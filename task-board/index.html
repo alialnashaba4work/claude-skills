@@ -413,6 +413,7 @@ button{cursor:pointer}
     <div class="field"><label for="f-notes">التفاصيل والملاحظات</label><textarea id="f-notes" placeholder="المتطلبات، الملاحظات، أي شيء تحتاج تتذكره..."></textarea></div>
   </div>
   <div class="d-foot">
+    <button class="btn btn-ghost" id="d-copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5"/></svg>نسخ المهمة</button>
     <button class="btn btn-danger" id="d-delete">حذف المهمة</button>
     <span class="meta" id="d-meta"></span>
   </div>
@@ -1075,6 +1076,14 @@ $('d-delete').onclick=()=>{
   if(assets)(async()=>{for(const a of assetIds){try{await assets.delete(a)}catch(e){}}})();
 };
 $('d-close').onclick=closeTask;$('scrim').onclick=closeTask;
+// copy a task: same details and steps (unticked), no due date or attachments, opens the copy
+$('d-copy').onclick=()=>{
+  const t=cur();if(!t)return;flush();
+  const c=JSON.parse(JSON.stringify(t));
+  Object.assign(c,{id:newId(),title:(t.title||'بدون عنوان')+' (نسخة)',status:'todo',due:'',attachments:[],createdAt:Date.now(),checklist:(t.checklist||[]).map(x=>({text:x.text,done:false}))});
+  delete c.completedAt;delete c.clientAuto;
+  state.tasks.push(c);persist(c);closeTask();openTask(c.id,true);toast('انعملت نسخة من المهمة');
+};
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('gview').hidden)closeGarden();else if(state.openId)closeTask()});
 
 /* ---------- top controls ---------- */
