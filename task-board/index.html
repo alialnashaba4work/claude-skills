@@ -218,7 +218,9 @@ button{cursor:pointer}
 /* no motivational line: the banner is just the garden */
 .hello .hello-t{display:none}
 /* small garden card, bottom-left */
-.hello .streak{margin-inline-start:auto;padding:5px;gap:6px;border-radius:16px}
+.hello .streak{margin-inline-start:auto;padding:5px;gap:6px;border-radius:16px;background:color-mix(in srgb,var(--surface) 45%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border:1px solid color-mix(in srgb,var(--surface) 60%,transparent)}
+.hello .streak .plant{background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+.hello .streak .garden-btn{background:color-mix(in srgb,var(--accent-soft) 60%,transparent)}
 .hello .plant{width:56px;height:44px;border-radius:12px}
 .hello .plant svg{width:44px;height:44px}
 .plant .tag{display:none}
