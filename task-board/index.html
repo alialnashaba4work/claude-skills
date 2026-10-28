@@ -301,8 +301,9 @@ button{cursor:pointer}
 .card .t{transition:color .18s ease}
 .switch button,.search,.select,.done-toggle,.shelf-h,.garden-btn,.done-btn,.btn,.theme button,.stat{transition:background-color .18s ease,color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
 @media (hover:hover){
-  .card:hover{transform:translateY(-3px);background:color-mix(in srgb,var(--c,var(--accent)) 9%,var(--surface));border-color:color-mix(in srgb,var(--c,var(--accent)) 45%,transparent);box-shadow:0 12px 26px -12px color-mix(in srgb,var(--c,var(--accent)) 70%,transparent)}
-  .card:hover .t{color:color-mix(in srgb,var(--c,var(--accent)) 72%,var(--ink))}
+  .card:hover{transform:translateY(-4px);background:color-mix(in srgb,var(--c,var(--accent)) 20%,var(--surface));border-color:var(--c,var(--accent));box-shadow:0 14px 30px -12px color-mix(in srgb,var(--c,var(--accent)) 80%,transparent)}
+  .card:hover .t{color:color-mix(in srgb,var(--c,var(--accent)) 85%,var(--ink))}
+  .card:hover .done-btn{border-color:var(--c,var(--accent))}
   .card.done:hover{transform:none}
   .switch button:not([aria-pressed="true"]):hover{background:var(--surface-2);color:var(--ink)}
   .search:hover,.select:hover{border-color:var(--accent)}
