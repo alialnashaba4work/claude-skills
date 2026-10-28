@@ -82,18 +82,19 @@ button{cursor:pointer}
 .select{background:var(--surface);border:1px solid var(--line);border-radius:999px;height:40px;padding:0 14px}
 
 /* board */
-.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
-.col{background:var(--surface);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:180px;transition:background .15s}
-.col.drop{background:var(--accent-soft)}
-.col-h{display:flex;align-items:center;gap:8px;padding:2px 4px 4px}
-.col-h .dot{width:8px;height:8px;border-radius:50%}
-.col-h b{font-weight:600}
-.col-h .c{color:var(--ink-3);font-size:12px;font-variant-numeric:tabular-nums}
-.col-h .add{margin-inline-start:auto;width:28px;height:28px;border-radius:50%;border:0;background:var(--surface-2);display:grid;place-items:center;color:var(--ink-2)}
-.col-h .add svg{width:14px;height:14px}
-.card{background:var(--surface-2);border:1px solid transparent;border-radius:16px;padding:12px 14px;text-align:start;display:flex;flex-direction:column;gap:8px;width:100%}
-.card:hover{border-color:var(--line);background:var(--surface)}
-.card.dragging{opacity:.4}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px;align-items:start}
+.done-toggle{align-self:flex-start;border:0;background:var(--surface);border-radius:999px;padding:9px 16px;display:inline-flex;gap:8px;align-items:center;color:var(--ink-2);font-weight:500}
+.done-toggle .n{font-size:12px;min-width:22px;padding:0 6px;border-radius:999px;background:var(--surface-2);text-align:center}
+.done-toggle svg{width:14px;height:14px;transition:transform .2s}
+.done-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.card{background:var(--surface);border:1px solid transparent;border-radius:18px;padding:14px 16px;text-align:start;display:flex;flex-direction:column;gap:8px;width:100%;cursor:pointer}
+.card:hover{border-color:var(--line);box-shadow:var(--shadow)}
+.card.done{background:transparent;border-color:var(--line)}
+.card-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.done-btn{margin-inline-start:auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12.5px;display:inline-flex;gap:6px;align-items:center;color:var(--ink-2)}
+.done-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.done-btn svg{width:14px;height:14px}
+.card.leaving{opacity:0;transform:scale(.97);transition:opacity .25s,transform .25s}
 .card .t{font-weight:600;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
 .card.done .t{color:var(--ink-3);text-decoration:line-through}
 .card .client{color:var(--ink-2);font-size:12.5px;display:flex;align-items:center;gap:6px;min-width:0}
@@ -107,7 +108,7 @@ button{cursor:pointer}
 .chip.ok{background:var(--accent-soft);color:var(--accent)}
 .prog{height:4px;border-radius:4px;background:var(--line);overflow:hidden}
 .prog i{display:block;height:100%;background:var(--accent)}
-.empty{border:1.5px dashed var(--line);border-radius:16px;padding:16px;text-align:center;color:var(--ink-3);font-size:12.5px}
+.empty{grid-column:1/-1;border:1.5px dashed var(--line);border-radius:16px;padding:16px;text-align:center;color:var(--ink-3);font-size:12.5px}
 
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(30,30,30,.35);z-index:20}
@@ -144,11 +145,10 @@ button{cursor:pointer}
 
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
-@media (max-width:1000px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1000px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:620px){
   body{padding-block:10px}
   .app{padding:14px;border-radius:22px;gap:18px}
-  .board{grid-template-columns:1fr}
   .switch{order:3;width:100%;margin:0}.switch button{flex:1;justify-content:center;padding:9px 6px;gap:6px;font-size:13px;white-space:nowrap}
   .top .btn-accent{margin-inline-start:auto}
   .bar h2{flex-basis:100%}
@@ -180,8 +180,8 @@ button{cursor:pointer}
 
   <section class="stats" aria-label="ملخص">
     <div class="stat hl"><div class="lbl">مهام مفتوحة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="3"/><path d="M5.5 8h5M5.5 5.5h5M5.5 10.5h3"/></svg></span></div><div class="num" id="s-open">0</div><div class="sub" id="s-open-sub">في هذه المساحة</div></div>
-    <div class="stat"><div class="lbl">قيد التنفيذ<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg></span></div><div class="num" id="s-doing">0</div><div class="sub">تعمل عليها الآن</div></div>
-    <div class="stat"><div class="lbl">تسليم خلال ٧ أيام<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="11" height="10" rx="2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg></span></div><div class="num" id="s-soon">0</div><div class="sub" id="s-late">لا توجد مهام متأخرة</div></div>
+    <div class="stat"><div class="lbl">متأخرة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg></span></div><div class="num" id="s-late-n">0</div><div class="sub">فات موعد تسليمها</div></div>
+    <div class="stat"><div class="lbl">تسليم خلال ٧ أيام<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="11" height="10" rx="2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg></span></div><div class="num" id="s-soon">0</div><div class="sub">قرب موعدها</div></div>
     <div class="stat"><div class="lbl">مكتملة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.5 8.5l3 3 6-6.5"/></svg></span></div><div class="num" id="s-done">0</div><div class="sub" id="s-done-sub">من أصل 0</div></div>
   </section>
 
@@ -192,6 +192,8 @@ button{cursor:pointer}
       <select class="select" id="client-filter" aria-label="تصفية حسب العميل"><option value="">كل العملاء</option></select>
     </div>
     <div class="board" id="board"></div>
+    <button class="done-toggle" id="done-toggle" aria-expanded="false" aria-controls="done-board">المكتملة <span class="n" id="done-n">0</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></button>
+    <div class="board" id="done-board" hidden></div>
   </section>
 </div>
 
@@ -204,7 +206,7 @@ button{cursor:pointer}
   </div>
   <div class="d-body">
     <input class="d-title" id="f-title" placeholder="عنوان المهمة">
-    <div class="field"><span class="sec-l">الحالة</span><div class="seg" id="f-status"></div></div>
+    <div><button class="btn btn-accent" id="f-complete"></button></div>
     <div class="grid2">
       <div class="field"><label for="f-client">العميل</label><input id="f-client" list="clients" placeholder="اسم العميل"><datalist id="clients"></datalist></div>
       <div class="field"><label for="f-due">تاريخ التسليم</label><input id="f-due" type="date"></div>
@@ -228,16 +230,10 @@ button{cursor:pointer}
 
 <script>
 (function(){
-const STATUSES=[
-  {id:'todo',label:'جديدة',color:'var(--ink-3)'},
-  {id:'doing',label:'قيد التنفيذ',color:'var(--accent)'},
-  {id:'review',label:'مراجعة',color:'var(--warn)'},
-  {id:'done',label:'مكتملة',color:'var(--solid)'}
-];
 const WS={freelance:'Freelance',moremedia:'More Media',islamic:'Islamic'};
 const PR={low:'منخفضة',med:'متوسطة',high:'عالية'};
 const $=id=>document.getElementById(id);
-const state={ws:'freelance',tasks:[],q:'',client:'',openId:null};
+const state={ws:'freelance',tasks:[],q:'',client:'',openId:null,showDone:false};
 let db=null,mode='pending';
 const queues={};
 
@@ -304,11 +300,9 @@ function render(){
   const all=wsTasks();
   const open=all.filter(t=>t.status!=='done');
   $('s-open').textContent=open.length;
-  $('s-doing').textContent=all.filter(t=>t.status==='doing').length;
   $('s-soon').textContent=open.filter(t=>{const n=daysLeft(t.due);return n!==null&&n>=0&&n<=7}).length;
   const late=open.filter(t=>{const n=daysLeft(t.due);return n!==null&&n<0}).length;
-  $('s-late').textContent=late?`${late} متأخرة`:'لا توجد مهام متأخرة';
-  $('s-late').style.color=late?'var(--danger)':'';
+  $('s-late-n').textContent=late;$('s-late-n').style.color=late?'var(--danger)':'';
   const done=all.length-open.length;
   $('s-done').textContent=done;$('s-done-sub').textContent=`من أصل ${all.length}`;
   $('s-open-sub').textContent='في '+WS[state.ws];
@@ -324,39 +318,40 @@ function render(){
   const q=state.q.trim().toLowerCase();
   const shown=all.filter(t=>(!state.client||(t.client||'').trim()===state.client)&&(!q||[t.title,t.client,t.notes].join(' ').toLowerCase().includes(q)));
 
-  const board=$('board');board.replaceChildren();
-  for(const s of STATUSES){
-    const items=shown.filter(t=>(t.status||'todo')===s.id).sort((a,b)=>{
-      const da=a.due||'9999',dbb=b.due||'9999';if(da!==dbb)return da<dbb?-1:1;return (b.createdAt||0)-(a.createdAt||0)});
-    const col=document.createElement('div');col.className='col';col.dataset.status=s.id;
-    const hd=document.createElement('div');hd.className='col-h';
-    hd.innerHTML=`<span class="dot" style="background:${s.color}"></span><b></b><span class="c"></span><button class="add" aria-label="إضافة مهمة إلى ${s.label}">${plusSvg}</button>`;
-    hd.querySelector('b').textContent=s.label;hd.querySelector('.c').textContent=items.length;
-    hd.querySelector('.add').onclick=()=>createTask(s.id);
-    col.append(hd);
-    if(!items.length){const e=document.createElement('div');e.className='empty';e.textContent=(q||state.client)?'لا نتائج':(s.id==='todo'&&!all.length?'لا توجد مهام بعد. اضغط + لإضافة أول مهمة':'اسحب بطاقة إلى هنا');col.append(e)}
-    for(const t of items)col.append(cardEl(t));
-    col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('drop')});
-    col.addEventListener('dragleave',e=>{if(!col.contains(e.relatedTarget))col.classList.remove('drop')});
-    col.addEventListener('drop',e=>{e.preventDefault();col.classList.remove('drop');const id=e.dataTransfer.getData('text/plain');const t=state.tasks.find(x=>x.id===id);if(t&&t.status!==s.id){t.status=s.id;persist(t);render()}});
-    board.append(col);
-  }
+  const byDue=(a,b)=>{const da=a.due||'9999',dbb=b.due||'9999';if(da!==dbb)return da<dbb?-1:1;return (b.createdAt||0)-(a.createdAt||0)};
+  const openShown=shown.filter(t=>t.status!=='done').sort(byDue);
+  const doneShown=shown.filter(t=>t.status==='done').sort((a,b)=>(b.completedAt||b.updatedAt||0)-(a.completedAt||a.updatedAt||0));
+  const board=$('board');board.replaceChildren(...openShown.map(cardEl));
+  if(!openShown.length){const e=document.createElement('div');e.className='empty';
+    e.textContent=(q||state.client)?'لا توجد مهام مطابقة':(all.length?'أنجزت كل المهام في '+WS[state.ws]+'. أضف مهمة جديدة متى ما احتجت':'لا توجد مهام بعد. اضغط "مهمة جديدة" لإضافة أول مهمة');board.append(e)}
+  $('done-n').textContent=doneShown.length;
+  $('done-toggle').hidden=!doneShown.length;
+  $('done-toggle').setAttribute('aria-expanded',String(state.showDone));
+  const db2=$('done-board');db2.hidden=!state.showDone||!doneShown.length;db2.replaceChildren(...doneShown.map(cardEl));
+}
+const checkSvg='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg>';
+function toggleDone(t,el){
+  const finishing=t.status!=='done';
+  const go=()=>{if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}persist(t);render();toast(finishing?'أحسنت! انتقلت المهمة إلى المكتملة':'رجعت المهمة إلى قائمة المهام')};
+  if(el&&finishing&&!matchMedia('(prefers-reduced-motion: reduce)').matches){el.classList.add('leaving');setTimeout(go,230)}else go();
 }
 function cardEl(t){
-  const b=document.createElement('button');b.className='card'+(t.status==='done'?' done':'');b.draggable=true;
+  const b=document.createElement('div');b.className='card'+(t.status==='done'?' done':'');b.tabIndex=0;b.setAttribute('role','button');
   const ti=document.createElement('div');ti.className='t';ti.textContent=t.title||'بدون عنوان';b.append(ti);
   if(t.client){const c=document.createElement('div');c.className='client';c.innerHTML=userSvg;const sp=document.createElement('span');sp.textContent=t.client;c.append(sp);b.append(c)}
-  const m=document.createElement('div');m.className='meta';
-  const dc=dueChip(t);if(dc)m.append(dc);
-  if(t.priority==='high'||t.priority==='med'){const p=document.createElement('span');p.className='chip pr-'+t.priority;p.textContent='أولوية '+PR[t.priority];m.append(p)}
-  if(t.budget){const p=document.createElement('span');p.className='chip';p.textContent=t.budget;m.append(p)}
   const ch=Array.isArray(t.checklist)?t.checklist:[];
-  if(ch.length){const d=ch.filter(x=>x.done).length;const p=document.createElement('span');p.className='chip'+(d===ch.length?' ok':'');p.textContent=`${d}/${ch.length}`;m.append(p)}
-  if(m.childElementCount)b.append(m);
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
+  const m=document.createElement('div');m.className='card-foot';
+  const dc=dueChip(t);if(dc)m.append(dc);
+  if(t.status!=='done'&&(t.priority==='high'||t.priority==='med')){const p=document.createElement('span');p.className='chip pr-'+t.priority;p.textContent='أولوية '+PR[t.priority];m.append(p)}
+  if(t.budget){const p=document.createElement('span');p.className='chip';p.textContent=t.budget;m.append(p)}
+  if(ch.length){const d=ch.filter(x=>x.done).length;const p=document.createElement('span');p.className='chip'+(d===ch.length?' ok':'');p.textContent=`${d}/${ch.length}`;m.append(p)}
+  const btn=document.createElement('button');btn.className='done-btn';
+  if(t.status==='done'){btn.textContent='إرجاع'}else{btn.innerHTML=checkSvg+'<span>اكتملت</span>'}
+  btn.onclick=e=>{e.stopPropagation();toggleDone(t,b)};
+  m.append(btn);b.append(m);
   b.onclick=()=>openTask(t.id);
-  b.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',t.id);b.classList.add('dragging')});
-  b.addEventListener('dragend',()=>b.classList.remove('dragging'));
+  b.addEventListener('keydown',e=>{if(e.target===b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openTask(t.id)}});
   return b;
 }
 
@@ -391,10 +386,13 @@ for(const fid in fieldMap){
   el.addEventListener('change',()=>{flush();render()});
 }
 function renderStatus(){
-  const t=cur(),wrap=$('f-status');wrap.replaceChildren();
-  for(const s of STATUSES){const b=document.createElement('button');b.textContent=s.label;b.setAttribute('aria-pressed',String((t.status||'todo')===s.id));
-    b.onclick=()=>{t.status=s.id;persist(t);renderStatus();render()};wrap.append(b)}
+  const t=cur(),b=$('f-complete'),done=t.status==='done';
+  b.className='btn '+(done?'btn-ghost':'btn-accent');
+  b.innerHTML=done?'إرجاع إلى المهام':checkSvg.replace('<svg','<svg width="16" height="16"')+'اكتملت';
 }
+$('f-complete').onclick=()=>{const t=cur();if(!t)return;flush();const finishing=t.status!=='done';
+  if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}
+  persist(t);closeTask();toast(finishing?'أحسنت! انتقلت المهمة إلى المكتملة':'رجعت المهمة إلى قائمة المهام')};
 function renderChecks(){
   const t=cur(),wrap=$('f-checks');wrap.replaceChildren();
   if(!Array.isArray(t.checklist))t.checklist=[];
@@ -422,8 +420,9 @@ $('d-close').onclick=closeTask;$('scrim').onclick=closeTask;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.openId)closeTask()});
 
 /* ---------- top controls ---------- */
-for(const w in WS)$('ws-'+w).onclick=()=>{state.ws=w;state.client='';try{localStorage.setItem('tb-ws',w)}catch(e){}render()};
+for(const w in WS)$('ws-'+w).onclick=()=>{state.ws=w;state.client='';state.showDone=false;try{localStorage.setItem('tb-ws',w)}catch(e){}render()};
 $('new-top').onclick=()=>createTask('todo');
+$('done-toggle').onclick=()=>{state.showDone=!state.showDone;render()};
 $('q').addEventListener('input',e=>{state.q=e.target.value;render()});
 $('client-filter').addEventListener('change',e=>{state.client=e.target.value;render()});
 
