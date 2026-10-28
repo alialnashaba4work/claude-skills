@@ -365,22 +365,6 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
-.kid-hop{animation:hop 2.4s ease-in-out infinite}
-@keyframes hop{0%,14%,100%{transform:translateY(0)}6%{transform:translateY(-3.5px)}}
-.arm-f,.arm-b{transform-box:fill-box;transform-origin:50% 0}
-.arm-f{animation:throwf 2.4s ease-in-out infinite}
-.arm-b{animation:throwb 2.4s ease-in-out infinite}
-@keyframes throwf{0%{transform:rotate(-112deg)}16%{transform:rotate(-20deg)}80%{transform:rotate(-30deg)}100%{transform:rotate(-112deg)}}
-@keyframes throwb{0%{transform:rotate(-70deg)}16%{transform:rotate(10deg)}80%{transform:rotate(0deg)}100%{transform:rotate(-70deg)}}
-.ballx{animation:ballx 2.4s infinite}
-@keyframes ballx{0%{transform:translateX(0);animation-timing-function:cubic-bezier(.45,0,.55,1)}50%{transform:translateX(110px);animation-timing-function:cubic-bezier(.45,0,.55,1)}100%{transform:translateX(0)}}
-.bally{animation:bally 1.2s infinite}
-@keyframes bally{0%{transform:translateY(0);animation-timing-function:cubic-bezier(.25,.6,.5,1)}50%{transform:translateY(-44px);animation-timing-function:cubic-bezier(.5,0,.75,.4)}100%{transform:translateY(0)}}
-.balls{transform-box:fill-box;transform-origin:center;animation:balls 1.2s infinite}
-@keyframes balls{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(.45);opacity:.1}}
-.spinb{transform-box:fill-box;transform-origin:center;animation:spin 1.2s linear infinite}
-.pony{transform-box:fill-box;transform-origin:100% 20%;animation:pony 1.2s ease-in-out infinite alternate}
-@keyframes pony{from{transform:rotate(-8deg)}to{transform:rotate(10deg)}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -1014,22 +998,42 @@ function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?WEIGHT[
 const levelOf=n=>{let l=LEVELS[0];for(const x of LEVELS)if(n>=x.min)l=x;return l};
 function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name;renderSky()}
 
-const RES=[{x:280,y:318,w:210,h:80},{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
+const RES=[{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
 function slots(n){const r=rnd(11),out=[];let guard=0;
   while(out.length<n&&guard<n*40){guard++;const x=25+r()*950,y=285+r()*258;
     if(RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h))continue;out.push({x,y,v:r()})}return out}
-const FLOWERS=['#F4B740','#E86A8A','#FFFFFF','#B48CE8','#FF8A5B'];
+const FLOWERS=[['#F7C548','#E8A21E'],['#F08AA4','#D45D7E'],['#FFFFFF','#E6E2F0'],['#C4A5F0','#9A78D6'],['#FF9E6B','#E8743E']];
+// shared paint for the garden (gradients are defined once per scene in gardenDefs)
+const CAN=`<circle cx="-8" cy="-27" r="12" fill="#077A70"/><circle cx="8" cy="-26" r="11" fill="#077A70"/>`;
 function plantSVG(i,p){
-  const s=(0.55+(p.y-285)/258*0.6).toFixed(2);let g;
-  if(i%25===24)g='<rect x="-4" y="-46" width="8" height="46" rx="3" fill="#8B6B4A"/><circle cy="-58" r="26" fill="#0B7D73"/><circle cx="-18" cy="-44" r="16" fill="#0EA89C"/><circle cx="18" cy="-44" r="16" fill="#0EA89C"/><circle cx="-6" cy="-66" r="8" fill="#fff" opacity=".18"/>';
-  else if(i%10===9)g='<path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#0EA89C" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/><path d="M0-40c0-7 2-13 5-17"/></g><g fill="#C2410C"><circle cx="-4" cy="-35" r="2.6"/><circle cx="3" cy="-34" r="2.6"/></g>';
-  else{const k=i%7;
-    if(k===0||k===4)g='<g stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M0 0c-1-6-4-10-7-12"/><path d="M0 0c0-7 1-12 2-15"/><path d="M0 0c2-5 5-8 8-9"/></g>';
-    else if(k===2)g='<circle cx="-8" cy="-8" r="9" fill="#2E8A62"/><circle cx="8" cy="-8" r="9" fill="#2E8A62"/><circle cy="-14" r="10" fill="#3EA374"/>';
-    else if(k===5)g='<rect x="-2.5" y="-24" width="5" height="24" rx="2" fill="#8B6B4A"/><circle cy="-30" r="14" fill="#0EA89C"/><circle cx="-9" cy="-22" r="9" fill="#0B8F84"/><circle cx="9" cy="-22" r="9" fill="#0B8F84"/>';
-    else{const c=FLOWERS[Math.floor(p.v*FLOWERS.length)];g=`<path d="M0 0v-14" stroke="#3E9E6A" stroke-width="2"/><path d="M0-6c-4-1-6-4-6-6c3 0 5 2 6 6z" fill="#3E9E6A"/><g fill="${c}"><circle cy="-19" r="3.6"/><circle cx="4.5" cy="-15" r="3.6"/><circle cx="-4.5" cy="-15" r="3.6"/><circle cy="-11" r="3.6"/></g><circle cy="-15" r="2.4" fill="#FFE08A"/>`}}
-  const k7=i%7,sh=i%25===24?26:i%10===9?18:k7===5?14:k7===2?16:0;
-  const shadow=sh?`<ellipse cy="1" rx="${sh}" ry="${(sh/5).toFixed(1)}" fill="#0B3B2E" opacity=".16"/>`:'';
+  const s=(0.55+(p.y-285)/258*0.6).toFixed(2);let g;const k=i%7,v=p.v;
+  if(i%25===24){ // big shade tree
+    g=`<path d="M-5 0c1.5-14 0-28 1-46h8c1 18-.5 32 1 46z" fill="url(#gxTrunk)"/><path d="M0-30l-12-10M1-36l11-9" stroke="#6E4F33" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="-20" cy="-50" r="19" fill="#06655D"/><circle cx="20" cy="-50" r="19" fill="#06655D"/><circle cy="-66" r="22" fill="#06655D"/>
+      <circle cx="-17" cy="-54" r="17" fill="url(#gxLeafA)"/><circle cx="17" cy="-53" r="17" fill="url(#gxLeafA)"/><circle cy="-68" r="20" fill="url(#gxLeafA)"/><circle cy="-49" r="16" fill="url(#gxLeafA)"/>
+      <circle cx="-9" cy="-74" r="6" fill="#fff" opacity=".16"/><circle cx="-22" cy="-58" r="4" fill="#fff" opacity=".12"/>`}
+  else if(i%10===9){ // palm
+    const fr=(a,c)=>`<path transform="rotate(${a})" d="M0 0C10-4 22-3 32 4C22 1 10 2 0 0z" fill="${c}"/>`;
+    g=`<path d="M-3 0C-1-14 2-28 0-42h5c1 14-1 28 2 42z" fill="url(#gxTrunk)"/><path d="M-2-6h7M-1-13h6M0-20h6M0-27h6M0-34h6" stroke="#6E4F33" stroke-width="1.3" opacity=".7"/>
+      <g transform="translate(2 -42)">${fr(-160,'#0B7D73')}${fr(-20,'#0B7D73')}${fr(-125,'#0EA89C')}${fr(-55,'#0EA89C')}${fr(-95,'#12B5A8')}${fr(175,'#0B8F84')}${fr(5,'#0B8F84')}
+      <g fill="#B5512A"><circle cx="-3" cy="5" r="2.6"/><circle cx="2" cy="6" r="2.6"/><circle cx="-.5" cy="9" r="2.4"/></g></g>`}
+  else if(k===0||k===4){ // grass tuft
+    g=`<path d="M-6 0C-7-6-9-10-12-13C-8-11-5-7-3 0z" fill="#3E9E6A"/><path d="M-2 0C-2-8-1-13 1-17C1-11 1-6 2 0z" fill="#58B47F"/><path d="M1 0C3-6 6-9 10-11C7-7 5-4 5 0z" fill="#3E9E6A"/>`}
+  else if(k===2){ // bush
+    g=`<ellipse cy="-2" rx="16" ry="4" fill="#24704F"/><circle cx="-9" cy="-9" r="9" fill="#2A7E58"/><circle cx="9" cy="-9" r="9" fill="#2A7E58"/>
+      <circle cx="-7" cy="-11" r="8" fill="url(#gxLeafB)"/><circle cx="8" cy="-11" r="8" fill="url(#gxLeafB)"/><circle cy="-16" r="9.5" fill="url(#gxLeafB)"/>
+      <circle cx="-3" cy="-20" r="3" fill="#fff" opacity=".18"/>${v>.6?'<circle cx="5" cy="-12" r="1.8" fill="#E86A8A"/><circle cx="-6" cy="-8" r="1.6" fill="#E86A8A"/>':''}`}
+  else if(k===5){ // small tree
+    g=`<path d="M-2.5 0c.8-8 0-16 .5-24h4c.5 8-.3 16 .5 24z" fill="url(#gxTrunk)"/>${CAN}
+      <circle cx="-8" cy="-29" r="10" fill="url(#gxLeafA)"/><circle cx="8" cy="-28" r="9.5" fill="url(#gxLeafA)"/><circle cy="-37" r="12" fill="url(#gxLeafA)"/>
+      <circle cx="-4" cy="-42" r="3.5" fill="#fff" opacity=".17"/>`}
+  else{ // flower
+    const [c1,c2]=FLOWERS[Math.floor(v*FLOWERS.length)];let pet='';
+    for(let j=0;j<5;j++)pet+=`<ellipse transform="rotate(${j*72})" cy="-3.6" rx="2.6" ry="3.8" fill="${c1}" stroke="${c2}" stroke-width=".6"/>`;
+    g=`<path d="M0 0C-1-5 1-10 0-15" stroke="#3E9E6A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M0-5C-5-6-7-9-7-11C-3-11-1-8 0-5z" fill="#58B47F"/><path d="M0-8C4-9 6-12 6-14C2-14 0-11 0-8z" fill="#3E9E6A"/>
+      <g transform="translate(0 -17)">${pet}<circle r="2.4" fill="#F9D36A"/><circle r="1.2" fill="#E0A030"/></g>`}
+  const sh=i%25===24?28:i%10===9?16:k===5?13:k===2?17:0;
+  const shadow=sh?`<ellipse cy="1" rx="${sh}" ry="${(sh/4.5).toFixed(1)}" fill="#0B3B2E" opacity=".15"/>`:'';
   return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})">${shadow}<g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
@@ -1069,73 +1073,78 @@ function moonInfo(){const h=hijri();const d=h?h.d:15;const f=Math.min(.97,Math.m
 function moonPath(r,f){const c=Math.cos(2*Math.PI*f),rx=(Math.abs(c)*r).toFixed(2);
   return f<=.5?`M0 ${-r}A${r} ${r} 0 0 1 0 ${r}A${rx} ${r} 0 0 ${c>0?0:1} 0 ${-r}z`:`M0 ${-r}A${r} ${r} 0 0 0 0 ${r}A${rx} ${r} 0 0 ${c>0?1:0} 0 ${-r}z`}
 function moonSVG(){const {f}=moonInfo();return `<g transform="translate(860 70)"><circle r="40" fill="#FFF4D6" opacity=".08"/><circle r="26" fill="#FFFFFF" opacity=".07"/><path d="${moonPath(26,f)}" fill="#FFF4D6"/></g>`}
-/* two kids playing catch: a boy in a white thobe and a girl in a pink dress */
-function kidsSVG(){
-  const skin='#E9B68E',skinS='#D99E76',hair='#2B211C';
-  const head=(girl)=>`<rect x="-2.2" y="-40" width="4.4" height="5" rx="2" fill="${skinS}"/>
-    ${girl?`<g class="pony"><path d="M-8-52c-7 1-9 9-6 16 1 2 4 2 4-1-2-5-1-10 2-12z" fill="${hair}"/></g>`:''}
-    <circle cy="-47" r="9.5" fill="${skin}"/><circle cx="-6.2" cy="-46.5" r="2.3" fill="${skinS}"/>
-    <path d="M-9.6-47.5C-10-55-5-58.5 0-58.5S9.8-55 9.6-49C7-52.5 3-53 0-53s-6 1-7.6 3.2c-.5-.2-1.5 1.8-2 2.3z" fill="${hair}"/>
-    ${girl?`<path d="M-10-49c-1 6 0 11 3 14l2-6c-2-3-2-6-1-8z" fill="${hair}"/><g transform="translate(-7 -56) rotate(-20)"><path d="M0 0l-6-4v8zM0 0l6-4v8z" fill="#F4B740"/><circle r="1.8" fill="#E0A030"/></g>`:''}
-    <circle cx="2" cy="-47.5" r="1.25" fill="${hair}"/><circle cx="6.6" cy="-47.5" r="1.25" fill="${hair}"/>
-    <circle cx="2.4" cy="-47.9" r=".4" fill="#fff"/><circle cx="7" cy="-47.9" r=".4" fill="#fff"/>
-    <circle cx="7.6" cy="-43.6" r="1.9" fill="#F29A8A" opacity=".55"/><circle cx="0.2" cy="-43.6" r="1.6" fill="#F29A8A" opacity=".4"/>
-    <path d="M2.6-42.6q2.2 2 4.6 0" stroke="#8A4B3B" stroke-width="1.15" fill="none" stroke-linecap="round"/>`;
-  const arm=(cls,sleeve,len,delay)=>`<g class="${cls}" style="animation-delay:${delay}"><path d="M0 0v${len}" stroke="${sleeve}" stroke-width="5" stroke-linecap="round"/><circle cy="${len+2.5}" r="2.6" fill="${skin}"/></g>`;
-  const boy=(d)=>`<g class="kid-hop" style="animation-delay:${d}">
-    <ellipse cy="1" rx="13" ry="3" fill="#0B3B2E" opacity=".18"/>
-    <ellipse cx="-4" cy="-1.6" rx="4.2" ry="2.3" fill="#6B4B33"/><ellipse cx="5.4" cy="-1.6" rx="4.2" ry="2.3" fill="#6B4B33"/>
-    <g transform="translate(-4 -34)">${arm('arm-b','#E4E4DC',13,d)}</g>
-    <path d="M-9.5-36.5Q0-40.5 9.5-36.5L12.5-3.5Q0-.5-12.5-3.5Z" fill="url(#gk1)"/>
-    <path d="M0-37.5v12" stroke="#D2D2C8" stroke-width="1.1"/><circle cy="-31" r=".9" fill="#C8C8BE"/><circle cy="-27.5" r=".9" fill="#C8C8BE"/>
-    ${head(false)}
-    <g transform="translate(5 -34)">${arm('arm-f','#F6F6F1',13,d)}</g></g>`;
-  const girl=(d)=>`<g class="kid-hop" style="animation-delay:${d}">
-    <ellipse cy="1" rx="12" ry="3" fill="#0B3B2E" opacity=".18"/>
-    <path d="M-4-12v9M4.5-12v9" stroke="${skin}" stroke-width="3.2" stroke-linecap="round"/>
-    <ellipse cx="-4" cy="-1.8" rx="3.8" ry="2.2" fill="#B04A6A"/><ellipse cx="5" cy="-1.8" rx="3.8" ry="2.2" fill="#B04A6A"/>
-    <g transform="translate(-4 -34)">${arm('arm-b',skinS,12,d)}</g>
-    <path d="M-7.5-36.5Q0-39.5 7.5-36.5L14-11Q0-6.5-14-11Z" fill="url(#gk2)"/>
-    <path d="M-14-11Q0-6.5 14-11" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="1.6" fill="none"/>
-    <path d="M-4.5-37.5Q0-34.5 4.5-37.5" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-    ${head(true)}
-    <g transform="translate(5 -34)">${arm('arm-f',skin,12,d)}</g></g>`;
-  const ball='<circle r="5.6" fill="#F4B740"/><path d="M-5.6 0a5.6 5.6 0 0 0 11.2 0z" fill="#E86A8A"/><path d="M-5.6 0h11.2" stroke="#fff" stroke-width="1.2"/><circle cx="-2" cy="-2.2" r="1.6" fill="#fff" opacity=".6"/>';
-  return `<defs><linearGradient id="gk1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".65" stop-color="#F4F4EE"/><stop offset="1" stop-color="#DADAD0"/></linearGradient>
-    <linearGradient id="gk2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F59AB2"/><stop offset="1" stop-color="#D45D7E"/></linearGradient></defs>
-    <g transform="translate(305 392)">
-      <g transform="translate(20 0)"><g class="ballx"><ellipse class="balls" rx="5.5" ry="1.7" fill="#0B3B2E" opacity=".2"/></g></g>
-      ${boy('0s')}
-      <g transform="translate(150 0) scale(-1 1)">${girl('-1.2s')}</g>
-      <g transform="translate(20 -33)"><g class="ballx"><g class="bally"><g class="spinb">${ball}</g></g></g></g>
-    </g>`;
+function gardenDefs(c,night){
+  return `<radialGradient id="gxSun"><stop offset="0" stop-color="#FFF6C8"/><stop offset=".6" stop-color="#FFD860"/><stop offset="1" stop-color="#FFC23A"/></radialGradient>
+  <radialGradient id="gxGlow"><stop offset="0" stop-color="#FFE9A0" stop-opacity=".55"/><stop offset="1" stop-color="#FFE9A0" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gxCloud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E3EEF0"/></linearGradient>
+  <linearGradient id="gxTrunk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#A47E58"/><stop offset="1" stop-color="#6E4F33"/></linearGradient>
+  <radialGradient id="gxLeafA" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#3FCBBC"/><stop offset=".55" stop-color="#0EA89C"/><stop offset="1" stop-color="#08857B"/></radialGradient>
+  <radialGradient id="gxLeafB" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#7CD3A2"/><stop offset=".6" stop-color="#3EA374"/><stop offset="1" stop-color="#2A7E58"/></radialGradient>
+  <linearGradient id="gxWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FCF8F1"/><stop offset="1" stop-color="#E8DFCF"/></linearGradient>
+  <linearGradient id="gxWin" x1="0" y1="0" x2="1" y2="1">${night?'<stop offset="0" stop-color="#FFEFB5"/><stop offset="1" stop-color="#F5BD4F"/>':'<stop offset="0" stop-color="#E6F7F5"/><stop offset="1" stop-color="#9FD4CE"/>'}</linearGradient>
+  <linearGradient id="gxDoor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12A093"/><stop offset="1" stop-color="#0A6B62"/></linearGradient>
+  <linearGradient id="gxStone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C3CBC9"/><stop offset="1" stop-color="#8D9896"/></linearGradient>
+  <radialGradient id="gxWater" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#9BDDEE"/><stop offset="1" stop-color="#4AA3C4"/></radialGradient>
+  <linearGradient id="gxPath" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EFE2C4"/><stop offset="1" stop-color="#DCC89F"/></linearGradient>
+  <pattern id="gxGrass" width="64" height="34" patternUnits="userSpaceOnUse"><path d="M6 20l2-6 2 6M30 10l2-5 2 5M50 28l2-6 2 6M18 32l1.5-4 1.5 4M42 18l1.5-4 1.5 4" stroke="${mixHex(c.g2,'#000000',.25)}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".35"/></pattern>`;
 }
+function cloudSVG(x,y,sc){return `<g class="cloud"><g transform="translate(${x} ${y}) scale(${sc})"><ellipse cx="2" cy="10" rx="62" ry="10" fill="#000" opacity=".04"/><g fill="url(#gxCloud)"><circle cx="-30" cy="-2" r="16"/><circle cx="-8" cy="-14" r="22"/><circle cx="18" cy="-8" r="18"/><circle cx="38" cy="0" r="13"/><rect x="-46" y="-2" width="98" height="14" rx="7"/></g><circle cx="-12" cy="-22" r="7" fill="#fff" opacity=".7"/></g></g>`}
 function gardenSVG(n,palms,seen,animate,wide){
   const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow(),dry=dryLevel();
   let c=skyFor(per);
   if(wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
   if(dry>0){const d=DESERT[per];c=Object.fromEntries(Object.keys(c).map(k=>[k,mixHex(c[k],d[k],dry)]))}
-  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}</defs>`;
+  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
   o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
   if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+=moonSVG()}
-  else o+=per==='sunset'?'<circle cx="820" cy="215" r="60" fill="#FFB054"/>':'<circle cx="860" cy="80" r="34" fill="#FFD25E"/><g class="cloud" fill="#fff" opacity=".85"><ellipse cx="200" cy="80" rx="60" ry="16"/><ellipse cx="232" cy="66" rx="32" ry="17"/><ellipse cx="560" cy="55" rx="44" ry="12"/></g>';
+  else{const sy=wide?172:80,cy0=wide?150:70;
+    if(per==='sunset')o+='<circle cx="820" cy="215" r="110" fill="url(#gxGlow)"/><circle cx="820" cy="215" r="58" fill="#FFB054"/><circle cx="820" cy="215" r="58" fill="url(#gxSun)" opacity=".45"/>';
+    else o+=`<circle cx="860" cy="${sy}" r="80" fill="url(#gxGlow)"/><circle cx="860" cy="${sy}" r="${wide?26:32}" fill="url(#gxSun)"/>`;
+    o+=cloudSVG(210,cy0,1)+cloudSVG(560,cy0-12,.75)+(wide?'':cloudSVG(380,cy0+40,.5));}
   // wide mode (banner zoomed out): carry the hills and ground past the scene edges
   if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
+  const far=mixHex(c.hill,c.b,.45);
+  o+=`<path d="M0 222C120 196 230 200 330 212S560 186 700 198 900 214 1000 204V560H0z" fill="${far}"/>`;
+  if(wide)o+=`<rect x="-2000" y="210" width="5000" height="20" fill="${far}"/>`;
+  {const r=rnd(9);let tl='';for(let x=10;x<1000;x+=26+r()*30){const y=212+Math.sin(x/90)*6,h=8+r()*10;tl+=`<ellipse cx="${x.toFixed(0)}" cy="${(y-h*.35+6).toFixed(0)}" rx="${(7+r()*7).toFixed(0)}" ry="${(h*.7).toFixed(0)}"/>`}o+=`<g fill="${mixHex(far,c.hill,.6)}" opacity=".7">${tl}</g>`}
   o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
   o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
+  o+=wide?`<rect x="-2000" y="262" width="5000" height="1400" fill="url(#gxGrass)"/>`:`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gxGrass)"/>`;
   if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=300+r()*240,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
     o+=`<g stroke="#9C6F3C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${Math.min(.7,(dry-.45)*1.4).toFixed(2)}">${cr}</g>`}
-  if(has(15))o+='<path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#E8D7B5" stroke-width="34" fill="none" stroke-linecap="round" opacity=".9"/><path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#D9C59E" stroke-width="2" stroke-dasharray="6 14" fill="none"/>';
-  if(has(5))o+='<g stroke="#9C7A55" stroke-width="4" stroke-linecap="round">'+Array.from({length:26},(_,i)=>`<path d="M${40+i*36} 266v-22"/>`).join('')+'<path d="M40 250H940M40 260H940" stroke-width="3"/></g>';
-  const house=has(60)?`<g transform="translate(600 210)"><rect x="18" y="62" width="224" height="92" rx="6" fill="#F3EDE3"/><path d="M6 66L130 6l124 60z" fill="#383838"/><rect x="186" y="16" width="18" height="34" fill="#383838"/><rect x="112" y="98" width="36" height="56" rx="4" fill="#0B7D73"/><rect x="42" y="88" width="44" height="34" rx="4" fill="${night?'#FFD97A':'#BFE6E2'}"/><rect x="174" y="88" width="44" height="34" rx="4" fill="${night?'#FFD97A':'#BFE6E2'}"/><circle cx="252" cy="120" r="5" fill="${night?'#FFD97A':'#9C7A55'}" class="${night?'glow':''}"/><path d="M252 125v29" stroke="#383838" stroke-width="3"/></g>`
-    :has(25)?`<g transform="translate(640 230)"><rect x="12" y="52" width="140" height="78" rx="6" fill="#F3EDE3"/><path d="M2 56L82 8l80 48z" fill="#383838"/><rect x="66" y="82" width="30" height="48" rx="4" fill="#0B7D73"/><rect x="28" y="72" width="28" height="24" rx="3" fill="${night?'#FFD97A':'#BFE6E2'}"/><rect x="110" y="72" width="28" height="24" rx="3" fill="${night?'#FFD97A':'#BFE6E2'}"/></g>`:'';
+  if(has(15)){const P='M505 560C500 480 520 420 560 380S660 330 700 330';
+    o+=`<path d="${P}" stroke="#C9B48A" stroke-width="38" fill="none" stroke-linecap="round" opacity=".55"/><path d="${P}" stroke="url(#gxPath)" stroke-width="32" fill="none" stroke-linecap="round"/>`;
+    const r=rnd(31);let pb='';for(let t=0;t<1;t+=.035){const x=(1-t)**3*505+3*(1-t)**2*t*500+3*(1-t)*t*t*520+t**3*560,y=(1-t)**3*560+3*(1-t)**2*t*480+3*(1-t)*t*t*420+t**3*380;pb+=`<ellipse cx="${(x+(r()-.5)*22).toFixed(0)}" cy="${(y+(r()-.5)*10).toFixed(0)}" rx="${(1.5+r()*2).toFixed(1)}" ry="${(1+r()*1.2).toFixed(1)}"/>`}
+    for(let t=0;t<1;t+=.08){const x=560+(700-560)*t,y=380-(50)*Math.sin(t*1.57);pb+=`<ellipse cx="${(x+(r()-.5)*18).toFixed(0)}" cy="${(y+(r()-.5)*8).toFixed(0)}" rx="${(1.5+r()*1.8).toFixed(1)}" ry="1.1"/>`}
+    o+=`<g fill="#BFA47A" opacity=".75">${pb}</g>`}
+  if(has(5)){o+='<g><path d="M40 250H940" stroke="#8A6845" stroke-width="3.5"/><path d="M40 260H940" stroke="#8A6845" stroke-width="3.5"/><path d="M40 249H940M40 259H940" stroke="#B89571" stroke-width="1" opacity=".8"/>';
+    for(let i=0;i<26;i++){const x=40+i*36;o+=`<path d="M${x-3} 268V246l3-4 3 4V268z" fill="#9C7A55"/><path d="M${x-3} 268V246l3-4V268z" fill="#B89571"/>`}o+='<ellipse cx="490" cy="269" rx="460" ry="3" fill="#0B3B2E" opacity=".08"/></g>'}
+  const win=(x,y,w,h)=>`<rect x="${x-2}" y="${y-2}" width="${w+4}" height="${h+4}" rx="3" fill="#FFFFFF"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="url(#gxWin)" class="${night?'glow':''}"/><path d="M${x+w/2} ${y}v${h}M${x} ${y+h/2}h${w}" stroke="#FFFFFF" stroke-width="2"/>${night?'':`<path d="M${x+3} ${y+h-4}l${w*0.35} ${-h*0.6}" stroke="#fff" stroke-width="2" opacity=".55"/>`}<rect x="${x-4}" y="${y+h+1}" width="${w+8}" height="4" rx="1.5" fill="#D9CDB8"/>`;
+  const house=has(60)?`<g transform="translate(600 210)"><rect x="186" y="12" width="20" height="40" fill="#5A4636"/><rect x="183" y="8" width="26" height="7" rx="2" fill="#4A3828"/>
+      <rect x="18" y="62" width="224" height="92" rx="5" fill="url(#gxWall)"/><rect x="18" y="140" width="224" height="14" fill="#DCCFB9"/>
+      <path d="M2 68L130 4L130 68z" fill="#4A4A4A"/><path d="M130 4L258 68L130 68z" fill="#2E2E2E"/><path d="M2 68H258" stroke="#232323" stroke-width="4" stroke-linecap="round"/>
+      ${win(40,86,46,34)}${win(174,86,46,34)}
+      <rect x="110" y="96" width="40" height="58" rx="4" fill="url(#gxDoor)"/><rect x="110" y="96" width="40" height="58" rx="4" fill="none" stroke="#08574F" stroke-width="2"/><circle cx="141" cy="127" r="2.6" fill="#F4D27A"/>
+      <rect x="102" y="152" width="56" height="7" rx="2" fill="#CBBCA2"/>
+      <circle cx="254" cy="118" r="5.5" fill="${night?'#FFD97A':'#C9A77C'}" class="${night?'glow':''}"/><path d="M254 124v31" stroke="#383838" stroke-width="3"/></g>`
+    :has(25)?`<g transform="translate(640 230)"><rect x="12" y="52" width="140" height="78" rx="5" fill="url(#gxWall)"/><rect x="12" y="118" width="140" height="12" fill="#DCCFB9"/>
+      <path d="M0 58L82 6L82 58z" fill="#4A4A4A"/><path d="M82 6L164 58L82 58z" fill="#2E2E2E"/><path d="M0 58H164" stroke="#232323" stroke-width="3.5" stroke-linecap="round"/>
+      ${win(26,72,30,24)}${win(108,72,30,24)}
+      <rect x="64" y="80" width="34" height="50" rx="4" fill="url(#gxDoor)"/><circle cx="91" cy="106" r="2.3" fill="#F4D27A"/><rect x="58" y="128" width="46" height="6" rx="2" fill="#CBBCA2"/></g>`:'';
   if(house)o+=`<ellipse cx="${has(60)?730:722}" cy="${has(60)?366:362}" rx="${has(60)?140:90}" ry="12" fill="#0B3B2E" opacity=".14"/>`;
   o+=house;
-  if(has(10))o+='<g transform="translate(215 300)"><ellipse cy="62" rx="34" ry="9" fill="#7E8B8A"/><rect x="-34" y="30" width="68" height="32" fill="#A9B4B2"/><path d="M-34 40h68M-34 51h68" stroke="#8D9997" stroke-width="2"/><ellipse cy="30" rx="34" ry="9" fill="#5F6B6A"/><path d="M-26 30V-6M26 30V-6" stroke="#8B6B4A" stroke-width="5"/><path d="M-40-4L0-26 40-4z" fill="#383838"/><path d="M0-6v24" stroke="#555" stroke-width="2"/><rect x="-6" y="16" width="12" height="10" rx="2" fill="#8B6B4A"/></g>';
-  if(has(40))o+='<g><ellipse cx="335" cy="470" rx="125" ry="38" fill="#7FC9E0"/><ellipse cx="335" cy="466" rx="110" ry="30" fill="#5FB7D4"/><path d="M270 460q20-8 40 0M350 474q20-8 40 0" stroke="#fff" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/><g fill="#3E9E6A"><ellipse cx="300" cy="476" rx="11" ry="4"/><ellipse cx="380" cy="458" rx="9" ry="3.5"/></g><circle cx="382" cy="456" r="3" fill="#E86A8A"/></g>';
-  if(has(15))o+='<g transform="translate(560 470)"><rect x="-30" y="-14" width="60" height="7" rx="3" fill="#8B6B4A"/><rect x="-30" y="-26" width="60" height="6" rx="3" fill="#8B6B4A"/><path d="M-24-7v14M24-7v14" stroke="#6B5038" stroke-width="4"/></g>';
+  if(has(10)){let st='';for(let row=0;row<3;row++)for(let j=0;j<5;j++){const x=-34+j*14+(row%2?7:0);if(x>30)continue;st+=`<rect x="${x}" y="${32+row*10}" width="13" height="9" rx="3" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".8"/>`}
+    o+=`<g transform="translate(215 300)"><ellipse cy="64" rx="40" ry="8" fill="#0B3B2E" opacity=".14"/><path d="M-34 30V60Q0 70 34 60V30z" fill="#9AA5A3"/><clipPath id="gxWellClip"><path d="M-34 30V60Q0 70 34 60V30z"/></clipPath><g clip-path="url(#gxWellClip)">${st}</g>
+      <ellipse cy="30" rx="34" ry="9" fill="#8D9896"/><ellipse cy="30" rx="27" ry="6" fill="#2F4A55"/><path d="M-26 30V-4M26 30V-4" stroke="#7A5A3C" stroke-width="5" stroke-linecap="round"/>
+      <path d="M-42-2L0-28L0-2z" fill="#4A4A4A"/><path d="M0-28L42-2L0-2z" fill="#2E2E2E"/><path d="M-26 -1H26" stroke="#7A5A3C" stroke-width="3"/>
+      <path d="M0-1v16" stroke="#C9B48A" stroke-width="1.4"/><path d="M-6 15h12l-2 9h-8z" fill="#8B6B4A"/><path d="M-6 15h12" stroke="#5A4636" stroke-width="1.5"/></g>`}
+  if(has(40)){let rim='';for(let a=0;a<360;a+=11){const r1=a*Math.PI/180;rim+=`<ellipse cx="${(335+Math.cos(r1)*122).toFixed(0)}" cy="${(468+Math.sin(r1)*36).toFixed(0)}" rx="${(8+(a%3)*2)}" ry="5.5" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".7"/>`}
+    const lily=(x,y,r,fl)=>`<path d="M${x} ${y}m${-r} 0a${r} ${r*.42} 0 1 0 ${r*2} 0l${-r} 0z" fill="#4FA36F"/><path d="M${x} ${y}l${r*.9} ${-r*.12}" stroke="#2E7E52" stroke-width="1"/>${fl?`<g transform="translate(${x-2} ${y-3})"><ellipse rx="3" ry="2" fill="#F08AA4"/><ellipse cy="-1.5" rx="1.8" ry="2.2" fill="#FFC6D4"/></g>`:''}`;
+    o+=`<g><ellipse cx="335" cy="474" rx="132" ry="42" fill="#0B3B2E" opacity=".12"/><ellipse cx="335" cy="468" rx="120" ry="34" fill="url(#gxWater)"/>${rim}
+      <path d="M262 462q22-9 44 0M352 478q22-9 44 0M300 486q16-6 32 0" stroke="#fff" stroke-width="2.6" fill="none" opacity=".55" stroke-linecap="round"/>
+      ${lily(300,476,11,true)}${lily(382,458,9,false)}${lily(360,484,7,true)}</g>`}
+  if(has(15))o+='<g transform="translate(560 470)"><ellipse cy="9" rx="34" ry="4" fill="#0B3B2E" opacity=".14"/><path d="M-24-7v14M24-7v14M-22-20v-6M22-20v-6" stroke="#5A4636" stroke-width="4" stroke-linecap="round"/><rect x="-32" y="-15" width="64" height="8" rx="3" fill="#A47E58"/><rect x="-32" y="-15" width="64" height="3" rx="1.5" fill="#C29A70"/><rect x="-32" y="-29" width="64" height="7" rx="3" fill="#A47E58"/><rect x="-32" y="-29" width="64" height="2.5" rx="1.2" fill="#C29A70"/></g>';
   if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/>'+label(0,-32,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>';
-  if(!night)o+=kidsSVG();
   const pts=slots(Math.min(n,260));
   const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
   if(dry>0)o+='<g filter="url(#gd)">';
@@ -1293,7 +1302,7 @@ function renderSky(){
   // empty garden: put the shoot in the middle of the banner
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
-    .replace('<circle cx="860" cy="80" r="34"','<circle cx="860" cy="172" r="26"').replace('cy="80" rx="60"','cy="160" rx="60"').replace('cy="66" rx="32"','cy="146" rx="32"').replace('cy="55" rx="44"','cy="140" rx="44"').replace('cx="560" cy="140"','cx="640" cy="140"').replace('translate(860 70)','translate(860 172) scale(.85)');
+    .replace('translate(860 70)','translate(860 172) scale(.85)');
   const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,cy=z>1?(innerWidth<=620?318:330):(innerWidth<=620?300:260),vy=Math.min(cy-H/2,560-H*0.55);
   $('sky-deco').innerHTML=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
