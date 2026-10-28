@@ -985,14 +985,17 @@ const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
 const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
 // dryness: every unfinished task dries the land a bit; 6 or more and it's full desert
 const openCount=()=>state.tasks.filter(t=>t.status!=='done').length;
-const dryLevel=()=>Math.min(1,openCount()/6);
+// 5 or fewer unfinished tasks = best weather; 15 or more = full desert
+const BEST_OPEN=5,WORST_OPEN=15;
+const dryLevel=()=>Math.max(0,Math.min(1,(openCount()-BEST_OPEN)/(WORST_OPEN-BEST_OPEN)));
 function weatherNow(){
   if(dryLevel()>=0.5)return 'desert';
+  if(openCount()<=BEST_OPEN)return 'spring';
   const now=Date.now(),recent=state.tasks.filter(t=>t.status==='done'&&t.completedAt&&t.createdAt&&now-t.completedAt<7*864e5);
   if(recent.length>=2){const d=recent.map(t=>t.completedAt-t.createdAt).sort((a,b)=>a-b);if(d[Math.floor(d.length/2)]<=2*864e5)return 'spring'}
   return 'normal';
 }
-function dryNote(){const n=openCount();if(!n)return '';return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} مهام مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: باقي ${n===1?'مهمة وحدة':n===2?'مهمتين':n+' مهام'} وترجع خضراء`}
+function dryNote(){const n=openCount();if(n<=BEST_OPEN)return '';const x=n-BEST_OPEN;return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} مهمة مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: خلّص ${x===1?'مهمة وحدة':x===2?'مهمتين':x+' مهام'} وترجع خضراء`}
 const WEATHER_NOTE={desert:'',spring:'ربيع ومطر خفيف: قاعد تخلّص مهامك بسرعة 🌸',normal:''};
 function skyFor(per){
   if(per==='night')return{a:'#0E1A24',b:'#1F4148',hill:'#1B3A3A',g1:'#2D5E4A',g2:'#22493A'};
