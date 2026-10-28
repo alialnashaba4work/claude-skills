@@ -223,9 +223,8 @@ button{cursor:pointer}
       <div class="field"><label for="f-client">العميل</label><input id="f-client" list="clients" placeholder="اسم العميل"><datalist id="clients"></datalist></div>
       <div class="field"><label for="f-due">تاريخ التسليم</label><input id="f-due" type="date"></div>
       <div class="field"><label for="f-priority">الأولوية</label><select id="f-priority"><option value="low">منخفضة</option><option value="med">متوسطة</option><option value="high">عالية</option></select></div>
-      <div class="field"><label for="f-budget">المبلغ</label><input id="f-budget" inputmode="decimal" placeholder="مثال: 1500 ر.س"></div>
       <div class="field"><label for="f-contact">تواصل العميل</label><input id="f-contact" placeholder="جوال أو إيميل"></div>
-      <div class="field"><label for="f-link">رابط</label><input id="f-link" dir="ltr" placeholder="https://"></div>
+      <div class="field" style="grid-column:1/-1"><label for="f-link">رابط</label><input id="f-link" dir="ltr" placeholder="https://"></div>
     </div>
     <div class="field"><span class="sec-l">قائمة المهام الفرعية</span>
       <div class="checks" id="f-checks"></div>
@@ -360,7 +359,6 @@ function cardEl(t){
   for(const ty of typesOf(t)){const k=document.createElement('span');k.className='chip kind';k.textContent=ty;m.append(k)}
   const dc=dueChip(t);if(dc)m.append(dc);
   if(t.status!=='done'&&(t.priority==='high'||t.priority==='med')){const p=document.createElement('span');p.className='chip pr-'+t.priority;p.textContent='أولوية '+PR[t.priority];m.append(p)}
-  if(t.budget){const p=document.createElement('span');p.className='chip';p.textContent=t.budget;m.append(p)}
   if(ch.length){const d=ch.filter(x=>x.done).length;const p=document.createElement('span');p.className='chip'+(d===ch.length?' ok':'');p.textContent=`${d}/${ch.length}`;m.append(p)}
   const btn=document.createElement('button');btn.className='done-btn';
   if(t.status==='done'){btn.textContent='إرجاع'}else{btn.innerHTML=checkSvg+'<span>اكتملت</span>'}
@@ -384,7 +382,7 @@ function openTask(id,focusTitle){
   state.openId=id;draftDirty=false;
   $('d-ws').textContent=WS[t.workspace||'freelance'];
   $('f-title').value=t.title||'';$('f-client').value=t.client||'';$('f-due').value=t.due||'';
-  $('f-priority').value=t.priority||'med';$('f-budget').value=t.budget||'';$('f-contact').value=t.contact||'';
+  $('f-priority').value=t.priority||'med';$('f-contact').value=t.contact||'';
   $('f-link').value=t.link||'';$('f-notes').value=t.notes||'';
   renderStatus();renderType();renderChecks();resetDelete();
   const c=t.createdAt?new Date(t.createdAt):null;
@@ -395,7 +393,7 @@ function openTask(id,focusTitle){
 function closeTask(){flush();state.openId=null;$('scrim').hidden=true;$('drawer').hidden=true;render()}
 function flush(){if(saveTimer){clearTimeout(saveTimer);saveTimer=null;const t=cur();if(t)persist(t)}draftDirty=false}
 function schedule(){draftDirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=null;const t=cur();if(t)persist(t);draftDirty=false;render()},700)}
-const fieldMap={'f-title':'title','f-client':'client','f-due':'due','f-priority':'priority','f-budget':'budget','f-contact':'contact','f-link':'link','f-notes':'notes'};
+const fieldMap={'f-title':'title','f-client':'client','f-due':'due','f-priority':'priority','f-contact':'contact','f-link':'link','f-notes':'notes'};
 for(const fid in fieldMap){
   const el=$(fid);
   el.addEventListener('input',()=>{const t=cur();if(!t)return;t[fieldMap[fid]]=el.value;schedule()});
