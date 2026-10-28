@@ -365,6 +365,10 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
+.hello .resize-h{position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:3;width:90px;height:22px;display:grid;place-items:center;cursor:ns-resize;touch-action:none}
+.resize-h span{width:46px;height:5px;border-radius:5px;background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:width .15s,background .15s}
+.resize-h:hover span,.resize-h.dragging span,.resize-h:focus-visible span{width:64px;background:var(--surface)}
+body.resizing{cursor:ns-resize;user-select:none}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -422,6 +426,7 @@ button{cursor:pointer}
   <section class="hello" id="hello">
     <div class="sky-deco" id="sky-deco" aria-hidden="true"></div>
     <div class="wx-pill" id="wx-pill" hidden></div>
+    <div class="resize-h" id="resize-h" role="separator" aria-orientation="horizontal" aria-label="اسحب لتكبير أو تصغير الحديقة" title="اسحب لتحت تكبر، ولفوق تصغر" tabindex="0"><span></span></div>
     <div class="zoom" role="group" aria-label="تكبير الحديقة">
       <button id="z-in" aria-label="تكبير" title="تكبير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
       <button id="z-out" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 8h9"/></svg></button>
@@ -1381,6 +1386,19 @@ function setShelf(open){$('medals').hidden=!open;$('shelf-toggle').setAttribute(
 try{if(localStorage.getItem('tb-shelf')==='1'){$('medals').hidden=false;$('shelf-toggle').setAttribute('aria-expanded','true')}}catch(e){}
 $('shelf-toggle').onclick=()=>setShelf($('medals').hidden);
 $('snd').onclick=toggleSound;
+// drag the handle under the garden: down = taller, up = shorter (remembered)
+{const hello=$('hello'),h=$('resize-h'),MIN=150,MAX=()=>Math.max(320,Math.round(innerHeight*0.85));
+  const apply=v=>{v=Math.round(Math.max(MIN,Math.min(MAX(),v)));hello.style.minHeight=v+'px';hello.style.height=v+'px';return v};
+  try{const v=parseInt(localStorage.getItem('tb-bannerH'),10);if(v)apply(v)}catch(e){}
+  const save=v=>{try{localStorage.setItem('tb-bannerH',String(v))}catch(e){}};
+  let y0=0,h0=0,cur=0;
+  h.addEventListener('pointerdown',e=>{e.preventDefault();y0=e.clientY;h0=hello.getBoundingClientRect().height;h.setPointerCapture(e.pointerId);h.classList.add('dragging');document.body.classList.add('resizing')});
+  h.addEventListener('pointermove',e=>{if(!h.classList.contains('dragging'))return;cur=apply(h0+(e.clientY-y0))});
+  const end=()=>{if(!h.classList.contains('dragging'))return;h.classList.remove('dragging');document.body.classList.remove('resizing');if(cur)save(cur)};
+  h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
+  h.addEventListener('keydown',e=>{if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;e.preventDefault();save(apply(hello.getBoundingClientRect().height+(e.key==='ArrowDown'?24:-24)))});
+  h.addEventListener('dblclick',()=>{hello.style.minHeight='';hello.style.height='';try{localStorage.removeItem('tb-bannerH')}catch(e){}});
+}
 // full screen where the browser allows it; iPhone Safari only allows it for videos
 $('fs-btn').onclick=async()=>{const d=document,el=d.documentElement,fsEl=d.fullscreenElement||d.webkitFullscreenElement;
   try{if(fsEl){await(d.exitFullscreen||d.webkitExitFullscreen).call(d);return}
