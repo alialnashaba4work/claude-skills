@@ -125,7 +125,11 @@ button{cursor:pointer}
 .types button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink-2)}
 .types button:hover{border-color:var(--ink-3)}
 .types button[aria-pressed="true"]{background:var(--solid);color:var(--on-solid);border-color:var(--solid)}
-.chip.kind{background:var(--solid);color:var(--on-solid)}
+/* each work type has its own calm color (--c), tinted against the theme */
+.chip.kind{--c:#9A9A9A;background:color-mix(in srgb,var(--c) 18%,var(--surface));color:color-mix(in srgb,var(--c) 72%,var(--ink));font-weight:600}
+.types button.tc{border-color:color-mix(in srgb,var(--c) 35%,transparent);background:color-mix(in srgb,var(--c) 10%,var(--surface));color:color-mix(in srgb,var(--c) 70%,var(--ink))}
+.types button.tc:hover{border-color:var(--c)}
+.types button.tc[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff}
 .chip{font-size:11.5px;border-radius:999px;padding:2px 9px;background:var(--surface-2);color:var(--ink-2);display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
 .chip.late{background:var(--danger-soft);color:var(--danger)}
 .chip.soon{background:var(--warn-soft);color:var(--warn)}
@@ -445,6 +449,7 @@ function sizeOf(t){if(SIZE[t.size])return t.size;return t.priority==='high'?'big
 const $=id=>document.getElementById(id);
 const state={days:[],badges:{},garden:{count:0,seen:0},ws:'freelance',clients:[],tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
 const TYPES=['بوست','كاروسيل','أنيميشن','فيديو','براند','محتوى','إنشاء فاتورة','أخرى'];
+const TYPE_COLORS={'بوست':'#5B9BD5','كاروسيل':'#8E7CC3','أنيميشن':'#E0915E','فيديو':'#D46F7A','براند':'#3FA08A','محتوى':'#C29A3F','إنشاء فاتورة':'#6A8AA0','أخرى':'#8F8F8F'};
 // work types: several per task; older tasks kept a single `type`
 function typesOf(t){return Array.isArray(t.types)?t.types:(t.type?[t.type]:[])}
 let db=null,mode='pending';
@@ -552,7 +557,7 @@ function cardEl(t){
   const ch=Array.isArray(t.checklist)?t.checklist:[];
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
   const m=document.createElement('div');m.className='card-foot';
-  for(const ty of typesOf(t)){const k=document.createElement('span');k.className='chip kind';k.textContent=ty;m.append(k)}
+  for(const ty of typesOf(t)){const k=document.createElement('span');k.className='chip kind';k.textContent=ty;k.style.setProperty('--c',TYPE_COLORS[ty]||'#9A9A9A');m.append(k)}
   const dc=dueChip(t);if(dc)m.append(dc);
   if(t.status!=='done'){const z=sizeOf(t);const p=document.createElement('span');p.className='chip size-'+z;p.textContent=SIZE[z];m.append(p)}
   if(ch.length){const d=ch.filter(x=>x.done).length;const p=document.createElement('span');p.className='chip'+(d===ch.length?' ok':'');p.textContent=`${d}/${ch.length}`;m.append(p)}
@@ -1054,7 +1059,7 @@ setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 function renderType(){
   const t=cur(),wrap=$('f-type');wrap.replaceChildren();
   const sel=typesOf(t);
-  for(const k of TYPES){const b=document.createElement('button');b.textContent=k;b.setAttribute('aria-pressed',String(sel.includes(k)));
+  for(const k of TYPES){const b=document.createElement('button');b.textContent=k;b.className='tc';b.style.setProperty('--c',TYPE_COLORS[k]||'#9A9A9A');b.setAttribute('aria-pressed',String(sel.includes(k)));
     b.onclick=()=>{const cur=typesOf(t);const next=cur.includes(k)?cur.filter(x=>x!==k):cur.concat(k);
       t.types=TYPES.filter(x=>next.includes(x));delete t.type;persist(t);renderType();render()};wrap.append(b)}
 }
