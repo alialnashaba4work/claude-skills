@@ -963,6 +963,7 @@ function celebrate(finishing,t){
   else if(sectionClear){confetti();toast(`خلّصت كل مهام ${wsName}! 🎉`)}
   else if(after!==before)toast(`نبتتك كبرت! صارت ${after} 🌱 سلسلة ${daysAr(n)}`);
   else if(first)toast(n>1?`أحسنت! سلسلة الإنجاز صارت ${daysAr(n)}`:'أحسنت! بدأت سلسلة الإنجاز اليوم');
+  else if(t&&!inGarden(t))toast('أحسنت! انتقلت المهمة إلى المكتملة');
   else toast(`أحسنت! ${w===1?'انزرعت زرعة':w===2?'انزرعت زرعتين':'انزرعت 3 زرعات'} في حديقتك 🌱`);
 }
 
@@ -979,13 +980,16 @@ const STRUCTS=[
   {at:100,name:'بوابة المحمية والمها',msg:'حديقتك صارت محمية! وجاها المها 🦌'},
   {at:150,name:'غزلان',msg:'الغزلان وصلت محميتك!'}
 ];
-const doneWeight=()=>state.tasks.filter(t=>t.status==='done').reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
+// only Freelance and Islamic tasks touch the garden (growth and weather); More Media does not
+const GARDEN_WS=['freelance','islamic'];
+const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
+const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
 function saveGarden(){const body={count:state.garden.count||0,seen:state.garden.seen||0};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
-function growGarden(t){const w=t?WEIGHT[sizeOf(t)]:1;state.garden.count=Math.max((state.garden.count||0)+w,doneWeight());saveGarden();return state.garden.count}
+function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?WEIGHT[sizeOf(t)]:1;state.garden.count=Math.max((state.garden.count||0)+w,doneWeight());saveGarden();return state.garden.count}
 const levelOf=n=>{let l=LEVELS[0];for(const x of LEVELS)if(n>=x.min)l=x;return l};
 function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name;renderSky()}
 
@@ -1008,7 +1012,7 @@ function plantSVG(i,p){
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
 const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
 // dryness: every unfinished task dries the land a bit; 6 or more and it's full desert
-const openCount=()=>state.tasks.filter(t=>t.status!=='done').length;
+const openCount=()=>state.tasks.filter(t=>t.status!=='done'&&inGarden(t)).length;
 // 5 or fewer unfinished tasks = best weather; 15 or more = full desert
 const BEST_OPEN=5,WORST_OPEN=15;
 const dryLevel=()=>Math.max(0,Math.min(1,(openCount()-BEST_OPEN)/(WORST_OPEN-BEST_OPEN)));
