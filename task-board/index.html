@@ -330,8 +330,12 @@ button{cursor:pointer}
 .wl,.wr{transform-box:fill-box;animation:wing .22s ease-in-out infinite alternate}
 .wl{transform-origin:100% 50%}.wr{transform-origin:0% 50%}
 @keyframes wing{to{transform:scaleX(.25)}}
-.rain{animation:rain .9s linear infinite}
-@keyframes rain{from{transform:translate(0,-60px)}to{transform:translate(-16px,60px)}}
+.rainloop{animation:rainloop 1.8s linear infinite}
+@keyframes rainloop{from{transform:translate(0,0)}to{transform:translate(-187.5px,600px)}}
+.tumble{animation:tumble 16s linear infinite}
+@keyframes tumble{from{transform:translateX(-80px)}to{transform:translateX(1080px)}}
+.spin{animation:spin 1.6s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
 .g-wx{font-size:13px;margin-top:4px;color:var(--ink);background:var(--surface-2);border-radius:999px;padding:3px 12px;display:inline-block}
 .hello .wx-pill{position:absolute;top:16px;right:16px;z-index:2;font-size:12px;font-weight:500;background:color-mix(in srgb,var(--surface) 45%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border:1px solid color-mix(in srgb,var(--surface) 60%,transparent);border-radius:999px;padding:5px 12px;color:var(--ink);max-width:calc(100% - 90px)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
@@ -611,7 +615,7 @@ function cardEl(t){
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
   const m=document.createElement('div');m.className='card-foot';
   for(const ty of typesOf(t)){const k=document.createElement('span');k.className='chip kind';k.textContent=ty;k.style.setProperty('--c',TYPE_COLORS[ty]||'#9A9A9A');m.append(k)}
-  {const age=ageDays(t);if(t.status!=='done'&&age>3){const a=document.createElement('span');a.className='chip late';a.textContent=`صار لها ${daysAr(age)}`;a.title='المهام اللي تطول أكثر من 3 أيام تعكّر جو الحديقة';m.append(a)}}
+  {const age=ageDays(t);if(t.status!=='done'&&age>3){const a=document.createElement('span');a.className='chip late';a.textContent=`صار لها ${daysAr(age)}`;a.title='صار لها أكثر من 3 أيام';m.append(a)}}
   if(t.status!=='done'){const z=sizeOf(t);const p=document.createElement('span');p.className='chip size-'+z;p.textContent=SIZE[z];m.append(p)}
   if(ch.length){const d=ch.filter(x=>x.done).length;const p=document.createElement('span');p.className='chip'+(d===ch.length?' ok':'');p.textContent=`${d}/${ch.length}`;m.append(p)}
   if(attsOf(t).length){const p=document.createElement('span');p.className='chip';p.innerHTML=clipSvg;p.append(String(attsOf(t).length));p.setAttribute('aria-label',attsOf(t).length+' مرفقات');m.append(p)}
@@ -979,35 +983,44 @@ function plantSVG(i,p){
 }
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
 const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
+// dryness: every unfinished task dries the land a bit; 6 or more and it's full desert
+const openCount=()=>state.tasks.filter(t=>t.status!=='done').length;
+const dryLevel=()=>Math.min(1,openCount()/6);
 function weatherNow(){
-  if(staleTasks().length)return 'gloomy';
+  if(dryLevel()>=0.5)return 'desert';
   const now=Date.now(),recent=state.tasks.filter(t=>t.status==='done'&&t.completedAt&&t.createdAt&&now-t.completedAt<7*864e5);
   if(recent.length>=2){const d=recent.map(t=>t.completedAt-t.createdAt).sort((a,b)=>a-b);if(d[Math.floor(d.length/2)]<=2*864e5)return 'spring'}
   return 'normal';
 }
-const WEATHER_NOTE={gloomy:'الجو متعكّر: عندك مهام صار لها أكثر من 3 أيام. خلّصها ويصحى الجو',spring:'ربيع ومطر خفيف: قاعد تخلّص مهامك بسرعة 🌸',normal:''};
+function dryNote(){const n=openCount();if(!n)return '';return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} مهام مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: باقي ${n===1?'مهمة وحدة':n===2?'مهمتين':n+' مهام'} وترجع خضراء`}
+const WEATHER_NOTE={desert:'',spring:'ربيع ومطر خفيف: قاعد تخلّص مهامك بسرعة 🌸',normal:''};
 function skyFor(per){
   if(per==='night')return{a:'#0E1A24',b:'#1F4148',hill:'#1B3A3A',g1:'#2D5E4A',g2:'#22493A'};
   if(per==='sunset')return{a:'#5B3F7A',b:'#F2A25E',hill:'#7C6A55',g1:'#7FB06B',g2:'#5E9555'};
   if(per==='dawn')return{a:'#FFE3C4',b:'#F9E6DC',hill:'#B9D8A8',g1:'#A8DB98',g2:'#7DC27D'};
   return{a:'#9FE3DC',b:'#E6F8F5',hill:'#A6DDB0',g1:'#9ED9A0',g2:'#6BBF7A'};
 }
+const DESERT={night:{a:'#1A1712',b:'#2E281D',hill:'#3A3020',g1:'#4E3F27',g2:'#3A2E1C'},sunset:{a:'#7A4E3A',b:'#E8A86A',hill:'#B88350',g1:'#CDA060',g2:'#A87A42'},dawn:{a:'#F2D2A8',b:'#F7E4C8',hill:'#D7B07A',g1:'#E0BE80',g2:'#C79A58'},day:{a:'#E6D3A6',b:'#F6E9CC',hill:'#D9B57A',g1:'#E3C17F',g2:'#C99A55'}};
+function mixHex(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+// plants lose color and turn brown as the land dries
+function dryFilter(d){const k=d*0.8,sat=1-d*0.55,S=[[.393,.769,.189],[.349,.686,.168],[.272,.534,.131]];
+  const m=[0,1,2].map(r=>[0,1,2].map(c=>((1-k)*(r===c?1:0)+k*S[r][c]).toFixed(3)).join(' ')+' 0 0').join(' ')+' 0 0 0 1 0';
+  return `<filter id="gd"><feColorMatrix type="saturate" values="${sat.toFixed(2)}"/><feColorMatrix type="matrix" values="${m}"/></filter>`}
 function gardenSVG(n,palms,seen,animate,wide){
-  const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow();
+  const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow(),dry=dryLevel();
   let c=skyFor(per);
-  if(wx==='gloomy')c=night?{a:'#0A0F13',b:'#182327',hill:'#16262A',g1:'#233B34',g2:'#1A2E27'}:{a:'#8F9AA0',b:'#C7CDCC',hill:'#97AA9B',g1:'#8DAA8E',g2:'#6A8B6E'};
-  else if(wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
-  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient></defs>`;
+  if(wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
+  if(dry>0){const d=DESERT[per];c=Object.fromEntries(Object.keys(c).map(k=>[k,mixHex(c[k],d[k],dry)]))}
+  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}</defs>`;
   o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
-  if(wx==='gloomy'){
-    // overcast: heavy grey clouds, no sun or stars
-    o+=`<g class="cloud" fill="${night?'#2A3438':'#7D878C'}" opacity=".95"><ellipse cx="160" cy="70" rx="150" ry="42"/><ellipse cx="300" cy="50" rx="110" ry="40"/><ellipse cx="480" cy="80" rx="160" ry="44"/><ellipse cx="680" cy="55" rx="130" ry="42"/><ellipse cx="880" cy="85" rx="160" ry="46"/></g><g fill="${night?'#3A4549':'#9AA3A7'}" opacity=".9"><ellipse cx="80" cy="150" rx="120" ry="30"/><ellipse cx="400" cy="165" rx="150" ry="30"/><ellipse cx="760" cy="155" rx="150" ry="32"/><ellipse cx="980" cy="170" rx="110" ry="28"/></g>`;
-  }else if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+='<g transform="translate(860 70)"><circle r="26" fill="#FFF4D6"/><circle cx="11" cy="-7" r="24" fill="#132834"/></g>'}
+  if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+='<g transform="translate(860 70)"><circle r="26" fill="#FFF4D6"/><circle cx="11" cy="-7" r="24" fill="#132834"/></g>'}
   else o+=per==='sunset'?'<circle cx="820" cy="215" r="60" fill="#FFB054"/>':'<circle cx="860" cy="80" r="34" fill="#FFD25E"/><g class="cloud" fill="#fff" opacity=".85"><ellipse cx="200" cy="80" rx="60" ry="16"/><ellipse cx="232" cy="66" rx="32" ry="17"/><ellipse cx="560" cy="55" rx="44" ry="12"/></g>';
   // wide mode (banner zoomed out): carry the hills and ground past the scene edges
   if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
   o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
   o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
+  if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=300+r()*240,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
+    o+=`<g stroke="#9C6F3C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${Math.min(.7,(dry-.45)*1.4).toFixed(2)}">${cr}</g>`}
   if(has(15))o+='<path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#E8D7B5" stroke-width="34" fill="none" stroke-linecap="round" opacity=".9"/><path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#D9C59E" stroke-width="2" stroke-dasharray="6 14" fill="none"/>';
   if(has(5))o+='<g stroke="#9C7A55" stroke-width="4" stroke-linecap="round">'+Array.from({length:26},(_,i)=>`<path d="M${40+i*36} 266v-22"/>`).join('')+'<path d="M40 250H940M40 260H940" stroke-width="3"/></g>';
   const house=has(60)?`<g transform="translate(600 210)"><rect x="18" y="62" width="224" height="92" rx="6" fill="#F3EDE3"/><path d="M6 66L130 6l124 60z" fill="#383838"/><rect x="186" y="16" width="18" height="34" fill="#383838"/><rect x="112" y="98" width="36" height="56" rx="4" fill="#0B7D73"/><rect x="42" y="88" width="44" height="34" rx="4" fill="${night?'#FFD97A':'#BFE6E2'}"/><rect x="174" y="88" width="44" height="34" rx="4" fill="${night?'#FFD97A':'#BFE6E2'}"/><circle cx="252" cy="120" r="5" fill="${night?'#FFD97A':'#9C7A55'}" class="${night?'glow':''}"/><path d="M252 125v29" stroke="#383838" stroke-width="3"/></g>`
@@ -1019,23 +1032,26 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/><text y="-32" text-anchor="middle" font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff">محمية</text></g>';
   const pts=slots(Math.min(n,260));
   const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
+  if(dry>0)o+='<g filter="url(#gd)">';
   for(const it of items){const svg=plantSVG(it.i,it.p);o+=animate&&it.i>=seen?svg.replace('<g transform','<g class="new" style="animation-delay:'+((it.i-seen)*120)+'ms"><g transform')+'</g>':svg}
+  if(dry>0)o+='</g>';
+  if(dry>=0.7)o+='<g transform="translate(0 372)"><g class="tumble"><g class="spin"><circle r="16" fill="none" stroke="#A57A45" stroke-width="2.2"/><path d="M-14-6c8 4 18 2 26-4M-12 8c8-6 18-6 25 0M-4-15c4 10 2 22-4 29M6-14c-6 8-6 20 2 28" stroke="#8B6234" stroke-width="1.8" fill="none" stroke-linecap="round"/></g></g></g>';
   const sp=[[880,330],[530,300],[950,300],[140,520]];
   for(let i=0;i<Math.min(palms,sp.length);i++){const [x,y]=sp[i];o+=`<g transform="translate(${x} ${y}) scale(1.5)"><path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#F4B740" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/></g><g fill="#C2410C"><circle cx="-4" cy="-35" r="2.6"/><circle cx="3" cy="-34" r="2.6"/></g></g>`}
   const oryx=(x,y,f=1)=>`<g transform="translate(${x} ${y}) scale(${f} 1)"><path d="M-30 0v26M-18 2v24M14 2v24M26 0v26" stroke="#E9E4DA" stroke-width="4" stroke-linecap="round"/><path d="M-30 26v-6M26 26v-6" stroke="#383838" stroke-width="4"/><ellipse cy="-4" rx="36" ry="16" fill="#F7F3EC"/><path d="M-36-6c-6 4-8 10-6 16" stroke="#F7F3EC" stroke-width="4" fill="none"/><path d="M26-14l14-18" stroke="#F7F3EC" stroke-width="11" stroke-linecap="round"/><ellipse cx="44" cy="-34" rx="9" ry="7" fill="#F7F3EC"/><path d="M42-40l-12-36M46-40l-6-36" stroke="#4A3B2E" stroke-width="2.4" stroke-linecap="round"/><path d="M48-36l2 6" stroke="#383838" stroke-width="3" stroke-linecap="round"/><path d="M-20-4h34" stroke="#C9B9A2" stroke-width="3" opacity=".6"/></g>`;
   if(has(100))o+=oryx(860,470)+oryx(930,430,-0.85);
   if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-14 0v16M-6 1v15M8 1v15M14 0v16" stroke="#B9875A" stroke-width="2.6"/><ellipse cy="-2" rx="18" ry="8" fill="#D9A46F"/><path d="M12-6l8-10" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><ellipse cx="22" cy="-18" rx="5" ry="4" fill="#D9A46F"/><path d="M21-21l-3-10M24-21l1-10" stroke="#4A3B2E" stroke-width="1.6"/></g>`;o+=gz(780,520)+gz(700,540)}
   // birds fly across the sky (not at night)
-  if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><path class="flap" d="M-10 0q5-7 10 0q5-7 10 0" stroke="${wx==='gloomy'?'#4A5458':'#383838'}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g></g>`;
+  if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><path class="flap" d="M-10 0q5-7 10 0q5-7 10 0" stroke="#383838" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g></g>`;
     o+=bird(150,34,1,4)+bird(175,40,.8,18)+bird(135,46,.7,30)+(has(80)?bird(190,38,.9,10):'');}
-  // butterflies flutter over the plants (not in gloomy weather or at night)
-  if(wx!=='gloomy'&&!night){const cols=['#F4B740','#E86A8A','#B48CE8','#FFFFFF','#5B9BD5'];const r=rnd(23);const count=wx==='spring'?7:4;
+  // butterflies flutter over the plants (not when the land is dry, not at night)
+  if(dry<0.5&&!night){const cols=['#F4B740','#E86A8A','#B48CE8','#FFFFFF','#5B9BD5'];const r=rnd(23);const count=wx==='spring'?7:4;
     for(let i=0;i<count;i++){const x=(120+r()*760).toFixed(0),y=(300+r()*170).toFixed(0),c1=cols[i%cols.length];
       o+=`<g transform="translate(${x} ${y})"><g class="bfly" style="animation-duration:${(10+r()*8).toFixed(1)}s;animation-delay:-${(r()*8).toFixed(1)}s"><g class="wl" fill="${c1}" stroke="#383838" stroke-opacity=".25"><ellipse cx="-5" cy="-3" rx="5" ry="6"/><ellipse cx="-4" cy="5" rx="3.5" ry="4"/></g><g class="wr" fill="${c1}" stroke="#383838" stroke-opacity=".25"><ellipse cx="5" cy="-3" rx="5" ry="6"/><ellipse cx="4" cy="5" rx="3.5" ry="4"/></g><rect x="-1" y="-6" width="2" height="13" rx="1" fill="#383838"/></g></g>`}}
   // spring: soft light rain
   if(wx==='spring'){
-    const r=rnd(41);let drops='';for(let i=0;i<120;i++){const x=(r()*1100-50).toFixed(0),y=(r()*560-80).toFixed(0);drops+=`<path d="M${x} ${y}l-4 14"/>`}
-    o+=`<g class="rain" stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.6" stroke-linecap="round" opacity=".7">${drops}</g>`;
+    const r=rnd(41);let drops='';for(let i=0;i<170;i++){const x=(r()*1500-250).toFixed(0),y=(r()*600).toFixed(0);drops+=`<path d="M${x} ${y}l-5 16"/>`}
+    o+=`<g stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.5" stroke-linecap="round" opacity=".65"><g class="rainloop"><g>${drops}</g><g transform="translate(187.5 -600)">${drops}</g></g></g>`;
   }
   if(!n)o+='<g transform="translate(500 430) scale(3.2)"><g class="pl"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g></g>';
   return o+'</svg>';
@@ -1043,7 +1059,7 @@ function gardenSVG(n,palms,seen,animate,wide){
 function renderGarden(animate){
   const n=gardenCount(),lv=levelOf(n),next=STRUCTS.find(x=>x.at>n),nextLv=LEVELS.find(x=>x.min>n);
   $('g-lvl').textContent=lv.name;
-  $('g-wx').textContent=WEATHER_NOTE[weatherNow()];$('g-wx').hidden=!WEATHER_NOTE[weatherNow()];
+  {const note=dryNote()||WEATHER_NOTE[weatherNow()];$('g-wx').textContent=note;$('g-wx').hidden=!note}
   $('g-sub').textContent=n?`زرعت ${n} ${n===1?'زرعة':n===2?'زرعتين':n<=10?'زرعات':'زرعة'} · السهلة تزرع وحدة، المتوسطة اثنتين، والكبيرة ثلاث`:'خلّص أول مهمة وتنزرع أول نبتة';
   const seen=Math.min(state.garden.seen||0,n);
   $('g-scene').innerHTML=gardenSVG(n,palmCount(),seen,animate);
@@ -1125,14 +1141,14 @@ function plusBubble(w){const el=document.createElement('span');el.className='plu
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow();
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow()+'|'+openCount();
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
-  {const w=weatherNow(),pill=$('wx-pill');pill.hidden=w==='normal';pill.textContent=w==='gloomy'?'☁️ الجو متعكّر: عندك مهام صار لها أكثر من 3 أيام':w==='spring'?'🌧️ ربيع: قاعد تخلّص بسرعة':''}
+  {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: قاعد تخلّص بسرعة':''}
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
-  const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sgr])"/g,'id="b$1"').replace(/url\(#g([sgr])\)/g,'url(#b$1)');
+  const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sgrd])"/g,'id="b$1"').replace(/url\(#g([sgrd])\)/g,'url(#b$1)');
   // empty garden: put the shoot in the middle of the banner
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
