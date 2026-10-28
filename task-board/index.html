@@ -194,14 +194,49 @@ button{cursor:pointer}
 .att-off{font-size:12.5px;color:var(--ink-3)}
 .card .cover{margin:-14px -16px 2px;height:130px;border-radius:17px 17px 0 0;overflow:hidden;background:var(--surface-2)}
 .card .cover img{width:100%;height:100%;object-fit:cover;display:block}
+.hello{position:relative;overflow:hidden;border-radius:26px;padding:22px 24px;background:var(--sky,var(--surface));min-height:120px;transition:background .6s}
+.hello>*:not(.sky-deco){position:relative;z-index:1}
+.hello h1,.hello p{color:var(--sky-ink,var(--ink))}
+.hello p{opacity:.85}
+.hello .status-note{color:inherit;opacity:.75}
+.sky-deco{position:absolute;inset:0;pointer-events:none;z-index:0}
+.sky-deco svg{position:absolute;inset:0;width:100%;height:100%}
+.sky-dawn{--sky:linear-gradient(180deg,#FFE3C4 0%,#FFC9B8 55%,#F9E6DC 100%);--sky-ink:#383838}
+.sky-day{--sky:linear-gradient(180deg,#BDEFEA 0%,#E4F8F5 70%,#F4FBFA 100%);--sky-ink:#383838}
+.sky-sunset{--sky:linear-gradient(180deg,#5B3F7A 0%,#C8607A 55%,#F2A25E 100%);--sky-ink:#FFFFFF}
+.sky-night{--sky:linear-gradient(180deg,#0E1A24 0%,#17303A 60%,#1F4148 100%);--sky-ink:#FFFFFF}
+.twinkle{animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.cloud{animation:drift 40s linear infinite}
+@keyframes drift{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+.garden{display:flex;align-items:flex-end;gap:2px;margin-top:4px;flex-wrap:wrap}
+.garden svg{width:18px;height:18px}
+.garden .more{font-size:11px;color:var(--ink-3);margin-inline-start:4px}
+.shelf{background:var(--surface);border-radius:22px;padding:14px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.shelf-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.shelf-h b{font-family:var(--f-display);font-weight:600;font-size:15px}
+.shelf-h span{font-size:12px;color:var(--ink-3)}
+.medals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.medal{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;min-width:0}
+.medal .m{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--ink-3);position:relative;transition:transform .2s}
+.medal .m svg{width:24px;height:24px}
+.medal.on .m{background:linear-gradient(160deg,#19C2B4,#08887D);color:#fff;box-shadow:0 0 0 3px var(--accent-soft),0 0 0 5px #F4B740}
+.medal.on .m:hover{transform:rotate(-8deg) scale(1.05)}
+.medal .nm{font-size:12px;font-weight:600;line-height:1.3}
+.medal .pg{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.medal.on .pg{color:var(--accent)}
+.medal.pop .m{animation:grow .9s cubic-bezier(.3,1.6,.5,1)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
 @media (max-width:620px){
   body{padding-block:10px}
   .app{padding:14px;border-radius:22px;gap:18px}
-  .switch{order:3;width:100%;margin:0}.switch button{flex:1;justify-content:center;padding:9px 6px;gap:6px;font-size:13px;white-space:nowrap}
+  .switch{order:3;width:100%;margin:0}.switch button{flex:1 1 0;min-width:0;justify-content:center;padding:8px 2px;gap:4px;font-size:12px;white-space:nowrap}.switch .n{min-width:18px;padding:0 4px}
   .top .theme{margin-inline-start:auto}
   .streak{flex:1 1 100%}
+  .hello{padding:18px}
+  .medals{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:14px}
   .top{gap:8px}.theme button{width:32px;height:32px}.top .btn-accent{padding:9px 13px}.brand{padding:6px}.brand span{display:none}
   .bar h2{flex-basis:100%}
   .search{flex:1 1 160px}
@@ -233,7 +268,8 @@ button{cursor:pointer}
     <button class="btn btn-accent" id="new-top"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>مهمة جديدة</button>
   </header>
 
-  <section class="hello">
+  <section class="hello" id="hello">
+    <div class="sky-deco" id="sky-deco" aria-hidden="true"></div>
     <div class="hello-t">
     <h1 id="greet">صباح الخير</h1>
     <p>سجّل مهامك وتابعها من مكان واحد. اضغط على أي بطاقة لتعديل تفاصيلها. <span class="status-note" id="store-note"></span></p>
@@ -244,6 +280,7 @@ button{cursor:pointer}
         <div class="st-l">سلسلة الإنجاز</div>
         <div class="st-n" id="st-n">0 أيام</div>
         <div class="st-s" id="st-s"></div>
+        <div class="garden" id="garden" hidden></div>
       </div>
     </div>
   </section>
@@ -251,6 +288,11 @@ button{cursor:pointer}
   <section class="stats" aria-label="ملخص">
     <div class="stat hl"><div class="lbl">المهام<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="3"/><path d="M5.5 8h5M5.5 5.5h5M5.5 10.5h3"/></svg></span></div><div class="num" id="s-open">0</div><div class="sub" id="s-open-sub">باقية</div></div>
     <div class="stat"><div class="lbl">مكتملة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.5 8.5l3 3 6-6.5"/></svg></span></div><div class="num" id="s-done">0</div><div class="sub" id="s-done-sub">من أصل 0</div></div>
+  </section>
+
+  <section class="shelf" aria-label="أوسمة الأسبوع">
+    <div class="shelf-h"><b>أوسمة هالأسبوع</b><span id="shelf-sum"></span></div>
+    <div class="medals" id="medals"></div>
   </section>
 
   <section style="display:flex;flex-direction:column;gap:14px">
@@ -305,13 +347,14 @@ button{cursor:pointer}
   </div>
 </aside>
 <div class="toast" id="toast" hidden></div>
+<canvas id="confetti" hidden></canvas>
 
 <script>
 (function(){
 const WS={freelance:'Freelance',moremedia:'More Media',islamic:'Islamic'};
 const PR={low:'منخفضة',med:'متوسطة',high:'عالية'};
 const $=id=>document.getElementById(id);
-const state={days:[],ws:'freelance',clients:[],tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
+const state={days:[],badges:{},ws:'freelance',clients:[],tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
 const TYPES=['بوست','كاروسيل','أنيميشن','براند','محتوى','أخرى'];
 // work types: several per task; older tasks kept a single `type`
 function typesOf(t){return Array.isArray(t.types)?t.types:(t.type?[t.type]:[])}
@@ -325,7 +368,7 @@ function localLoad(){try{return JSON.parse(localStorage.getItem('tb-tasks')||'[]
 function localSave(){try{localStorage.setItem('tb-tasks',JSON.stringify(state.tasks))}catch(e){}}
 function useLocal(){
   if(mode==='db')return;
-  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
+  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.badges=JSON.parse(localStorage.getItem('tb-badges')||'{}')}catch(e){}try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
   $('store-note').textContent='(يتم الحفظ في هذا المتصفح فقط)';
   render();
 }
@@ -373,9 +416,7 @@ const userSvg='<svg width="13" height="13" viewBox="0 0 16 16" fill="none" strok
 /* ---------- render ---------- */
 function wsTasks(){return state.tasks.filter(t=>(t.workspace||'freelance')===state.ws)}
 function render(){
-  const h=new Date().getHours();
-  renderStreak();
-  $('greet').textContent=h<12?'صباح الخير':'مساء الخير';
+  renderStreak();renderSky();renderMedals();
   for(const w in WS){$('ws-'+w).setAttribute('aria-pressed',String(w===state.ws));$('n-'+w).textContent=state.tasks.filter(t=>(t.workspace||'freelance')===w&&t.status!=='done').length}
   $('board-title').textContent='لوحة '+WS[state.ws];
 
@@ -410,7 +451,7 @@ function render(){
 const checkSvg='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg>';
 function toggleDone(t,el){
   const finishing=t.status!=='done';
-  const go=()=>{if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}persist(t);render();celebrate(finishing)};
+  const go=()=>{if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}persist(t);render();celebrate(finishing,t)};
   if(el&&finishing&&!matchMedia('(prefers-reduced-motion: reduce)').matches){el.classList.add('leaving');setTimeout(go,230)}else go();
 }
 function cardEl(t){
@@ -597,7 +638,6 @@ const dayKey=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1)
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 function daySet(){const set=new Set(state.days);for(const t of state.tasks)if(t.status==='done'&&t.completedAt)set.add(dayKey(t.completedAt));return set}
 function streakNow(fromYesterday){const set=daySet();let d=new Date();if(fromYesterday||!set.has(dayKey(d)))d=addDays(d,-1);let n=0;while(set.has(dayKey(d))){n++;d=addDays(d,-1)}return n}
-function bestStreak(){const ks=[...daySet()].sort();let best=0,run=0,prev=null;for(const k of ks){const d=new Date(k+'T12:00');run=prev&&dayKey(addDays(prev,1))===k?run+1:1;best=Math.max(best,run);prev=d}return best}
 function daysAr(n){if(n===1)return 'يوم واحد';if(n===2)return 'يومين';if(n>=3&&n<=10)return n+' أيام';return n+' يوم'}
 const POT='<path d="M18 46h28l-3 13a3 3 0 0 1-3 2H24a3 3 0 0 1-3-2z" fill="var(--solid)"/><rect x="15" y="43" width="34" height="6" rx="3" fill="var(--solid)"/><ellipse cx="32" cy="44" rx="14" ry="2.4" fill="#8B6B4A"/>';
 const LEAF=(x,y,r,s=1)=>`<path transform="translate(${x} ${y}) rotate(${r}) scale(${s})" d="M0 0c4-6 12-7 16-4c-3 5-10 8-16 4z" fill="var(--accent)"/>`;
@@ -610,20 +650,29 @@ const STAGES=[
   {min:30,name:'نخلة',svg:POT+'<path d="M32 43c0-8 1-16 0-24" stroke="#A47E55" stroke-width="4" stroke-linecap="round"/><path d="M30 38h4M30 33h4M30 28h4M30 23h4" stroke="#7A5C3C" stroke-width="1.2"/>'+'<g fill="none" stroke="var(--accent)" stroke-width="3.6" stroke-linecap="round"><path d="M32 18c-6-4-13-3-18 2"/><path d="M32 18c6-4 13-3 18 2"/><path d="M32 18c-4-6-10-9-15-8"/><path d="M32 18c4-6 10-9 15-8"/><path d="M32 18c0-5 1-9 3-12"/></g><g fill="#C2410C"><circle cx="28" cy="22" r="2"/><circle cx="31" cy="24" r="2"/><circle cx="35" cy="22" r="2"/><circle cx="33" cy="25" r="2"/></g>'}
 ];
 const stageOf=n=>{let st=STAGES[0];for(const s of STAGES)if(n>=s.min)st=s;return st};
+// every 30 days in a row grows a palm; it moves to the garden and a new seed starts
+const cycleOf=n=>n>0&&n%30===0?30:n%30;
+function runs(){const ks=[...daySet()].sort();const out=[];let run=0,prev=null;for(const k of ks){if(prev&&dayKey(addDays(new Date(prev+'T12:00'),1))===k)run++;else{if(run)out.push(run);run=1}prev=k}if(run)out.push(run);return out}
+function palmCount(){return runs().reduce((a,r)=>a+Math.floor(r/30),0)}
+function bestStreak(){return Math.max(0,...runs())}
+const MINI_PALM='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 19c0-4 .5-7 0-10" stroke="#A47E55" stroke-width="2" stroke-linecap="round" fill="none"/><g fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"><path d="M10 8c-2-2-5-2-7 0"/><path d="M10 8c2-2 5-2 7 0"/><path d="M10 8c-1-3-3-4-5-4"/><path d="M10 8c1-3 3-4 5-4"/></g><circle cx="9" cy="10" r="1" fill="#C2410C"/><circle cx="11" cy="10" r="1" fill="#C2410C"/></svg>';
 let lastStage=null;
 function renderStreak(){
-  const n=streakNow(),st=stageOf(n),next=STAGES.find(s=>s.min>n),doneToday=daySet().has(dayKey(new Date()));
+  const n=streakNow(),c=cycleOf(n),st=stageOf(c),next=STAGES.find(s=>s.min>c),doneToday=daySet().has(dayKey(new Date()));
   const plant=$('plant');
   if(lastStage!==st.name){plant.innerHTML='<svg viewBox="0 0 64 64">'+st.svg+'</svg>';if(lastStage!==null){plant.classList.remove('grow');void plant.offsetWidth;plant.classList.add('grow')}lastStage=st.name}
   $('st-n').textContent=n?daysAr(n):'ابدأ اليوم';
   const sub=$('st-s');sub.replaceChildren();
   const b=document.createElement('b');b.textContent=st.name;sub.append(b);
-  if(next){const left=next.min-n;sub.append(` · باقي ${daysAr(left)} وتصير ${next.name}`)}else sub.append(' · وصلت أعلى مرحلة');
+  if(c===30)sub.append(' · نخلة جديدة في حديقتك');
+  else if(next){const left=next.min-c;sub.append(` · باقي ${daysAr(left)} وتصير ${next.name}`)}
   const line=document.createElement('div');
   if(doneToday)line.textContent='أنجزت اليوم ✓';
   else{line.className='wait';line.textContent=n?'خلّص مهمة اليوم عشان تكمل السلسلة':'خلّص مهمة اليوم وتبدأ تنبت'}
   const best=bestStreak();if(best>n&&best>1)line.append(` · أفضل سلسلة: ${daysAr(best)}`);
   sub.append(line);
+  const palms=palmCount(),g=$('garden');g.hidden=!palms;
+  if(palms){g.innerHTML=MINI_PALM.repeat(Math.min(palms,10))+(palms>10?`<span class="more">+${palms-10}</span>`:'');g.title=`حديقتك: ${palms} نخلة`;g.setAttribute('aria-label',`حديقتك فيها ${palms} نخلة`)}
 }
 let daysQ=Promise.resolve();
 function logToday(){
@@ -633,14 +682,112 @@ function logToday(){
   else try{localStorage.setItem('tb-days',JSON.stringify(state.days))}catch(e){}
   return true;
 }
-function celebrate(finishing){
-  if(!finishing){toast('رجعت المهمة إلى قائمة المهام');renderStreak();return}
-  const had=state.days.includes(dayKey(new Date()));const before=stageOf(had?streakNow():streakNow(true)).name;const first=logToday();const n=streakNow();const after=stageOf(n).name;
-  renderStreak();
-  if(after!==before)toast(`نبتتك كبرت! صارت ${after} 🌱 سلسلة ${daysAr(n)}`);
+
+/* ---------- weekly badges (week starts Sunday) ---------- */
+function weekStart(d=new Date()){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-x.getDay());return x}
+const weekId=()=>dayKey(weekStart());
+const G={
+  ten:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4 10-10"/><path d="M5 6.5l2 2" opacity=".6"/></svg>',
+  week:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c2 4 6 5 6 10a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-5 1-8z"/></svg>',
+  ontime:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9 2.5h6"/></svg>',
+  all:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="8.5" y="13.5" width="7" height="7" rx="2"/></svg>',
+  early:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg>',
+  type:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>'
+};
+function weekBadges(){
+  const ws0=weekStart().getTime();
+  const done=state.tasks.filter(t=>t.status==='done'&&t.completedAt>=ws0);
+  const due=t=>t.due?parseDate(t.due).getTime()+864e5-1:null;
+  const lateDone=done.filter(t=>due(t)!==null&&t.completedAt>due(t)).length;
+  const onTime=done.filter(t=>due(t)!==null&&t.completedAt<=due(t)).length;
+  const openLate=state.tasks.filter(t=>t.status!=='done'&&daysLeft(t.due)!==null&&daysLeft(t.due)<0).length;
+  const early=done.filter(t=>t.due&&(parseDate(t.due).getTime()-new Date(new Date(t.completedAt).setHours(0,0,0,0)).getTime())>=2*864e5).length;
+  const wsCount=new Set(done.map(t=>t.workspace||'freelance')).size;
+  const byType={};for(const t of done)for(const ty of typesOf(t))byType[ty]=(byType[ty]||0)+1;
+  const topType=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0]||['',0];
+  return [
+    {id:'ten',name:'عشرة',desc:'خلّص 10 مهام هالأسبوع',goal:10,val:done.length},
+    {id:'week',name:'أسبوع كامل',desc:'سلسلة إنجاز 7 أيام ورا بعض',goal:7,val:Math.min(streakNow(),7)},
+    {id:'ontime',name:'بلا تأخير',desc:'خلّص 3 مهام قبل موعدها هالأسبوع، بدون أي مهمة متأخرة',goal:3,val:onTime,blocked:lateDone>0||openLate>0},
+    {id:'all',name:'كل الأقسام',desc:'خلّص مهمة في Freelance و More Media و Islamic',goal:3,val:wsCount},
+    {id:'early',name:'سبّاق',desc:'خلّص مهمتين قبل موعدهم بيومين أو أكثر',goal:2,val:early},
+    {id:'type',name:topType[1]>=3?'متخصص '+topType[0]:'متخصص',desc:'خلّص 3 مهام من نفس النوع (بوست، كاروسيل...)',goal:3,val:topType[1]}
+  ].map(b=>Object.assign(b,{on:b.val>=b.goal&&!b.blocked}));
+}
+function totalBadges(){let n=0;for(const k in state.badges)if(k!==weekId())n+=(state.badges[k]||[]).length;return n+weekBadges().filter(b=>b.on).length}
+let popIds=[];
+function renderMedals(){
+  const list=weekBadges(),wrap=$('medals');wrap.replaceChildren();
+  for(const b of list){
+    const el=document.createElement('div');el.className='medal'+(b.on?' on':'')+(popIds.includes(b.id)?' pop':'');el.title=b.desc;
+    const m=document.createElement('div');m.className='m';m.innerHTML=G[b.id];
+    const nm=document.createElement('div');nm.className='nm';nm.textContent=b.name;
+    const pg=document.createElement('div');pg.className='pg';pg.textContent=b.on?'حصلت عليه':(b.blocked&&b.val>=b.goal?'فيه مهمة متأخرة':`${Math.min(b.val,b.goal)}/${b.goal}`);
+    el.append(m,nm,pg);wrap.append(el);
+  }
+  popIds=[];
+  const on=list.filter(b=>b.on).length,tot=totalBadges();
+  $('shelf-sum').textContent=`${on} من ${list.length} هالأسبوع`+(tot>on?` · مجموع أوسمتك: ${tot}`:'');
+}
+let badgesQ=Promise.resolve();
+function saveBadges(ids){
+  const wk=weekId();state.badges=Object.assign({},state.badges,{[wk]:ids});
+  if(mode==='db'){const body={weeks:state.badges};badgesQ=badgesQ.then(()=>db.doc('meta/badges').set(body)).catch(()=>{})}
+  else try{localStorage.setItem('tb-badges',JSON.stringify(state.badges))}catch(e){}
+}
+
+/* ---------- confetti ---------- */
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=$('confetti');cv.hidden=false;const dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  const cols=['#0EA89C','#19C2B4','#383838','#F4B740','#FFFFFF','#C8607A'];
+  const ps=Array.from({length:140},()=>({x:innerWidth/2+(Math.random()-.5)*160,y:innerHeight*.35,vx:(Math.random()-.5)*11,vy:-Math.random()*12-4,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,w:6+Math.random()*6,h:4+Math.random()*4,c:cols[Math.floor(Math.random()*cols.length)]}));
+  const t0=performance.now();
+  (function frame(t){const k=(t-t0)/1800;ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(const p of ps){p.vy+=.32;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;ctx.save();ctx.globalAlpha=Math.max(0,1-k);ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.strokeStyle='rgba(0,0,0,.08)';ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.strokeRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()}
+    if(k<1)requestAnimationFrame(frame);else{ctx.clearRect(0,0,innerWidth,innerHeight);cv.hidden=true}})(t0);
+}
+
+function celebrate(finishing,t){
+  if(!finishing){toast('رجعت المهمة إلى قائمة المهام');renderStreak();renderMedals();return}
+  const had=state.days.includes(dayKey(new Date()));
+  const nBefore=had?streakNow():streakNow(true);
+  const before=stageOf(cycleOf(nBefore)).name,palmsBefore=palmCount();
+  const wk=weekId(),oldIds=(state.badges[wk]||[]).slice();
+  const first=logToday();const n=streakNow();const after=stageOf(cycleOf(n)).name,palmsAfter=palmCount();
+  const nowOn=weekBadges().filter(b=>b.on);const newOnes=nowOn.filter(b=>!oldIds.includes(b.id));
+  if(newOnes.length){saveBadges([...new Set(oldIds.concat(nowOn.map(b=>b.id)))]);popIds=newOnes.map(b=>b.id)}
+  renderStreak();renderMedals();
+  const wsName=t?WS[t.workspace||'freelance']:'';
+  const sectionClear=t&&!state.tasks.some(x=>(x.workspace||'freelance')===(t.workspace||'freelance')&&x.status!=='done');
+  if(palmsAfter>palmsBefore){confetti();toast(`نخلة جديدة انضافت لحديقتك! 🌴 ${daysAr(n)} ورا بعض`)}
+  else if(newOnes.length){confetti();toast(`حصلت على وسام «${newOnes[0].name}» 🏅`)}
+  else if(sectionClear){confetti();toast(`خلّصت كل مهام ${wsName}! 🎉`)}
+  else if(after!==before)toast(`نبتتك كبرت! صارت ${after} 🌱 سلسلة ${daysAr(n)}`);
   else if(first)toast(n>1?`أحسنت! سلسلة الإنجاز صارت ${daysAr(n)}`:'أحسنت! بدأت سلسلة الإنجاز اليوم');
   else toast('أحسنت! انتقلت المهمة إلى المكتملة');
 }
+
+/* ---------- sky over the greeting, by time of day ---------- */
+function periodOf(h){if(h>=5&&h<8)return 'dawn';if(h>=8&&h<16)return 'day';if(h>=16&&h<19)return 'sunset';return 'night'}
+function rnd(seed){return()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646}}
+const SKY={
+  dawn:'<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMax slice"><g transform="translate(330 168)"><circle r="70" fill="#FFB36B" opacity=".35"/><circle r="46" fill="#FF9F5A"/></g><g stroke="#FF9F5A" stroke-width="3" stroke-linecap="round" opacity=".5"><path d="M330 80v-18M268 104l-12-12M392 104l12-12M240 150h-18M420 150h18"/></g><g class="cloud" fill="#fff" opacity=".7"><ellipse cx="520" cy="60" rx="46" ry="14"/><ellipse cx="545" cy="50" rx="26" ry="14"/></g></svg>',
+  day:'<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid slice"><circle cx="360" cy="46" r="44" fill="#FFE08A" opacity=".35"/><circle cx="360" cy="46" r="26" fill="#FFD25E"/><g class="cloud" fill="#fff"><ellipse cx="200" cy="70" rx="50" ry="15"/><ellipse cx="228" cy="58" rx="28" ry="16"/><ellipse cx="520" cy="40" rx="40" ry="12"/><ellipse cx="540" cy="31" rx="22" ry="12"/></g></svg>',
+  sunset:'<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMax slice"><circle cx="340" cy="150" r="80" fill="#FFC069" opacity=".25"/><circle cx="340" cy="150" r="52" fill="#FFB054"/><g stroke="#3A2650" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"><path d="M470 48q6-6 12 0q6-6 12 0"/><path d="M500 62q5-5 10 0q5-5 10 0"/></g></svg>'
+};
+function nightSky(){const r=rnd(7);let st='';for(let i=0;i<60;i++){const x=(r()*800).toFixed(0),y=(r()*150).toFixed(0),rad=(r()*1.4+.4).toFixed(1),tw=r()<.35;st+=`<circle cx="${x}" cy="${y}" r="${rad}" fill="#fff" ${tw?`class="twinkle" style="animation-delay:${(r()*3).toFixed(2)}s"`:'opacity=".7"'}/>`}
+  return `<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid slice">${st}<g transform="translate(360 52)"><circle r="24" fill="#FFF4D6"/><circle cx="10" cy="-6" r="22" fill="#132834"/></g></svg>`}
+let lastPeriod=null;
+function renderSky(){
+  const h=new Date().getHours(),per=periodOf(h);
+  $('greet').textContent=h<5?'سهران؟ الله يعينك':h<12?'صباح الخير':'مساء الخير';
+  if(per===lastPeriod)return;lastPeriod=per;
+  const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
+  $('sky-deco').innerHTML=per==='night'?nightSky():SKY[per];
+}
+setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
 function renderType(){
   const t=cur(),wrap=$('f-type');wrap.replaceChildren();
@@ -656,7 +803,7 @@ function renderStatus(){
 }
 $('f-complete').onclick=()=>{const t=cur();if(!t)return;flush();const finishing=t.status!=='done';
   if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}
-  persist(t);closeTask();celebrate(finishing)};
+  persist(t);closeTask();celebrate(finishing,t)};
 function renderChecks(){
   const t=cur(),wrap=$('f-checks');wrap.replaceChildren();
   if(!Array.isArray(t.checklist))t.checklist=[];
@@ -712,6 +859,7 @@ if(window.claude&&typeof window.claude.use==='function'){
       if(state.openId&&draftDirty){const cur=state.tasks.find(t=>t.id===state.openId);const i=incoming.findIndex(t=>t.id===state.openId);if(cur&&i>-1)incoming[i]=cur}
       state.tasks=incoming;render();
     },()=>{toast('انقطع الاتصال بقاعدة البيانات');});
+    db.doc('meta/badges').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.badges=d&&d.weeks&&typeof d.weeks==='object'?d.weeks:{};renderMedals()},()=>{});
     db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
     db.collection('clients').onSnapshot(snap=>{state.clients=snap.docs.map(s=>Object.assign({id:s.id},s.data()));render();if(state.openId)renderClients()},()=>{});
   }).catch(useLocal);
