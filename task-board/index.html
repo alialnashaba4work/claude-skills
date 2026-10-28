@@ -197,17 +197,23 @@ button{cursor:pointer}
 .att-off{font-size:12.5px;color:var(--ink-3)}
 .card .cover{margin:-14px -16px 2px;height:130px;border-radius:17px 17px 0 0;overflow:hidden;background:var(--surface-2)}
 .card .cover img{width:100%;height:100%;object-fit:cover;display:block}
-.hello{position:relative;overflow:hidden;border-radius:26px;padding:22px 24px;background:var(--sky,var(--surface));min-height:120px;transition:background .6s}
+.hello{position:relative;overflow:hidden;border-radius:26px;padding:22px 24px;background:var(--sky,var(--surface));min-height:250px;transition:background .6s}
 .hello>*:not(.sky-deco){position:relative;z-index:1}
 .hello h1,.hello p{color:var(--sky-ink,var(--ink))}
 .hello p{opacity:.85}
 .hello .status-note{color:inherit;opacity:.75}
+.hello .quote{font-size:clamp(20px,2.6vw,30px);line-height:1.45;max-width:24ch;transition:opacity .5s}
+.hello .quote.fade{opacity:0}
+.hello .status-note:empty{display:none}
 .sky-deco{position:absolute;inset:0;pointer-events:none;z-index:0}
 .sky-deco svg{position:absolute;inset:0;width:100%;height:100%}
-.sky-dawn{--sky:linear-gradient(180deg,#FFE3C4 0%,#FFC9B8 55%,#F9E6DC 100%);--sky-ink:#383838}
-.sky-day{--sky:linear-gradient(180deg,#BDEFEA 0%,#E4F8F5 70%,#F4FBFA 100%);--sky-ink:#383838}
-.sky-sunset{--sky:linear-gradient(180deg,#5B3F7A 0%,#C8607A 55%,#F2A25E 100%);--sky-ink:#FFFFFF}
-.sky-night{--sky:linear-gradient(180deg,#0E1A24 0%,#17303A 60%,#1F4148 100%);--sky-ink:#FFFFFF}
+.sky-dawn{--sky:linear-gradient(180deg,#FFE3C4 0%,#FFC9B8 55%,#F9E6DC 100%);--sky-ink:#383838;--veil:rgba(255,246,238,.85)}
+.sky-day{--sky:linear-gradient(180deg,#BDEFEA 0%,#E4F8F5 70%,#F4FBFA 100%);--sky-ink:#383838;--veil:rgba(244,251,250,.85)}
+.sky-sunset{--sky:linear-gradient(180deg,#5B3F7A 0%,#C8607A 55%,#F2A25E 100%);--sky-ink:#FFFFFF;--veil:rgba(60,40,80,.62)}
+.sky-night{--sky:linear-gradient(180deg,#0E1A24 0%,#17303A 60%,#1F4148 100%);--sky-ink:#FFFFFF;--veil:rgba(14,26,36,.66)}
+/* soft veil behind the greeting text (text sits on the right in RTL) */
+.sky-deco::after{content:"";position:absolute;inset:0;background:linear-gradient(to left,var(--veil,transparent) 0%,var(--veil,transparent) 22%,transparent 52%)}
+@media (max-width:620px){.sky-deco::after{background:linear-gradient(to bottom,var(--veil,transparent) 0%,var(--veil,transparent) 40%,transparent 75%)}}
 .twinkle{animation:tw 3s ease-in-out infinite}
 @keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
 .cloud{animation:drift 40s linear infinite}
@@ -300,8 +306,8 @@ button{cursor:pointer}
   <section class="hello" id="hello">
     <div class="sky-deco" id="sky-deco" aria-hidden="true"></div>
     <div class="hello-t">
-    <h1 id="greet">صباح الخير</h1>
-    <p>سجّل مهامك وتابعها من مكان واحد. اضغط على أي بطاقة لتعديل تفاصيلها. <span class="status-note" id="store-note"></span></p>
+    <h1 class="quote" id="quote" aria-live="polite"></h1>
+    <p class="status-note" id="store-note"></p>
     </div>
     <div class="streak" id="streak" title="سلسلة الإنجاز: أنجز مهمة واحدة على الأقل كل يوم">
       <div class="plant" id="plant" aria-hidden="true"></div>
@@ -835,7 +841,7 @@ function saveGarden(){const body={count:state.garden.count||0,seen:state.garden.
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
 function growGarden(t){const w=t?WEIGHT[sizeOf(t)]:1;state.garden.count=Math.max((state.garden.count||0)+w,doneWeight());saveGarden();return state.garden.count}
 const levelOf=n=>{let l=LEVELS[0];for(const x of LEVELS)if(n>=x.min)l=x;return l};
-function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name}
+function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name;renderSky()}
 
 const RES=[{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
 function slots(n){const r=rnd(11),out=[];let guard=0;
@@ -906,6 +912,52 @@ function closeGarden(){$('g-scrim').hidden=true;$('gview').hidden=true}
 $('garden-btn').onclick=openGarden;$('plant').onclick=openGarden;
 $('g-close').onclick=closeGarden;$('g-scrim').onclick=closeGarden;
 
+/* ---------- motivational line, changes every 10 minutes ---------- */
+const QUOTES=[
+  'ابدأ بالمهمة الأصغر، والباقي يمشي وراها.',
+  'كل مهمة تخلّصها زرعة جديدة في حديقتك.',
+  'الإتقان عادة، مو صدفة.',
+  'خطوة اليوم أفضل من خطة بكرة.',
+  '«إن الله يحب إذا عمل أحدكم عملًا أن يتقنه»',
+  '﴿وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ﴾',
+  'ما تحتاج تكون جاهز، تحتاج تبدأ.',
+  'مهمة وحدة الحين، وبس.',
+  'العميل ينسى السرعة، ويتذكر الجودة.',
+  'التعب يروح، والإنجاز يبقى.',
+  'شغلك اليوم هو معرضك بكرة.',
+  'كل كاروسيل يبدأ بشريحة وحدة.',
+  'البساطة أصعب من الزخرفة، وأجمل.',
+  'خلّص اللي بيدك قبل ما تفكر باللي بعده.',
+  'أفضل وقت تبدأ فيه كان أمس، وثاني أفضل وقت الحين.',
+  'ركّز 25 دقيقة، وارتاح 5.',
+  'الفكرة الحلوة تستاهل تنفيذ يليق فيها.',
+  'لا تقارن بدايتك بنهاية غيرك.',
+  'اشتغل بهدوء، وخل شغلك يتكلم.',
+  'صغّر المهمة لين تصير سهلة تبدأها.',
+  'الانضباط يوصلك لما يخلص الحماس.',
+  'المسودة الأولى مو لازم تكون حلوة، لازم تكون موجودة.',
+  'من زرع حصد.',
+  'كل يوم تنجز فيه شي، يوم ما راح عليك.',
+  'خذ نفس، رتّب أولوياتك، وابدأ.',
+  'التصميم الحلو يحل مشكلة قبل ما يكون جميل.',
+  'القليل الدائم يغلب الكثير المتقطع.',
+  '﴿وَأَنْ لَيْسَ لِلْإِنْسَانِ إِلَّا مَا سَعَى﴾',
+  'إنجاز بسيط اليوم أحسن من مثالي ما يصير.',
+  'افتخر بتقدمك، مو بس بالنتيجة.',
+  'افتح الملف، والباقي يجي.',
+  'حديقتك ما تكبر بالتفكير، تكبر بالشغل.'
+];
+let lastQuote=-1;
+function renderQuote(){
+  const i=Math.floor(Date.now()/6e5)%QUOTES.length;if(i===lastQuote)return;
+  const el=$('quote');
+  if(lastQuote<0||matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=QUOTES[i]}
+  else{el.classList.add('fade');setTimeout(()=>{el.textContent=QUOTES[i];el.classList.remove('fade')},500)}
+  lastQuote=i;
+}
+// line up with the next 10-minute mark, then tick every 10 minutes
+setTimeout(()=>{renderQuote();setInterval(renderQuote,6e5)},6e5-Date.now()%6e5+50);
+
 /* ---------- sky over the greeting, by time of day ---------- */
 function periodOf(h){if(h>=5&&h<8)return 'dawn';if(h>=8&&h<16)return 'day';if(h>=16&&h<19)return 'sunset';return 'night'}
 function rnd(seed){return()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646}}
@@ -919,10 +971,15 @@ function nightSky(){const r=rnd(7);let st='';for(let i=0;i<60;i++){const x=(r()*
 let lastPeriod=null;
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
-  $('greet').textContent=h<5?'سهران؟ الله يعينك':h<12?'صباح الخير':'مساء الخير';
-  if(per===lastPeriod)return;lastPeriod=per;
+  renderQuote();
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms;
+  if(key===lastPeriod)return;lastPeriod=key;
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
-  $('sky-deco').innerHTML=per==='night'?nightSky():SKY[per];
+  // the banner shows your garden as it is now, cropped to the fence, house and plants
+  // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
+  const full=gardenSVG(n,palms,n,false).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
+  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>'));
+  $('sky-deco').innerHTML=`<svg viewBox="0 195 1000 380" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
