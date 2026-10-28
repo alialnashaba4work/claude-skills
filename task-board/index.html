@@ -101,7 +101,12 @@ button{cursor:pointer}
 .card .client{color:var(--ink-2);font-size:12.5px;display:flex;align-items:center;gap:6px;min-width:0}
 .card .client span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.chip{font-size:11.5px;border-radius:999px;padding:2px 9px;background:var(--surface);color:var(--ink-2);display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+.types{display:flex;flex-wrap:wrap;gap:6px}
+.types button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink-2)}
+.types button:hover{border-color:var(--ink-3)}
+.types button[aria-pressed="true"]{background:var(--solid);color:var(--on-solid);border-color:var(--solid)}
+.chip.kind{background:var(--solid);color:var(--on-solid)}
+.chip{font-size:11.5px;border-radius:999px;padding:2px 9px;background:var(--surface-2);color:var(--ink-2);display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
 .chip.late{background:var(--danger-soft);color:var(--danger)}
 .chip.soon{background:var(--warn-soft);color:var(--warn)}
 .chip.pr-high{background:var(--danger-soft);color:var(--danger)}
@@ -191,6 +196,7 @@ button{cursor:pointer}
       <h2 id="board-title">لوحة Freelance</h2>
       <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg><input id="q" type="search" placeholder="بحث في المهام"></label>
       <select class="select" id="client-filter" aria-label="تصفية حسب العميل"><option value="">كل العملاء</option></select>
+      <select class="select" id="type-filter" aria-label="تصفية حسب نوع العمل"><option value="">كل الأنواع</option><option>بوست</option><option>كاروسيل</option><option>أنيميشن</option><option>براند</option><option>محتوى</option><option>أخرى</option></select>
     </div>
     <div class="board" id="board"></div>
     <button class="done-toggle" id="done-toggle" aria-expanded="false" aria-controls="done-board">المكتملة <span class="n" id="done-n">0</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></button>
@@ -208,6 +214,7 @@ button{cursor:pointer}
   <div class="d-body">
     <input class="d-title" id="f-title" placeholder="عنوان المهمة">
     <div><button class="btn btn-accent" id="f-complete"></button></div>
+    <div class="field"><span class="sec-l">نوع العمل</span><div class="types" id="f-type"></div></div>
     <div class="grid2">
       <div class="field"><label for="f-client">العميل</label><input id="f-client" list="clients" placeholder="اسم العميل"><datalist id="clients"></datalist></div>
       <div class="field"><label for="f-due">تاريخ التسليم</label><input id="f-due" type="date"></div>
@@ -234,7 +241,8 @@ button{cursor:pointer}
 const WS={freelance:'Freelance',moremedia:'More Media',islamic:'Islamic'};
 const PR={low:'منخفضة',med:'متوسطة',high:'عالية'};
 const $=id=>document.getElementById(id);
-const state={ws:'freelance',tasks:[],q:'',client:'',openId:null,showDone:false};
+const state={ws:'freelance',tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
+const TYPES=['بوست','كاروسيل','أنيميشن','براند','محتوى','أخرى'];
 let db=null,mode='pending';
 const queues={};
 
@@ -317,7 +325,7 @@ function render(){
   $('clients').replaceChildren(...clients.map(c=>{const o=document.createElement('option');o.value=c;return o}));
 
   const q=state.q.trim().toLowerCase();
-  const shown=all.filter(t=>(!state.client||(t.client||'').trim()===state.client)&&(!q||[t.title,t.client,t.notes].join(' ').toLowerCase().includes(q)));
+  const shown=all.filter(t=>(!state.client||(t.client||'').trim()===state.client)&&(!state.type||t.type===state.type)&&(!q||[t.title,t.client,t.notes].join(' ').toLowerCase().includes(q)));
 
   const byDue=(a,b)=>{const da=a.due||'9999',dbb=b.due||'9999';if(da!==dbb)return da<dbb?-1:1;return (b.createdAt||0)-(a.createdAt||0)};
   const openShown=shown.filter(t=>t.status!=='done').sort(byDue);
@@ -343,6 +351,7 @@ function cardEl(t){
   const ch=Array.isArray(t.checklist)?t.checklist:[];
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
   const m=document.createElement('div');m.className='card-foot';
+  if(t.type){const k=document.createElement('span');k.className='chip kind';k.textContent=t.type;m.append(k)}
   const dc=dueChip(t);if(dc)m.append(dc);
   if(t.status!=='done'&&(t.priority==='high'||t.priority==='med')){const p=document.createElement('span');p.className='chip pr-'+t.priority;p.textContent='أولوية '+PR[t.priority];m.append(p)}
   if(t.budget){const p=document.createElement('span');p.className='chip';p.textContent=t.budget;m.append(p)}
@@ -371,7 +380,7 @@ function openTask(id,focusTitle){
   $('f-title').value=t.title||'';$('f-client').value=t.client||'';$('f-due').value=t.due||'';
   $('f-priority').value=t.priority||'med';$('f-budget').value=t.budget||'';$('f-contact').value=t.contact||'';
   $('f-link').value=t.link||'';$('f-notes').value=t.notes||'';
-  renderStatus();renderChecks();resetDelete();
+  renderStatus();renderType();renderChecks();resetDelete();
   const c=t.createdAt?new Date(t.createdAt):null;
   $('d-meta').textContent=c?'أُنشئت '+new Intl.DateTimeFormat('ar-u-nu-latn',{day:'numeric',month:'short',year:'numeric'}).format(c):'';
   $('scrim').hidden=false;$('drawer').hidden=false;
@@ -385,6 +394,11 @@ for(const fid in fieldMap){
   const el=$(fid);
   el.addEventListener('input',()=>{const t=cur();if(!t)return;t[fieldMap[fid]]=el.value;schedule()});
   el.addEventListener('change',()=>{flush();render()});
+}
+function renderType(){
+  const t=cur(),wrap=$('f-type');wrap.replaceChildren();
+  for(const k of TYPES){const b=document.createElement('button');b.textContent=k;b.setAttribute('aria-pressed',String(t.type===k));
+    b.onclick=()=>{t.type=t.type===k?'':k;persist(t);renderType();render()};wrap.append(b)}
 }
 function renderStatus(){
   const t=cur(),b=$('f-complete'),done=t.status==='done';
@@ -426,6 +440,7 @@ $('new-top').onclick=()=>createTask('todo');
 $('done-toggle').onclick=()=>{state.showDone=!state.showDone;render()};
 $('q').addEventListener('input',e=>{state.q=e.target.value;render()});
 $('client-filter').addEventListener('change',e=>{state.client=e.target.value;render()});
+$('type-filter').addEventListener('change',e=>{state.type=e.target.value;render()});
 
 render();
 if(window.claude&&typeof window.claude.use==='function'){
