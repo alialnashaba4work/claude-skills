@@ -53,6 +53,9 @@ body { font-family: var(--font); }
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
 ```
 
-In a claude.ai Artifact, only Google Fonts can load from outside, so embed the
-Thmanyah files as `data:font/otf;base64,...` URLs in the `@font-face` rules.
+In a claude.ai Artifact, only Google Fonts can load from outside. For a private
+artifact, publish the .otf files alongside the page with the Artifact tool's
+`files` option (e.g. `fonts/ThmanyahSans-Regular.otf`, content type `font/otf`)
+and point `@font-face` at those relative paths. Keep the font files out of git;
+`.gitignore` already blocks them.
 Show Arabic dates with Latin digits (`ar-u-nu-latn`) so numbers use Montserrat.
