@@ -65,6 +65,18 @@ button{cursor:pointer}
 .btn svg{width:16px;height:16px}
 
 /* greeting */
+.hello{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hello-t{flex:1 1 320px;min-width:0}
+.streak{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:22px;padding:8px 8px 8px 18px;flex:0 1 auto}
+.plant{width:64px;height:64px;border-radius:16px;background:var(--accent-soft);flex:none;display:grid;place-items:center;overflow:hidden}
+.plant svg{width:60px;height:60px;transform-origin:50% 90%}
+.plant.grow svg{animation:grow .9s cubic-bezier(.3,1.6,.5,1)}
+@keyframes grow{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.st-l{font-size:12px;color:var(--ink-2)}
+.st-n{font-family:var(--f-display);font-size:22px;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums}
+.st-s{font-size:12px;color:var(--ink-3)}
+.st-s b{font-weight:600;color:var(--accent)}
+.st-s .wait{color:var(--warn)}
 .hello h1{font-family:var(--f-display);font-weight:500;font-size:clamp(24px,3.4vw,34px);margin:0;letter-spacing:-.01em;text-wrap:balance}
 .hello p{margin:4px 0 0;color:var(--ink-2)}
 .status-note{font-size:12px;color:var(--ink-3)}
@@ -189,6 +201,7 @@ button{cursor:pointer}
   .app{padding:14px;border-radius:22px;gap:18px}
   .switch{order:3;width:100%;margin:0}.switch button{flex:1;justify-content:center;padding:9px 6px;gap:6px;font-size:13px;white-space:nowrap}
   .top .theme{margin-inline-start:auto}
+  .streak{flex:1 1 100%}
   .top{gap:8px}.theme button{width:32px;height:32px}.top .btn-accent{padding:9px 13px}.brand{padding:6px}.brand span{display:none}
   .bar h2{flex-basis:100%}
   .search{flex:1 1 160px}
@@ -221,8 +234,18 @@ button{cursor:pointer}
   </header>
 
   <section class="hello">
+    <div class="hello-t">
     <h1 id="greet">صباح الخير</h1>
     <p>سجّل مهامك وتابعها من مكان واحد. اضغط على أي بطاقة لتعديل تفاصيلها. <span class="status-note" id="store-note"></span></p>
+    </div>
+    <div class="streak" id="streak" title="سلسلة الإنجاز: أنجز مهمة واحدة على الأقل كل يوم">
+      <div class="plant" id="plant" aria-hidden="true"></div>
+      <div class="st-txt">
+        <div class="st-l">سلسلة الإنجاز</div>
+        <div class="st-n" id="st-n">0 أيام</div>
+        <div class="st-s" id="st-s"></div>
+      </div>
+    </div>
   </section>
 
   <section class="stats" aria-label="ملخص">
@@ -288,7 +311,7 @@ button{cursor:pointer}
 const WS={freelance:'Freelance',moremedia:'More Media',islamic:'Islamic'};
 const PR={low:'منخفضة',med:'متوسطة',high:'عالية'};
 const $=id=>document.getElementById(id);
-const state={ws:'freelance',clients:[],tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
+const state={days:[],ws:'freelance',clients:[],tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
 const TYPES=['بوست','كاروسيل','أنيميشن','براند','محتوى','أخرى'];
 // work types: several per task; older tasks kept a single `type`
 function typesOf(t){return Array.isArray(t.types)?t.types:(t.type?[t.type]:[])}
@@ -302,7 +325,7 @@ function localLoad(){try{return JSON.parse(localStorage.getItem('tb-tasks')||'[]
 function localSave(){try{localStorage.setItem('tb-tasks',JSON.stringify(state.tasks))}catch(e){}}
 function useLocal(){
   if(mode==='db')return;
-  mode='local';state.tasks=localLoad();try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
+  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
   $('store-note').textContent='(يتم الحفظ في هذا المتصفح فقط)';
   render();
 }
@@ -351,6 +374,7 @@ const userSvg='<svg width="13" height="13" viewBox="0 0 16 16" fill="none" strok
 function wsTasks(){return state.tasks.filter(t=>(t.workspace||'freelance')===state.ws)}
 function render(){
   const h=new Date().getHours();
+  renderStreak();
   $('greet').textContent=h<12?'صباح الخير':'مساء الخير';
   for(const w in WS){$('ws-'+w).setAttribute('aria-pressed',String(w===state.ws));$('n-'+w).textContent=state.tasks.filter(t=>(t.workspace||'freelance')===w&&t.status!=='done').length}
   $('board-title').textContent='لوحة '+WS[state.ws];
@@ -386,7 +410,7 @@ function render(){
 const checkSvg='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg>';
 function toggleDone(t,el){
   const finishing=t.status!=='done';
-  const go=()=>{if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}persist(t);render();toast(finishing?'أحسنت! انتقلت المهمة إلى المكتملة':'رجعت المهمة إلى قائمة المهام')};
+  const go=()=>{if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}persist(t);render();celebrate(finishing)};
   if(el&&finishing&&!matchMedia('(prefers-reduced-motion: reduce)').matches){el.classList.add('leaving');setTimeout(go,230)}else go();
 }
 function cardEl(t){
@@ -568,6 +592,56 @@ $('f-title').addEventListener('input',()=>{
   renderClients();
 });
 
+/* ---------- achievement streak: days in a row with at least one finished task ---------- */
+const dayKey=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+function daySet(){const set=new Set(state.days);for(const t of state.tasks)if(t.status==='done'&&t.completedAt)set.add(dayKey(t.completedAt));return set}
+function streakNow(fromYesterday){const set=daySet();let d=new Date();if(fromYesterday||!set.has(dayKey(d)))d=addDays(d,-1);let n=0;while(set.has(dayKey(d))){n++;d=addDays(d,-1)}return n}
+function bestStreak(){const ks=[...daySet()].sort();let best=0,run=0,prev=null;for(const k of ks){const d=new Date(k+'T12:00');run=prev&&dayKey(addDays(prev,1))===k?run+1:1;best=Math.max(best,run);prev=d}return best}
+function daysAr(n){if(n===1)return 'يوم واحد';if(n===2)return 'يومين';if(n>=3&&n<=10)return n+' أيام';return n+' يوم'}
+const POT='<path d="M18 46h28l-3 13a3 3 0 0 1-3 2H24a3 3 0 0 1-3-2z" fill="var(--solid)"/><rect x="15" y="43" width="34" height="6" rx="3" fill="var(--solid)"/><ellipse cx="32" cy="44" rx="14" ry="2.4" fill="#8B6B4A"/>';
+const LEAF=(x,y,r,s=1)=>`<path transform="translate(${x} ${y}) rotate(${r}) scale(${s})" d="M0 0c4-6 12-7 16-4c-3 5-10 8-16 4z" fill="var(--accent)"/>`;
+const STAGES=[
+  {min:0,name:'بذرة',svg:POT+'<ellipse cx="32" cy="41" rx="4" ry="3" fill="#8B6B4A"/><path d="M32 38c0-2 1-3 2-4" stroke="var(--accent)" stroke-width="1.6" fill="none" stroke-linecap="round"/>'},
+  {min:1,name:'نبتة',svg:POT+'<path d="M32 43V33" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>'+LEAF(32,34,-20,.8)+LEAF(32,34,200,.8)},
+  {min:3,name:'شتلة',svg:POT+'<path d="M32 43V22" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/>'+LEAF(32,36,-15)+LEAF(32,36,195)+LEAF(32,28,-35,.9)+LEAF(32,28,215,.9)+LEAF(32,22,-70,.7)},
+  {min:7,name:'زهرة',svg:POT+'<path d="M32 43V20" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/>'+LEAF(32,37,-15)+LEAF(32,37,195)+LEAF(32,29,-30,.9)+LEAF(32,29,210,.9)+'<g transform="translate(32 16)"><circle r="4.2" cx="0" cy="-5" fill="#F4B740"/><circle r="4.2" cx="5" cy="0" fill="#F4B740"/><circle r="4.2" cx="0" cy="5" fill="#F4B740"/><circle r="4.2" cx="-5" cy="0" fill="#F4B740"/><circle r="3.4" fill="#FFF6DD"/></g>'},
+  {min:14,name:'شجرة',svg:POT+'<path d="M32 43V26M32 33l-6-5M32 30l6-5" stroke="#8B6B4A" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="18" r="12" fill="var(--accent)"/><circle cx="22" cy="24" r="8" fill="var(--accent)"/><circle cx="42" cy="24" r="8" fill="var(--accent)"/><circle cx="28" cy="15" r="3" fill="#fff" opacity=".25"/>'},
+  {min:30,name:'نخلة',svg:POT+'<path d="M32 43c0-8 1-16 0-24" stroke="#A47E55" stroke-width="4" stroke-linecap="round"/><path d="M30 38h4M30 33h4M30 28h4M30 23h4" stroke="#7A5C3C" stroke-width="1.2"/>'+'<g fill="none" stroke="var(--accent)" stroke-width="3.6" stroke-linecap="round"><path d="M32 18c-6-4-13-3-18 2"/><path d="M32 18c6-4 13-3 18 2"/><path d="M32 18c-4-6-10-9-15-8"/><path d="M32 18c4-6 10-9 15-8"/><path d="M32 18c0-5 1-9 3-12"/></g><g fill="#C2410C"><circle cx="28" cy="22" r="2"/><circle cx="31" cy="24" r="2"/><circle cx="35" cy="22" r="2"/><circle cx="33" cy="25" r="2"/></g>'}
+];
+const stageOf=n=>{let st=STAGES[0];for(const s of STAGES)if(n>=s.min)st=s;return st};
+let lastStage=null;
+function renderStreak(){
+  const n=streakNow(),st=stageOf(n),next=STAGES.find(s=>s.min>n),doneToday=daySet().has(dayKey(new Date()));
+  const plant=$('plant');
+  if(lastStage!==st.name){plant.innerHTML='<svg viewBox="0 0 64 64">'+st.svg+'</svg>';if(lastStage!==null){plant.classList.remove('grow');void plant.offsetWidth;plant.classList.add('grow')}lastStage=st.name}
+  $('st-n').textContent=n?daysAr(n):'ابدأ اليوم';
+  const sub=$('st-s');sub.replaceChildren();
+  const b=document.createElement('b');b.textContent=st.name;sub.append(b);
+  if(next){const left=next.min-n;sub.append(` · باقي ${daysAr(left)} وتصير ${next.name}`)}else sub.append(' · وصلت أعلى مرحلة');
+  const line=document.createElement('div');
+  if(doneToday)line.textContent='أنجزت اليوم ✓';
+  else{line.className='wait';line.textContent=n?'خلّص مهمة اليوم عشان تكمل السلسلة':'خلّص مهمة اليوم وتبدأ تنبت'}
+  const best=bestStreak();if(best>n&&best>1)line.append(` · أفضل سلسلة: ${daysAr(best)}`);
+  sub.append(line);
+}
+let daysQ=Promise.resolve();
+function logToday(){
+  const k=dayKey(new Date());if(state.days.includes(k))return false;
+  state.days=state.days.concat(k).slice(-800);
+  if(mode==='db'){const body={days:state.days};daysQ=daysQ.then(()=>db.doc('meta/days').set(body)).catch(()=>{})}
+  else try{localStorage.setItem('tb-days',JSON.stringify(state.days))}catch(e){}
+  return true;
+}
+function celebrate(finishing){
+  if(!finishing){toast('رجعت المهمة إلى قائمة المهام');renderStreak();return}
+  const had=state.days.includes(dayKey(new Date()));const before=stageOf(had?streakNow():streakNow(true)).name;const first=logToday();const n=streakNow();const after=stageOf(n).name;
+  renderStreak();
+  if(after!==before)toast(`نبتتك كبرت! صارت ${after} 🌱 سلسلة ${daysAr(n)}`);
+  else if(first)toast(n>1?`أحسنت! سلسلة الإنجاز صارت ${daysAr(n)}`:'أحسنت! بدأت سلسلة الإنجاز اليوم');
+  else toast('أحسنت! انتقلت المهمة إلى المكتملة');
+}
+
 function renderType(){
   const t=cur(),wrap=$('f-type');wrap.replaceChildren();
   const sel=typesOf(t);
@@ -582,7 +656,7 @@ function renderStatus(){
 }
 $('f-complete').onclick=()=>{const t=cur();if(!t)return;flush();const finishing=t.status!=='done';
   if(finishing){t.status='done';t.completedAt=Date.now()}else{t.status='todo';delete t.completedAt}
-  persist(t);closeTask();toast(finishing?'أحسنت! انتقلت المهمة إلى المكتملة':'رجعت المهمة إلى قائمة المهام')};
+  persist(t);closeTask();celebrate(finishing)};
 function renderChecks(){
   const t=cur(),wrap=$('f-checks');wrap.replaceChildren();
   if(!Array.isArray(t.checklist))t.checklist=[];
@@ -638,6 +712,7 @@ if(window.claude&&typeof window.claude.use==='function'){
       if(state.openId&&draftDirty){const cur=state.tasks.find(t=>t.id===state.openId);const i=incoming.findIndex(t=>t.id===state.openId);if(cur&&i>-1)incoming[i]=cur}
       state.tasks=incoming;render();
     },()=>{toast('انقطع الاتصال بقاعدة البيانات');});
+    db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
     db.collection('clients').onSnapshot(snap=>{state.clients=snap.docs.map(s=>Object.assign({id:s.id},s.data()));render();if(state.openId)renderClients()},()=>{});
   }).catch(useLocal);
 }else useLocal();
