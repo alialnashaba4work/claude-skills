@@ -374,7 +374,7 @@ button{cursor:pointer}
       <h2 id="board-title">لوحة Freelance</h2>
       <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg><input id="q" type="search" placeholder="بحث في المهام"></label>
       <select class="select" id="client-filter" aria-label="تصفية حسب العميل"><option value="">كل العملاء</option></select>
-      <select class="select" id="type-filter" aria-label="تصفية حسب نوع العمل"><option value="">كل الأنواع</option><option>بوست</option><option>كاروسيل</option><option>أنيميشن</option><option>براند</option><option>محتوى</option><option>أخرى</option></select>
+      <select class="select" id="type-filter" aria-label="تصفية حسب نوع العمل"><option value="">كل الأنواع</option><option>بوست</option><option>كاروسيل</option><option>أنيميشن</option><option>فيديو</option><option>براند</option><option>محتوى</option><option>أخرى</option></select>
     </div>
     <div class="board" id="board"></div>
     <button class="done-toggle" id="done-toggle" aria-expanded="false" aria-controls="done-board">المكتملة <span class="n" id="done-n">0</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></button>
@@ -444,7 +444,7 @@ const WEIGHT={easy:1,med:2,big:3};
 function sizeOf(t){if(SIZE[t.size])return t.size;return t.priority==='high'?'big':t.priority==='low'?'easy':'med'}
 const $=id=>document.getElementById(id);
 const state={days:[],badges:{},garden:{count:0,seen:0},ws:'freelance',clients:[],tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
-const TYPES=['بوست','كاروسيل','أنيميشن','براند','محتوى','أخرى'];
+const TYPES=['بوست','كاروسيل','أنيميشن','فيديو','براند','محتوى','أخرى'];
 // work types: several per task; older tasks kept a single `type`
 function typesOf(t){return Array.isArray(t.types)?t.types:(t.type?[t.type]:[])}
 let db=null,mode='pending';
