@@ -82,16 +82,16 @@ button{cursor:pointer}
 .status-note{font-size:12px;color:var(--ink-3)}
 
 /* stats */
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.stat{background:var(--surface);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:var(--surface);border-radius:16px;padding:10px 16px 10px 18px;display:grid;grid-template-columns:auto auto;grid-template-areas:"num lbl" "num sub";column-gap:12px;row-gap:1px;align-items:center;flex:0 0 auto}
 .stat.hl{background:linear-gradient(160deg,#16BDB0,#0A9488);color:#fff}
-.stat .lbl{display:flex;justify-content:space-between;align-items:center;color:var(--ink-2);font-size:13px}
-.stat.hl .lbl{color:rgba(255,255,255,.85)}
-.stat .ico{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2)}
-.stat.hl .ico{background:rgba(255,255,255,.18)}
+.stat .lbl{grid-area:lbl;display:flex;align-items:center;color:var(--ink-2);font-size:13px;font-weight:500}
+.stat.hl .lbl{color:rgba(255,255,255,.9)}
+.stat .ico{display:none}
+.stat.hl .ico{display:none}
 .stat .ico svg{width:15px;height:15px}
-.stat .num{font-family:var(--f-display);font-size:32px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
-.stat .sub{font-size:12px;color:var(--ink-3)}
+.stat .num{grid-area:num;font-family:var(--f-display);font-size:28px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;min-width:1ch;text-align:center}
+.stat .sub{grid-area:sub;font-size:11.5px;color:var(--ink-3)}
 .stat.hl .sub{color:rgba(255,255,255,.8)}
 
 /* toolbar */
@@ -291,7 +291,7 @@ button{cursor:pointer}
   .drawer .d-body{padding:18px 20px 28px}
   .drawer .d-head,.drawer .d-foot{padding-inline:20px}
   .drawer .d-title{font-size:24px}
-  .stat .num{font-size:26px}
+  .stat .num{font-size:24px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
