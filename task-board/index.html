@@ -115,6 +115,7 @@ button{cursor:pointer}
 .done-btn{margin-inline-start:auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12.5px;display:inline-flex;gap:6px;align-items:center;color:var(--ink-2)}
 .done-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .done-btn svg{width:14px;height:14px}
+.card.drop-over{outline:2px dashed #0EA89C;outline-offset:2px;background:var(--accent-soft)}
 .card.leaving{opacity:0;transform:scale(.97);transition:opacity .25s,transform .25s}
 .card .t{font-weight:600;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
 .card.done .t{color:var(--ink-3);text-decoration:line-through}
@@ -317,6 +318,20 @@ button{cursor:pointer}
   .btn-ghost:hover{background:var(--line)}
   .stat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
   .theme button:not([aria-pressed="true"]):hover{background:var(--surface-2);color:var(--ink)}
+/* garden life: birds, butterflies, rain */
+.fly{animation:fly 36s linear infinite}
+@keyframes fly{from{transform:translateX(-120px)}to{transform:translateX(1120px)}}
+.flap{transform-box:fill-box;transform-origin:center;animation:flap .45s ease-in-out infinite alternate}
+@keyframes flap{to{transform:scaleY(.3)}}
+.bfly{animation:wander 14s ease-in-out infinite alternate}
+@keyframes wander{0%{transform:translate(0,0)}20%{transform:translate(40px,-30px)}40%{transform:translate(85px,-5px)}60%{transform:translate(60px,28px)}80%{transform:translate(110px,10px)}100%{transform:translate(140px,-20px)}}
+.wl,.wr{transform-box:fill-box;animation:wing .22s ease-in-out infinite alternate}
+.wl{transform-origin:100% 50%}.wr{transform-origin:0% 50%}
+@keyframes wing{to{transform:scaleX(.25)}}
+.rain{animation:rain .9s linear infinite}
+@keyframes rain{from{transform:translate(0,-60px)}to{transform:translate(-16px,60px)}}
+.g-wx{font-size:13px;margin-top:4px;color:var(--ink);background:var(--surface-2);border-radius:999px;padding:3px 12px;display:inline-block}
+.hello .wx-pill{position:absolute;top:16px;right:16px;z-index:2;font-size:12px;font-weight:500;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:999px;padding:5px 12px;color:var(--ink);box-shadow:0 2px 10px rgba(30,30,30,.08);max-width:calc(100% - 90px)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -372,6 +387,7 @@ button{cursor:pointer}
 
   <section class="hello" id="hello">
     <div class="sky-deco" id="sky-deco" aria-hidden="true"></div>
+    <div class="wx-pill" id="wx-pill" hidden></div>
     <div class="zoom" role="group" aria-label="تكبير الحديقة">
       <button id="z-in" aria-label="تكبير" title="تكبير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
       <button id="z-out" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 8h9"/></svg></button>
@@ -405,8 +421,8 @@ button{cursor:pointer}
   <section style="display:flex;flex-direction:column;gap:14px">
     <div class="bar">
       <h2 id="board-title">لوحة Freelance</h2>
-      <button class="btn btn-accent" id="new-top"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>مهمة جديدة</button>
-      <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg><input id="q" type="search" placeholder="بحث في المهام"></label>
+      <button class="btn btn-accent" id="new-top" title="اختصار: N"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>مهمة جديدة</button>
+      <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg><input id="q" type="search" placeholder="بحث في المهام  ( / )"></label>
       <select class="select" id="client-filter" aria-label="تصفية حسب العميل"><option value="">كل العملاء</option></select>
       <select class="select" id="type-filter" aria-label="تصفية حسب نوع العمل"><option value="">كل الأنواع</option><option>بوست</option><option>كاروسيل</option><option>أنيميشن</option><option>فيديو</option><option>براند</option><option>محتوى</option><option>إنشاء فاتورة</option><option>أخرى</option></select>
     </div>
@@ -434,7 +450,6 @@ button{cursor:pointer}
         <div class="types" id="f-clients" hidden></div>
         <div class="auto-note" id="client-auto" hidden></div>
       </div>
-      <div class="field"><label for="f-due">تاريخ التسليم</label><input id="f-due" type="date"></div>
       <div class="field"><label for="f-size">حجم العمل</label><select id="f-size"><option value="easy">سهل · يزرع زرعة</option><option value="med">متوسط · يزرع زرعتين</option><option value="big">كبير · يزرع 3 زرعات</option></select></div>
       <div class="field" style="grid-column:1/-1"><label for="f-link">رابط</label><input id="f-link" dir="ltr" placeholder="https://"></div>
     </div>
@@ -461,7 +476,7 @@ button{cursor:pointer}
 <div class="scrim" id="g-scrim" hidden></div>
 <div class="gview" id="gview" dir="rtl" lang="ar" role="dialog" aria-modal="true" aria-label="حديقتي" hidden>
   <div class="g-head">
-    <div><div class="g-l">حديقتي</div><div class="g-lvl" id="g-lvl">زرعة صغيرة</div><div class="g-sub" id="g-sub"></div></div>
+    <div><div class="g-l">حديقتي</div><div class="g-lvl" id="g-lvl">زرعة صغيرة</div><div class="g-sub" id="g-sub"></div><div class="g-wx" id="g-wx" hidden></div></div>
     <button class="icon-btn" id="g-close" aria-label="إغلاق"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
   </div>
   <div class="g-scene" id="g-scene"></div>
@@ -561,8 +576,8 @@ function render(){
   const q=state.q.trim().toLowerCase();
   const shown=all.filter(t=>(!state.client||(t.client||'').trim()===state.client)&&(!state.type||typesOf(t).includes(state.type))&&(!q||[t.title,t.client,t.notes].join(' ').toLowerCase().includes(q)));
 
-  const byDue=(a,b)=>{const da=a.due||'9999',dbb=b.due||'9999';if(da!==dbb)return da<dbb?-1:1;return (b.createdAt||0)-(a.createdAt||0)};
-  const openShown=shown.filter(t=>t.status!=='done').sort(byDue);
+  // oldest open task first, so the ones waiting longest stay in view
+  const openShown=shown.filter(t=>t.status!=='done').sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   const doneShown=shown.filter(t=>t.status==='done').sort((a,b)=>(b.completedAt||b.updatedAt||0)-(a.completedAt||a.updatedAt||0));
   const board=$('board');board.replaceChildren(...openShown.map(cardEl));
   if(!openShown.length){const e=document.createElement('div');e.className='empty';
@@ -588,7 +603,7 @@ function cardEl(t){
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
   const m=document.createElement('div');m.className='card-foot';
   for(const ty of typesOf(t)){const k=document.createElement('span');k.className='chip kind';k.textContent=ty;k.style.setProperty('--c',TYPE_COLORS[ty]||'#9A9A9A');m.append(k)}
-  const dc=dueChip(t);if(dc)m.append(dc);
+  {const age=ageDays(t);if(t.status!=='done'&&age>3){const a=document.createElement('span');a.className='chip late';a.textContent=`صار لها ${daysAr(age)}`;a.title='المهام اللي تطول أكثر من 3 أيام تعكّر جو الحديقة';m.append(a)}}
   if(t.status!=='done'){const z=sizeOf(t);const p=document.createElement('span');p.className='chip size-'+z;p.textContent=SIZE[z];m.append(p)}
   if(ch.length){const d=ch.filter(x=>x.done).length;const p=document.createElement('span');p.className='chip'+(d===ch.length?' ok':'');p.textContent=`${d}/${ch.length}`;m.append(p)}
   if(attsOf(t).length){const p=document.createElement('span');p.className='chip';p.innerHTML=clipSvg;p.append(String(attsOf(t).length));p.setAttribute('aria-label',attsOf(t).length+' مرفقات');m.append(p)}
@@ -597,6 +612,12 @@ function cardEl(t){
   btn.onclick=e=>{e.stopPropagation();toggleDone(t,b)};
   m.append(btn);b.append(m);
   b.onclick=()=>openTask(t.id);
+  // drop files straight onto the card to attach them
+  b.addEventListener('dragover',e=>{if([...e.dataTransfer.types].includes('Files')){e.preventDefault();b.classList.add('drop-over')}});
+  b.addEventListener('dragleave',e=>{if(!b.contains(e.relatedTarget))b.classList.remove('drop-over')});
+  b.addEventListener('drop',async e=>{b.classList.remove('drop-over');const fs=[...e.dataTransfer.files];if(!fs.length)return;e.preventDefault();
+    if(!assets){toast('المرفقات تشتغل في اللوحة المنشورة لما تكون مسجّل دخولك');return}
+    toast('جارٍ رفع الملف…');const ok=await addFiles(fs,t);if(ok)toast(ok===1?'انضاف الملف للمهمة':`انضافت ${ok} ملفات للمهمة`)});
   b.addEventListener('keydown',e=>{if(e.target===b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openTask(t.id)}});
   return b;
 }
@@ -613,7 +634,7 @@ function openTask(id,focusTitle){
   const t=state.tasks.find(x=>x.id===id);if(!t)return;
   state.openId=id;draftDirty=false;
   $('d-ws').textContent=WS[t.workspace||'freelance'];
-  $('f-title').value=t.title||'';$('f-due').value=t.due||'';
+  $('f-title').value=t.title||'';
   $('f-size').value=sizeOf(t);
   $('f-link').value=t.link||'';$('f-notes').value=t.notes||'';
   editClients=false;$('client-add').hidden=true;renderStatus();renderClients();$('client-auto').hidden=true;renderType();renderChecks();renderAtts();resetDelete();$('att-note').hidden=true;
@@ -622,10 +643,10 @@ function openTask(id,focusTitle){
   $('scrim').hidden=false;$('drawer').hidden=false;
   (focusTitle?$('f-title'):$('d-close')).focus();
 }
-function closeTask(){flush();state.openId=null;$('scrim').hidden=true;$('drawer').hidden=true;render()}
+function closeTask(){if(document.activeElement&&$('drawer').contains(document.activeElement))document.activeElement.blur();flush();state.openId=null;$('scrim').hidden=true;$('drawer').hidden=true;render()}
 function flush(){if(saveTimer){clearTimeout(saveTimer);saveTimer=null;const t=cur();if(t)persist(t)}draftDirty=false}
 function schedule(){draftDirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=null;const t=cur();if(t)persist(t);draftDirty=false;render()},700)}
-const fieldMap={'f-title':'title','f-due':'due','f-size':'size','f-link':'link','f-notes':'notes'};
+const fieldMap={'f-title':'title','f-size':'size','f-link':'link','f-notes':'notes'};
 for(const fid in fieldMap){
   const el=$(fid);
   el.addEventListener('input',()=>{const t=cur();if(!t)return;t[fieldMap[fid]]=el.value;schedule()});
@@ -647,26 +668,28 @@ function attErr(e,name){const c=e&&e.code;
   if(c==='not_granted'||c==='capability_disabled'||c==='capability_removed')return 'رفع الملفات غير متاح هنا.';
   if(c==='upstream_auth')return 'انتهت الجلسة. حدّث الصفحة أو سجّل دخولك مرة ثانية.';
   return `تعذّر رفع «${name}»، حاول مرة ثانية.`}
-async function addFiles(files){
-  const t0=cur();if(!t0||!assets||!files.length)return;
-  const tid=t0.id;attNote('');
+async function addFiles(files,toTask){
+  const t0=toTask||cur();if(!t0||!assets||!files.length)return 0;
+  const tid=t0.id;if(!toTask)attNote('');let ok=0;
   for(const f of files){
     const type=fileType(f);
-    if(!type){attNote(`«${f.name}»: هذا النوع غير مدعوم. ارفع صورة أو فيديو MP4 أو PDF أو ملف نصي.`);continue}
-    if(f.size>(type==='image/svg+xml'?2:20)*1048576){attNote(`«${f.name}» أكبر من ${type==='image/svg+xml'?2:20} ميجا.`);continue}
+    const say=m=>toTask?toast(m):attNote(m);
+    if(!type){say(`«${f.name}»: هذا النوع غير مدعوم. ارفع صورة أو فيديو MP4 أو PDF أو ملف نصي.`);continue}
+    if(f.size>(type==='image/svg+xml'?2:20)*1048576){say(`«${f.name}» أكبر من ${type==='image/svg+xml'?2:20} ميجا.`);continue}
     const p={tid,name:f.name};pending.push(p);renderAtts();
     try{
       let r;
       try{r=await assets.upload(f,{type})}
       catch(e){if(e&&e.code==='store_unavailable'){await new Promise(res=>setTimeout(res,1500));r=await assets.upload(f,{type})}else throw e}
       const live=state.tasks.find(x=>x.id===tid);
-      if(live){live.attachments=attsOf(live).concat({id:r.id,name:f.name,type:r.contentType,size:r.sizeBytes,addedAt:Date.now()});persist(live)}
-    }catch(e){attNote(attErr(e,f.name))}
+      if(live){live.attachments=attsOf(live).concat({id:r.id,name:f.name,type:r.contentType,size:r.sizeBytes,addedAt:Date.now()});persist(live);ok++}
+    }catch(e){if(toTask)toast(attErr(e,f.name));else attNote(attErr(e,f.name))}
     finally{pending=pending.filter(x=>x!==p);renderAtts();render()}
   }
+  return ok;
 }
 function renderAtts(){
-  const t=cur();if(!t)return;
+  const t=cur();if(!t||$('drawer').hidden)return;
   const wrap=$('f-atts');wrap.replaceChildren();
   $('f-drop').hidden=!assets;$('att-off').hidden=!!assets||attsOf(t).length>0;
   for(const a of attsOf(t)){
@@ -828,28 +851,25 @@ const weekId=()=>dayKey(weekStart());
 const G={
   ten:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4 10-10"/><path d="M5 6.5l2 2" opacity=".6"/></svg>',
   week:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c2 4 6 5 6 10a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-5 1-8z"/></svg>',
-  ontime:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9 2.5h6"/></svg>',
+  clean:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9 2.5h6"/></svg>',
   all:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="8.5" y="13.5" width="7" height="7" rx="2"/></svg>',
-  early:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg>',
+  fast:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg>',
   type:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>'
 };
 function weekBadges(){
   const ws0=weekStart().getTime();
   const done=state.tasks.filter(t=>t.status==='done'&&t.completedAt>=ws0);
-  const due=t=>t.due?parseDate(t.due).getTime()+864e5-1:null;
-  const lateDone=done.filter(t=>due(t)!==null&&t.completedAt>due(t)).length;
-  const onTime=done.filter(t=>due(t)!==null&&t.completedAt<=due(t)).length;
-  const openLate=state.tasks.filter(t=>t.status!=='done'&&daysLeft(t.due)!==null&&daysLeft(t.due)<0).length;
-  const early=done.filter(t=>t.due&&(parseDate(t.due).getTime()-new Date(new Date(t.completedAt).setHours(0,0,0,0)).getTime())>=2*864e5).length;
+  const fast=done.filter(t=>t.createdAt&&t.completedAt-t.createdAt<=864e5).length;
+  const stale=staleTasks().length;
   const wsCount=new Set(done.map(t=>t.workspace||'freelance')).size;
   const byType={};for(const t of done)for(const ty of typesOf(t))byType[ty]=(byType[ty]||0)+1;
   const topType=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0]||['',0];
   return [
     {id:'ten',name:'عشرة',desc:'خلّص 10 مهام هالأسبوع',goal:10,val:done.length},
     {id:'week',name:'أسبوع كامل',desc:'سلسلة إنجاز 7 أيام ورا بعض',goal:7,val:Math.min(streakNow(),7)},
-    {id:'ontime',name:'بلا تأخير',desc:'خلّص 3 مهام قبل موعدها هالأسبوع، بدون أي مهمة متأخرة',goal:3,val:onTime,blocked:lateDone>0||openLate>0},
+    {id:'clean',name:'بلا تراكم',desc:'خلّص 3 مهام هالأسبوع، وما عندك ولا مهمة صار لها أكثر من 3 أيام',goal:3,val:done.length,blocked:stale>0},
     {id:'all',name:'كل الأقسام',desc:'خلّص مهمة في Freelance و More Media و Islamic',goal:3,val:wsCount},
-    {id:'early',name:'سبّاق',desc:'خلّص مهمتين قبل موعدهم بيومين أو أكثر',goal:2,val:early},
+    {id:'fast',name:'سريع',desc:'خلّص 3 مهام خلال يوم من إضافتها',goal:3,val:fast},
     {id:'type',name:topType[1]>=3?'متخصص '+topType[0]:'متخصص',desc:'خلّص 3 مهام من نفس النوع (بوست، كاروسيل...)',goal:3,val:topType[1]}
   ].map(b=>Object.assign(b,{on:b.val>=b.goal&&!b.blocked}));
 }
@@ -861,7 +881,7 @@ function renderMedals(){
     const el=document.createElement('div');el.className='medal'+(b.on?' on':'')+(popIds.includes(b.id)?' pop':'');el.title=b.desc;
     const m=document.createElement('div');m.className='m';m.innerHTML=G[b.id];
     const nm=document.createElement('div');nm.className='nm';nm.textContent=b.name;
-    const pg=document.createElement('div');pg.className='pg';pg.textContent=b.on?'حصلت عليه':(b.blocked&&b.val>=b.goal?'فيه مهمة متأخرة':`${Math.min(b.val,b.goal)}/${b.goal}`);
+    const pg=document.createElement('div');pg.className='pg';pg.textContent=b.on?'حصلت عليه':(b.blocked&&b.val>=b.goal?'فيه مهمة قديمة':`${Math.min(b.val,b.goal)}/${b.goal}`);
     el.append(m,nm,pg);wrap.append(el);
   }
   popIds=[];
@@ -949,6 +969,15 @@ function plantSVG(i,p){
     else{const c=FLOWERS[Math.floor(p.v*FLOWERS.length)];g=`<path d="M0 0v-14" stroke="#3E9E6A" stroke-width="2"/><path d="M0-6c-4-1-6-4-6-6c3 0 5 2 6 6z" fill="#3E9E6A"/><g fill="${c}"><circle cy="-19" r="3.6"/><circle cx="4.5" cy="-15" r="3.6"/><circle cx="-4.5" cy="-15" r="3.6"/><circle cy="-11" r="3.6"/></g><circle cy="-15" r="2.4" fill="#FFE08A"/>`}}
   return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"><g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
+const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
+const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
+function weatherNow(){
+  if(staleTasks().length)return 'gloomy';
+  const now=Date.now(),recent=state.tasks.filter(t=>t.status==='done'&&t.completedAt&&t.createdAt&&now-t.completedAt<7*864e5);
+  if(recent.length>=2){const d=recent.map(t=>t.completedAt-t.createdAt).sort((a,b)=>a-b);if(d[Math.floor(d.length/2)]<=2*864e5)return 'spring'}
+  return 'normal';
+}
+const WEATHER_NOTE={gloomy:'الجو متعكّر: عندك مهام صار لها أكثر من 3 أيام. خلّصها ويصحى الجو',spring:'ربيع ومطر خفيف: قاعد تخلّص مهامك بسرعة 🌸',normal:''};
 function skyFor(per){
   if(per==='night')return{a:'#0E1A24',b:'#1F4148',hill:'#1B3A3A',g1:'#2D5E4A',g2:'#22493A'};
   if(per==='sunset')return{a:'#5B3F7A',b:'#F2A25E',hill:'#7C6A55',g1:'#7FB06B',g2:'#5E9555'};
@@ -956,10 +985,16 @@ function skyFor(per){
   return{a:'#9FE3DC',b:'#E6F8F5',hill:'#A6DDB0',g1:'#9ED9A0',g2:'#6BBF7A'};
 }
 function gardenSVG(n,palms,seen,animate,wide){
-  const per=periodOf(new Date().getHours()),c=skyFor(per),night=per==='night';
-  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient></defs>`;
+  const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow();
+  let c=skyFor(per);
+  if(wx==='gloomy')c=night?{a:'#0A0F13',b:'#182327',hill:'#16262A',g1:'#233B34',g2:'#1A2E27'}:{a:'#8F9AA0',b:'#C7CDCC',hill:'#97AA9B',g1:'#8DAA8E',g2:'#6A8B6E'};
+  else if(wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
+  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient></defs>`;
   o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
-  if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+='<g transform="translate(860 70)"><circle r="26" fill="#FFF4D6"/><circle cx="11" cy="-7" r="24" fill="#132834"/></g>'}
+  if(wx==='gloomy'){
+    // overcast: heavy grey clouds, no sun or stars
+    o+=`<g class="cloud" fill="${night?'#2A3438':'#7D878C'}" opacity=".95"><ellipse cx="160" cy="70" rx="150" ry="42"/><ellipse cx="300" cy="50" rx="110" ry="40"/><ellipse cx="480" cy="80" rx="160" ry="44"/><ellipse cx="680" cy="55" rx="130" ry="42"/><ellipse cx="880" cy="85" rx="160" ry="46"/></g><g fill="${night?'#3A4549':'#9AA3A7'}" opacity=".9"><ellipse cx="80" cy="150" rx="120" ry="30"/><ellipse cx="400" cy="165" rx="150" ry="30"/><ellipse cx="760" cy="155" rx="150" ry="32"/><ellipse cx="980" cy="170" rx="110" ry="28"/></g>`;
+  }else if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+='<g transform="translate(860 70)"><circle r="26" fill="#FFF4D6"/><circle cx="11" cy="-7" r="24" fill="#132834"/></g>'}
   else o+=per==='sunset'?'<circle cx="820" cy="215" r="60" fill="#FFB054"/>':'<circle cx="860" cy="80" r="34" fill="#FFD25E"/><g class="cloud" fill="#fff" opacity=".85"><ellipse cx="200" cy="80" rx="60" ry="16"/><ellipse cx="232" cy="66" rx="32" ry="17"/><ellipse cx="560" cy="55" rx="44" ry="12"/></g>';
   // wide mode (banner zoomed out): carry the hills and ground past the scene edges
   if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
@@ -982,13 +1017,26 @@ function gardenSVG(n,palms,seen,animate,wide){
   const oryx=(x,y,f=1)=>`<g transform="translate(${x} ${y}) scale(${f} 1)"><path d="M-30 0v26M-18 2v24M14 2v24M26 0v26" stroke="#E9E4DA" stroke-width="4" stroke-linecap="round"/><path d="M-30 26v-6M26 26v-6" stroke="#383838" stroke-width="4"/><ellipse cy="-4" rx="36" ry="16" fill="#F7F3EC"/><path d="M-36-6c-6 4-8 10-6 16" stroke="#F7F3EC" stroke-width="4" fill="none"/><path d="M26-14l14-18" stroke="#F7F3EC" stroke-width="11" stroke-linecap="round"/><ellipse cx="44" cy="-34" rx="9" ry="7" fill="#F7F3EC"/><path d="M42-40l-12-36M46-40l-6-36" stroke="#4A3B2E" stroke-width="2.4" stroke-linecap="round"/><path d="M48-36l2 6" stroke="#383838" stroke-width="3" stroke-linecap="round"/><path d="M-20-4h34" stroke="#C9B9A2" stroke-width="3" opacity=".6"/></g>`;
   if(has(100))o+=oryx(860,470)+oryx(930,430,-0.85);
   if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-14 0v16M-6 1v15M8 1v15M14 0v16" stroke="#B9875A" stroke-width="2.6"/><ellipse cy="-2" rx="18" ry="8" fill="#D9A46F"/><path d="M12-6l8-10" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><ellipse cx="22" cy="-18" rx="5" ry="4" fill="#D9A46F"/><path d="M21-21l-3-10M24-21l1-10" stroke="#4A3B2E" stroke-width="1.6"/></g>`;o+=gz(780,520)+gz(700,540)}
-  if(has(80)&&!night)o+='<g stroke="#383838" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"><path d="M420 90q8-8 16 0q8-8 16 0"/><path d="M470 120q6-6 12 0q6-6 12 0"/><path d="M390 130q5-5 10 0q5-5 10 0"/></g>';
+  // birds fly across the sky (not at night)
+  if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><path class="flap" d="M-10 0q5-7 10 0q5-7 10 0" stroke="${wx==='gloomy'?'#4A5458':'#383838'}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g></g>`;
+    o+=bird(150,34,1,4)+bird(175,40,.8,18)+bird(135,46,.7,30)+(has(80)?bird(190,38,.9,10):'');}
+  // butterflies flutter over the plants (not in gloomy weather or at night)
+  if(wx!=='gloomy'&&!night){const cols=['#F4B740','#E86A8A','#B48CE8','#FFFFFF','#5B9BD5'];const r=rnd(23);const count=wx==='spring'?7:4;
+    for(let i=0;i<count;i++){const x=(120+r()*760).toFixed(0),y=(300+r()*170).toFixed(0),c1=cols[i%cols.length];
+      o+=`<g transform="translate(${x} ${y})"><g class="bfly" style="animation-duration:${(10+r()*8).toFixed(1)}s;animation-delay:-${(r()*8).toFixed(1)}s"><g class="wl" fill="${c1}" stroke="#383838" stroke-opacity=".25"><ellipse cx="-5" cy="-3" rx="5" ry="6"/><ellipse cx="-4" cy="5" rx="3.5" ry="4"/></g><g class="wr" fill="${c1}" stroke="#383838" stroke-opacity=".25"><ellipse cx="5" cy="-3" rx="5" ry="6"/><ellipse cx="4" cy="5" rx="3.5" ry="4"/></g><rect x="-1" y="-6" width="2" height="13" rx="1" fill="#383838"/></g></g>`}}
+  // spring: soft light rain and a faint rainbow
+  if(wx==='spring'){
+    if(!night)o+='<path d="M120 300A380 230 0 0 1 880 300" fill="none" stroke-width="10" stroke="url(#gr)" opacity=".35"/>';
+    const r=rnd(41);let drops='';for(let i=0;i<120;i++){const x=(r()*1100-50).toFixed(0),y=(r()*560-80).toFixed(0);drops+=`<path d="M${x} ${y}l-4 14"/>`}
+    o+=`<g class="rain" stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.6" stroke-linecap="round" opacity=".7">${drops}</g>`;
+  }
   if(!n)o+='<g transform="translate(500 430) scale(3.2)"><g class="pl"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g></g>';
   return o+'</svg>';
 }
 function renderGarden(animate){
   const n=gardenCount(),lv=levelOf(n),next=STRUCTS.find(x=>x.at>n),nextLv=LEVELS.find(x=>x.min>n);
   $('g-lvl').textContent=lv.name;
+  $('g-wx').textContent=WEATHER_NOTE[weatherNow()];$('g-wx').hidden=!WEATHER_NOTE[weatherNow()];
   $('g-sub').textContent=n?`زرعت ${n} ${n===1?'زرعة':n===2?'زرعتين':n<=10?'زرعات':'زرعة'} · السهلة تزرع وحدة، المتوسطة اثنتين، والكبيرة ثلاث`:'خلّص أول مهمة وتنزرع أول نبتة';
   const seen=Math.min(state.garden.seen||0,n);
   $('g-scene').innerHTML=gardenSVG(n,palmCount(),seen,animate);
@@ -1070,13 +1118,14 @@ function plusBubble(w){const el=document.createElement('span');el.className='plu
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI;
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow();
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
+  {const w=weatherNow(),pill=$('wx-pill');pill.hidden=w==='normal';pill.textContent=w==='gloomy'?'☁️ الجو متعكّر: عندك مهام صار لها أكثر من 3 أيام':w==='spring'?'🌧️ ربيع: قاعد تخلّص بسرعة':''}
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
-  const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
+  const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sgr])"/g,'id="b$1"').replace(/url\(#g([sgr])\)/g,'url(#b$1)');
   // empty garden: put the shoot in the middle of the banner
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
@@ -1134,7 +1183,13 @@ $('d-copy').onclick=()=>{
   delete c.completedAt;delete c.clientAuto;
   state.tasks.push(c);persist(c);closeTask();openTask(c.id,true);toast('انعملت نسخة من المهمة');
 };
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('gview').hidden)closeGarden();else if(state.openId)closeTask()});
+document.addEventListener('keydown',e=>{
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement&&document.activeElement.tagName)||(document.activeElement&&document.activeElement.isContentEditable);
+  if(!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&$('drawer').hidden&&$('gview').hidden){
+    if(e.code==='KeyN'){e.preventDefault();createTask('todo');return}
+    if(e.code==='Slash'){e.preventDefault();$('q').focus();return}
+  }
+  if(e.key!=='Escape')return;if(!$('gview').hidden)closeGarden();else if(state.openId)closeTask()});
 
 /* ---------- top controls ---------- */
 for(const w in WS)$('ws-'+w).onclick=()=>{state.ws=w;state.client='';state.showDone=false;try{localStorage.setItem('tb-ws',w)}catch(e){}render()};
