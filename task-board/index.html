@@ -218,7 +218,7 @@ button{cursor:pointer}
   <div class="d-body">
     <input class="d-title" id="f-title" placeholder="عنوان المهمة">
     <div><button class="btn btn-accent" id="f-complete"></button></div>
-    <div class="field"><span class="sec-l">نوع العمل</span><div class="types" id="f-type"></div></div>
+    <div class="field"><span class="sec-l">نوع العمل (تقدر تختار أكثر من واحد)</span><div class="types" id="f-type"></div></div>
     <div class="grid2">
       <div class="field"><label for="f-client">العميل</label><input id="f-client" list="clients" placeholder="اسم العميل"><datalist id="clients"></datalist></div>
       <div class="field"><label for="f-due">تاريخ التسليم</label><input id="f-due" type="date"></div>
@@ -247,6 +247,8 @@ const PR={low:'منخفضة',med:'متوسطة',high:'عالية'};
 const $=id=>document.getElementById(id);
 const state={ws:'freelance',tasks:[],q:'',client:'',type:'',openId:null,showDone:false};
 const TYPES=['بوست','كاروسيل','أنيميشن','براند','محتوى','أخرى'];
+// work types: several per task; older tasks kept a single `type`
+function typesOf(t){return Array.isArray(t.types)?t.types:(t.type?[t.type]:[])}
 let db=null,mode='pending';
 const queues={};
 
@@ -329,7 +331,7 @@ function render(){
   $('clients').replaceChildren(...clients.map(c=>{const o=document.createElement('option');o.value=c;return o}));
 
   const q=state.q.trim().toLowerCase();
-  const shown=all.filter(t=>(!state.client||(t.client||'').trim()===state.client)&&(!state.type||t.type===state.type)&&(!q||[t.title,t.client,t.notes].join(' ').toLowerCase().includes(q)));
+  const shown=all.filter(t=>(!state.client||(t.client||'').trim()===state.client)&&(!state.type||typesOf(t).includes(state.type))&&(!q||[t.title,t.client,t.notes].join(' ').toLowerCase().includes(q)));
 
   const byDue=(a,b)=>{const da=a.due||'9999',dbb=b.due||'9999';if(da!==dbb)return da<dbb?-1:1;return (b.createdAt||0)-(a.createdAt||0)};
   const openShown=shown.filter(t=>t.status!=='done').sort(byDue);
@@ -355,7 +357,7 @@ function cardEl(t){
   const ch=Array.isArray(t.checklist)?t.checklist:[];
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
   const m=document.createElement('div');m.className='card-foot';
-  if(t.type){const k=document.createElement('span');k.className='chip kind';k.textContent=t.type;m.append(k)}
+  for(const ty of typesOf(t)){const k=document.createElement('span');k.className='chip kind';k.textContent=ty;m.append(k)}
   const dc=dueChip(t);if(dc)m.append(dc);
   if(t.status!=='done'&&(t.priority==='high'||t.priority==='med')){const p=document.createElement('span');p.className='chip pr-'+t.priority;p.textContent='أولوية '+PR[t.priority];m.append(p)}
   if(t.budget){const p=document.createElement('span');p.className='chip';p.textContent=t.budget;m.append(p)}
@@ -401,8 +403,10 @@ for(const fid in fieldMap){
 }
 function renderType(){
   const t=cur(),wrap=$('f-type');wrap.replaceChildren();
-  for(const k of TYPES){const b=document.createElement('button');b.textContent=k;b.setAttribute('aria-pressed',String(t.type===k));
-    b.onclick=()=>{t.type=t.type===k?'':k;persist(t);renderType();render()};wrap.append(b)}
+  const sel=typesOf(t);
+  for(const k of TYPES){const b=document.createElement('button');b.textContent=k;b.setAttribute('aria-pressed',String(sel.includes(k)));
+    b.onclick=()=>{const cur=typesOf(t);const next=cur.includes(k)?cur.filter(x=>x!==k):cur.concat(k);
+      t.types=TYPES.filter(x=>next.includes(x));delete t.type;persist(t);renderType();render()};wrap.append(b)}
 }
 function renderStatus(){
   const t=cur(),b=$('f-complete'),done=t.status==='done';
