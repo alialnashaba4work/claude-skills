@@ -230,7 +230,10 @@ button{cursor:pointer}
 .garden svg{width:18px;height:18px}
 .garden .more{font-size:11px;color:var(--ink-3);margin-inline-start:4px}
 .shelf{background:var(--surface);border-radius:18px;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
-.shelf-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.shelf-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;border:0;background:transparent;padding:2px 0;text-align:start;cursor:pointer;color:inherit}
+.shelf-h .chev{width:16px;height:16px;margin-inline-start:auto;color:var(--ink-3);transition:transform .2s}
+.shelf-h[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.shelf:has(.medals[hidden]){gap:0}
 .shelf-h b{font-family:var(--f-display);font-weight:600;font-size:13px}
 .shelf-h span{font-size:12px;color:var(--ink-3)}
 .medals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
@@ -335,8 +338,8 @@ button{cursor:pointer}
   </section>
 
   <section class="shelf" aria-label="أوسمة الأسبوع">
-    <div class="shelf-h"><b>أوسمة هالأسبوع</b><span id="shelf-sum"></span></div>
-    <div class="medals" id="medals"></div>
+    <button class="shelf-h" id="shelf-toggle" aria-expanded="false" aria-controls="medals"><b>أوسمة هالأسبوع</b><span id="shelf-sum"></span><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>
+    <div class="medals" id="medals" hidden></div>
   </section>
 
   <section style="display:flex;flex-direction:column;gap:14px">
@@ -1043,6 +1046,10 @@ try{const saved=localStorage.getItem('tb-theme');if(saved==='dark'||saved==='lig
 showTheme();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',showTheme);
 $('th-light').onclick=()=>setTheme('light');$('th-dark').onclick=()=>setTheme('dark');
+/* badges shelf: open or closed, remembered per browser */
+function setShelf(open){$('medals').hidden=!open;$('shelf-toggle').setAttribute('aria-expanded',String(open));try{localStorage.setItem('tb-shelf',open?'1':'0')}catch(e){}}
+try{if(localStorage.getItem('tb-shelf')==='1'){$('medals').hidden=false;$('shelf-toggle').setAttribute('aria-expanded','true')}}catch(e){}
+$('shelf-toggle').onclick=()=>setShelf($('medals').hidden);
 $('new-top').onclick=()=>createTask('todo');
 $('done-toggle').onclick=()=>{state.showDone=!state.showDone;render()};
 $('q').addEventListener('input',e=>{state.q=e.target.value;render()});
