@@ -374,7 +374,7 @@ let draftDirty=false,saveTimer=null;
 function cur(){return state.tasks.find(t=>t.id===state.openId)}
 function createTask(status){
   if(mode==='pending'){toast('لحظة، يتم تحميل المهام...');return}
-  const t={id:newId(),workspace:state.ws,title:'',client:state.client||'',status:status||'todo',priority:'med',due:'',budget:'',contact:'',link:'',notes:'',checklist:[],createdAt:Date.now()};
+  const t={id:newId(),workspace:state.ws,title:'',client:state.client||'',status:status||'todo',priority:'med',due:'',types:[],contact:'',link:'',notes:'',checklist:[],createdAt:Date.now()};
   state.tasks.push(t);persist(t);render();openTask(t.id,true);
 }
 function openTask(id,focusTitle){
