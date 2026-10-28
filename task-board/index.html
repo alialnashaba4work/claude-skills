@@ -365,6 +365,22 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
+.kid-hop{animation:hop 2.4s ease-in-out infinite}
+@keyframes hop{0%,14%,100%{transform:translateY(0)}6%{transform:translateY(-3.5px)}}
+.arm-f,.arm-b{transform-box:fill-box;transform-origin:50% 0}
+.arm-f{animation:throwf 2.4s ease-in-out infinite}
+.arm-b{animation:throwb 2.4s ease-in-out infinite}
+@keyframes throwf{0%{transform:rotate(-112deg)}16%{transform:rotate(-20deg)}80%{transform:rotate(-30deg)}100%{transform:rotate(-112deg)}}
+@keyframes throwb{0%{transform:rotate(-70deg)}16%{transform:rotate(10deg)}80%{transform:rotate(0deg)}100%{transform:rotate(-70deg)}}
+.ballx{animation:ballx 2.4s infinite}
+@keyframes ballx{0%{transform:translateX(0);animation-timing-function:cubic-bezier(.45,0,.55,1)}50%{transform:translateX(110px);animation-timing-function:cubic-bezier(.45,0,.55,1)}100%{transform:translateX(0)}}
+.bally{animation:bally 1.2s infinite}
+@keyframes bally{0%{transform:translateY(0);animation-timing-function:cubic-bezier(.25,.6,.5,1)}50%{transform:translateY(-44px);animation-timing-function:cubic-bezier(.5,0,.75,.4)}100%{transform:translateY(0)}}
+.balls{transform-box:fill-box;transform-origin:center;animation:balls 1.2s infinite}
+@keyframes balls{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(.45);opacity:.1}}
+.spinb{transform-box:fill-box;transform-origin:center;animation:spin 1.2s linear infinite}
+.pony{transform-box:fill-box;transform-origin:100% 20%;animation:pony 1.2s ease-in-out infinite alternate}
+@keyframes pony{from{transform:rotate(-8deg)}to{transform:rotate(10deg)}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -998,7 +1014,7 @@ function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?WEIGHT[
 const levelOf=n=>{let l=LEVELS[0];for(const x of LEVELS)if(n>=x.min)l=x;return l};
 function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name;renderSky()}
 
-const RES=[{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
+const RES=[{x:280,y:318,w:210,h:80},{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
 function slots(n){const r=rnd(11),out=[];let guard=0;
   while(out.length<n&&guard<n*40){guard++;const x=25+r()*950,y=285+r()*258;
     if(RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h))continue;out.push({x,y,v:r()})}return out}
@@ -1012,7 +1028,9 @@ function plantSVG(i,p){
     else if(k===2)g='<circle cx="-8" cy="-8" r="9" fill="#2E8A62"/><circle cx="8" cy="-8" r="9" fill="#2E8A62"/><circle cy="-14" r="10" fill="#3EA374"/>';
     else if(k===5)g='<rect x="-2.5" y="-24" width="5" height="24" rx="2" fill="#8B6B4A"/><circle cy="-30" r="14" fill="#0EA89C"/><circle cx="-9" cy="-22" r="9" fill="#0B8F84"/><circle cx="9" cy="-22" r="9" fill="#0B8F84"/>';
     else{const c=FLOWERS[Math.floor(p.v*FLOWERS.length)];g=`<path d="M0 0v-14" stroke="#3E9E6A" stroke-width="2"/><path d="M0-6c-4-1-6-4-6-6c3 0 5 2 6 6z" fill="#3E9E6A"/><g fill="${c}"><circle cy="-19" r="3.6"/><circle cx="4.5" cy="-15" r="3.6"/><circle cx="-4.5" cy="-15" r="3.6"/><circle cy="-11" r="3.6"/></g><circle cy="-15" r="2.4" fill="#FFE08A"/>`}}
-  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"><g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
+  const k7=i%7,sh=i%25===24?26:i%10===9?18:k7===5?14:k7===2?16:0;
+  const shadow=sh?`<ellipse cy="1" rx="${sh}" ry="${(sh/5).toFixed(1)}" fill="#0B3B2E" opacity=".16"/>`:'';
+  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})">${shadow}<g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
 const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
@@ -1051,6 +1069,47 @@ function moonInfo(){const h=hijri();const d=h?h.d:15;const f=Math.min(.97,Math.m
 function moonPath(r,f){const c=Math.cos(2*Math.PI*f),rx=(Math.abs(c)*r).toFixed(2);
   return f<=.5?`M0 ${-r}A${r} ${r} 0 0 1 0 ${r}A${rx} ${r} 0 0 ${c>0?0:1} 0 ${-r}z`:`M0 ${-r}A${r} ${r} 0 0 0 0 ${r}A${rx} ${r} 0 0 ${c>0?1:0} 0 ${-r}z`}
 function moonSVG(){const {f}=moonInfo();return `<g transform="translate(860 70)"><circle r="40" fill="#FFF4D6" opacity=".08"/><circle r="26" fill="#FFFFFF" opacity=".07"/><path d="${moonPath(26,f)}" fill="#FFF4D6"/></g>`}
+/* two kids playing catch: a boy in a white thobe and a girl in a pink dress */
+function kidsSVG(){
+  const skin='#E9B68E',skinS='#D99E76',hair='#2B211C';
+  const head=(girl)=>`<rect x="-2.2" y="-40" width="4.4" height="5" rx="2" fill="${skinS}"/>
+    ${girl?`<g class="pony"><path d="M-8-52c-7 1-9 9-6 16 1 2 4 2 4-1-2-5-1-10 2-12z" fill="${hair}"/></g>`:''}
+    <circle cy="-47" r="9.5" fill="${skin}"/><circle cx="-6.2" cy="-46.5" r="2.3" fill="${skinS}"/>
+    <path d="M-9.6-47.5C-10-55-5-58.5 0-58.5S9.8-55 9.6-49C7-52.5 3-53 0-53s-6 1-7.6 3.2c-.5-.2-1.5 1.8-2 2.3z" fill="${hair}"/>
+    ${girl?`<path d="M-10-49c-1 6 0 11 3 14l2-6c-2-3-2-6-1-8z" fill="${hair}"/><g transform="translate(-7 -56) rotate(-20)"><path d="M0 0l-6-4v8zM0 0l6-4v8z" fill="#F4B740"/><circle r="1.8" fill="#E0A030"/></g>`:''}
+    <circle cx="2" cy="-47.5" r="1.25" fill="${hair}"/><circle cx="6.6" cy="-47.5" r="1.25" fill="${hair}"/>
+    <circle cx="2.4" cy="-47.9" r=".4" fill="#fff"/><circle cx="7" cy="-47.9" r=".4" fill="#fff"/>
+    <circle cx="7.6" cy="-43.6" r="1.9" fill="#F29A8A" opacity=".55"/><circle cx="0.2" cy="-43.6" r="1.6" fill="#F29A8A" opacity=".4"/>
+    <path d="M2.6-42.6q2.2 2 4.6 0" stroke="#8A4B3B" stroke-width="1.15" fill="none" stroke-linecap="round"/>`;
+  const arm=(cls,sleeve,len,delay)=>`<g class="${cls}" style="animation-delay:${delay}"><path d="M0 0v${len}" stroke="${sleeve}" stroke-width="5" stroke-linecap="round"/><circle cy="${len+2.5}" r="2.6" fill="${skin}"/></g>`;
+  const boy=(d)=>`<g class="kid-hop" style="animation-delay:${d}">
+    <ellipse cy="1" rx="13" ry="3" fill="#0B3B2E" opacity=".18"/>
+    <ellipse cx="-4" cy="-1.6" rx="4.2" ry="2.3" fill="#6B4B33"/><ellipse cx="5.4" cy="-1.6" rx="4.2" ry="2.3" fill="#6B4B33"/>
+    <g transform="translate(-4 -34)">${arm('arm-b','#E4E4DC',13,d)}</g>
+    <path d="M-9.5-36.5Q0-40.5 9.5-36.5L12.5-3.5Q0-.5-12.5-3.5Z" fill="url(#gk1)"/>
+    <path d="M0-37.5v12" stroke="#D2D2C8" stroke-width="1.1"/><circle cy="-31" r=".9" fill="#C8C8BE"/><circle cy="-27.5" r=".9" fill="#C8C8BE"/>
+    ${head(false)}
+    <g transform="translate(5 -34)">${arm('arm-f','#F6F6F1',13,d)}</g></g>`;
+  const girl=(d)=>`<g class="kid-hop" style="animation-delay:${d}">
+    <ellipse cy="1" rx="12" ry="3" fill="#0B3B2E" opacity=".18"/>
+    <path d="M-4-12v9M4.5-12v9" stroke="${skin}" stroke-width="3.2" stroke-linecap="round"/>
+    <ellipse cx="-4" cy="-1.8" rx="3.8" ry="2.2" fill="#B04A6A"/><ellipse cx="5" cy="-1.8" rx="3.8" ry="2.2" fill="#B04A6A"/>
+    <g transform="translate(-4 -34)">${arm('arm-b',skinS,12,d)}</g>
+    <path d="M-7.5-36.5Q0-39.5 7.5-36.5L14-11Q0-6.5-14-11Z" fill="url(#gk2)"/>
+    <path d="M-14-11Q0-6.5 14-11" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="1.6" fill="none"/>
+    <path d="M-4.5-37.5Q0-34.5 4.5-37.5" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    ${head(true)}
+    <g transform="translate(5 -34)">${arm('arm-f',skin,12,d)}</g></g>`;
+  const ball='<circle r="5.6" fill="#F4B740"/><path d="M-5.6 0a5.6 5.6 0 0 0 11.2 0z" fill="#E86A8A"/><path d="M-5.6 0h11.2" stroke="#fff" stroke-width="1.2"/><circle cx="-2" cy="-2.2" r="1.6" fill="#fff" opacity=".6"/>';
+  return `<defs><linearGradient id="gk1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".65" stop-color="#F4F4EE"/><stop offset="1" stop-color="#DADAD0"/></linearGradient>
+    <linearGradient id="gk2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F59AB2"/><stop offset="1" stop-color="#D45D7E"/></linearGradient></defs>
+    <g transform="translate(305 392)">
+      <g transform="translate(20 0)"><g class="ballx"><ellipse class="balls" rx="5.5" ry="1.7" fill="#0B3B2E" opacity=".2"/></g></g>
+      ${boy('0s')}
+      <g transform="translate(150 0) scale(-1 1)">${girl('-1.2s')}</g>
+      <g transform="translate(20 -33)"><g class="ballx"><g class="bally"><g class="spinb">${ball}</g></g></g></g>
+    </g>`;
+}
 function gardenSVG(n,palms,seen,animate,wide){
   const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow(),dry=dryLevel();
   let c=skyFor(per);
@@ -1070,11 +1129,13 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(has(5))o+='<g stroke="#9C7A55" stroke-width="4" stroke-linecap="round">'+Array.from({length:26},(_,i)=>`<path d="M${40+i*36} 266v-22"/>`).join('')+'<path d="M40 250H940M40 260H940" stroke-width="3"/></g>';
   const house=has(60)?`<g transform="translate(600 210)"><rect x="18" y="62" width="224" height="92" rx="6" fill="#F3EDE3"/><path d="M6 66L130 6l124 60z" fill="#383838"/><rect x="186" y="16" width="18" height="34" fill="#383838"/><rect x="112" y="98" width="36" height="56" rx="4" fill="#0B7D73"/><rect x="42" y="88" width="44" height="34" rx="4" fill="${night?'#FFD97A':'#BFE6E2'}"/><rect x="174" y="88" width="44" height="34" rx="4" fill="${night?'#FFD97A':'#BFE6E2'}"/><circle cx="252" cy="120" r="5" fill="${night?'#FFD97A':'#9C7A55'}" class="${night?'glow':''}"/><path d="M252 125v29" stroke="#383838" stroke-width="3"/></g>`
     :has(25)?`<g transform="translate(640 230)"><rect x="12" y="52" width="140" height="78" rx="6" fill="#F3EDE3"/><path d="M2 56L82 8l80 48z" fill="#383838"/><rect x="66" y="82" width="30" height="48" rx="4" fill="#0B7D73"/><rect x="28" y="72" width="28" height="24" rx="3" fill="${night?'#FFD97A':'#BFE6E2'}"/><rect x="110" y="72" width="28" height="24" rx="3" fill="${night?'#FFD97A':'#BFE6E2'}"/></g>`:'';
+  if(house)o+=`<ellipse cx="${has(60)?730:722}" cy="${has(60)?366:362}" rx="${has(60)?140:90}" ry="12" fill="#0B3B2E" opacity=".14"/>`;
   o+=house;
   if(has(10))o+='<g transform="translate(215 300)"><ellipse cy="62" rx="34" ry="9" fill="#7E8B8A"/><rect x="-34" y="30" width="68" height="32" fill="#A9B4B2"/><path d="M-34 40h68M-34 51h68" stroke="#8D9997" stroke-width="2"/><ellipse cy="30" rx="34" ry="9" fill="#5F6B6A"/><path d="M-26 30V-6M26 30V-6" stroke="#8B6B4A" stroke-width="5"/><path d="M-40-4L0-26 40-4z" fill="#383838"/><path d="M0-6v24" stroke="#555" stroke-width="2"/><rect x="-6" y="16" width="12" height="10" rx="2" fill="#8B6B4A"/></g>';
   if(has(40))o+='<g><ellipse cx="335" cy="470" rx="125" ry="38" fill="#7FC9E0"/><ellipse cx="335" cy="466" rx="110" ry="30" fill="#5FB7D4"/><path d="M270 460q20-8 40 0M350 474q20-8 40 0" stroke="#fff" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/><g fill="#3E9E6A"><ellipse cx="300" cy="476" rx="11" ry="4"/><ellipse cx="380" cy="458" rx="9" ry="3.5"/></g><circle cx="382" cy="456" r="3" fill="#E86A8A"/></g>';
   if(has(15))o+='<g transform="translate(560 470)"><rect x="-30" y="-14" width="60" height="7" rx="3" fill="#8B6B4A"/><rect x="-30" y="-26" width="60" height="6" rx="3" fill="#8B6B4A"/><path d="M-24-7v14M24-7v14" stroke="#6B5038" stroke-width="4"/></g>';
   if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/>'+label(0,-32,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>';
+  if(!night)o+=kidsSVG();
   const pts=slots(Math.min(n,260));
   const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
   if(dry>0)o+='<g filter="url(#gd)">';
