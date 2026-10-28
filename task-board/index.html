@@ -503,28 +503,33 @@ drawerEl.addEventListener('paste',e=>{const fs=[...(e.clipboardData&&e.clipboard
 /* ---------- clients ---------- */
 let editClients=false;
 const norm=x=>(x||'').trim().toLowerCase();
-function clientNames(){
+// each workspace keeps its own clients
+function curWs(){const t=cur();return (t&&t.workspace)||state.ws}
+const wsOf=x=>x.workspace||'freelance';
+function clientNames(ws=curWs()){
   const seen=new Map();
-  for(const c of state.clients)if(c.name&&!seen.has(norm(c.name)))seen.set(norm(c.name),c.name.trim());
-  for(const t of state.tasks)if(t.client&&!seen.has(norm(t.client)))seen.set(norm(t.client),t.client.trim());
+  for(const c of state.clients)if(c.name&&wsOf(c)===ws&&!seen.has(norm(c.name)))seen.set(norm(c.name),c.name.trim());
+  for(const t of state.tasks)if(t.client&&wsOf(t)===ws&&!seen.has(norm(t.client)))seen.set(norm(t.client),t.client.trim());
   return [...seen.values()].sort((a,b)=>a.localeCompare(b,'ar'));
 }
 function saveClient(name){
   name=name.trim();if(!name)return null;
   const ex=clientNames().find(n=>norm(n)===norm(name));
-  if(!state.clients.some(c=>norm(c.name)===norm(name))){
-    const c={id:newId(),name:ex||name,createdAt:Date.now()};state.clients.push(c);
-    if(mode==='db')db.collection('clients').doc(c.id).set({name:c.name,createdAt:c.createdAt}).catch(()=>toast('تعذّر حفظ العميل'));
+  const ws=curWs();
+  if(!state.clients.some(c=>wsOf(c)===ws&&norm(c.name)===norm(name))){
+    const c={id:newId(),name:ex||name,workspace:ws,createdAt:Date.now()};state.clients.push(c);
+    if(mode==='db')db.collection('clients').doc(c.id).set({name:c.name,workspace:ws,createdAt:c.createdAt}).catch(()=>toast('تعذّر حفظ العميل'));
     else try{localStorage.setItem('tb-clients',JSON.stringify(state.clients))}catch(e){}
   }
   return ex||name;
 }
 function removeClient(name){
-  const c=state.clients.find(x=>norm(x.name)===norm(name));
+  const ws=curWs();
+  const c=state.clients.find(x=>wsOf(x)===ws&&norm(x.name)===norm(name));
   if(c){state.clients=state.clients.filter(x=>x!==c);
     if(mode==='db')db.collection('clients').doc(c.id).delete().catch(()=>toast('تعذّر حذف العميل'));
     else try{localStorage.setItem('tb-clients',JSON.stringify(state.clients))}catch(e){}}
-  if(state.tasks.some(t=>norm(t.client)===norm(name)))toast('شلته من قائمة العملاء، لكنه باقي في مهام مسجّلة باسمه');
+  if(state.tasks.some(t=>wsOf(t)===ws&&norm(t.client)===norm(name)))toast('شلته من قائمة العملاء، لكنه باقي في مهام مسجّلة باسمه');
 }
 function renderClients(){
   const t=cur();if(!t)return;const wrap=$('f-clients');wrap.replaceChildren();
