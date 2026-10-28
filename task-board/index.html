@@ -251,7 +251,8 @@ button{cursor:pointer}
 .garden-btn .lv{font-weight:500;opacity:.8}
 .garden-btn .lv:not(:empty)::before{content:"· "}
 .garden-btn:hover{background:var(--accent);color:var(--on-accent)}
-.plant{cursor:pointer}
+.plant{cursor:pointer;position:relative}
+.plant .tag{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:600;line-height:1.5;background:var(--accent);color:var(--on-accent);border-radius:999px;padding:0 6px;white-space:nowrap}
 .gview{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(1000px,calc(100% - 32px));max-height:calc(100% - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow-y:auto;background:var(--surface);z-index:23;border-radius:28px;padding:20px 22px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 80px rgba(20,20,20,.3);animation:pop .25s ease-out}
 #g-scrim{z-index:22}
 .g-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -702,7 +703,7 @@ function daysAr(n){if(n===1)return 'يوم واحد';if(n===2)return 'يومين
 const POT='<path d="M18 46h28l-3 13a3 3 0 0 1-3 2H24a3 3 0 0 1-3-2z" fill="var(--solid)"/><rect x="15" y="43" width="34" height="6" rx="3" fill="var(--solid)"/><ellipse cx="32" cy="44" rx="14" ry="2.4" fill="#8B6B4A"/>';
 const LEAF=(x,y,r,s=1)=>`<path transform="translate(${x} ${y}) rotate(${r}) scale(${s})" d="M0 0c4-6 12-7 16-4c-3 5-10 8-16 4z" fill="var(--accent)"/>`;
 const STAGES=[
-  {min:0,name:'بذرة',svg:POT+'<ellipse cx="32" cy="41" rx="4" ry="3" fill="#8B6B4A"/><path d="M32 38c0-2 1-3 2-4" stroke="var(--accent)" stroke-width="1.6" fill="none" stroke-linecap="round"/>'},
+  {min:0,name:'بذرة',svg:POT+'<path d="M24 44c2-4 14-4 16 0z" fill="#8B6B4A"/><path d="M32 43v-11" stroke="#3E9E6A" stroke-width="2.6" stroke-linecap="round"/><path d="M32 34c-1-5-6-8-11-7c1 5 6 8 11 7z" fill="#5CC48E"/><path d="M32 32c1-5 6-8 11-7c-1 5-6 8-11 7z" fill="var(--accent)"/><ellipse cx="36" cy="42.5" rx="2.6" ry="1.6" fill="#C9A27A"/>'},
   {min:1,name:'نبتة',svg:POT+'<path d="M32 43V33" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>'+LEAF(32,34,-20,.8)+LEAF(32,34,200,.8)},
   {min:3,name:'شتلة',svg:POT+'<path d="M32 43V22" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/>'+LEAF(32,36,-15)+LEAF(32,36,195)+LEAF(32,28,-35,.9)+LEAF(32,28,215,.9)+LEAF(32,22,-70,.7)},
   {min:7,name:'زهرة',svg:POT+'<path d="M32 43V20" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/>'+LEAF(32,37,-15)+LEAF(32,37,195)+LEAF(32,29,-30,.9)+LEAF(32,29,210,.9)+'<g transform="translate(32 16)"><circle r="4.2" cx="0" cy="-5" fill="#F4B740"/><circle r="4.2" cx="5" cy="0" fill="#F4B740"/><circle r="4.2" cx="0" cy="5" fill="#F4B740"/><circle r="4.2" cx="-5" cy="0" fill="#F4B740"/><circle r="3.4" fill="#FFF6DD"/></g>'},
@@ -721,6 +722,10 @@ function renderStreak(){
   const n=streakNow(),c=cycleOf(n),st=stageOf(c),next=STAGES.find(s=>s.min>c),doneToday=daySet().has(dayKey(new Date()));
   const plant=$('plant');
   if(lastStage!==st.name){plant.innerHTML='<svg viewBox="0 0 64 64">'+st.svg+'</svg>';if(lastStage!==null){plant.classList.remove('grow');void plant.offsetWidth;plant.classList.add('grow')}lastStage=st.name}
+  // small "start today" tag while the streak is at zero
+  let tag=plant.querySelector('.tag');
+  if(!n&&!tag){tag=document.createElement('span');tag.className='tag';tag.textContent='ابدأ اليوم';plant.append(tag)}
+  else if(n&&tag)tag.remove();
   $('st-n').textContent=n?daysAr(n):'ابدأ اليوم';
   const sub=$('st-s');sub.replaceChildren();
   const b=document.createElement('b');b.textContent=st.name;sub.append(b);
