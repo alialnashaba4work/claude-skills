@@ -338,6 +338,19 @@ button{cursor:pointer}
 @keyframes spin{to{transform:rotate(360deg)}}
 .g-wx{font-size:13px;margin-top:4px;color:var(--ink);background:var(--surface-2);border-radius:999px;padding:3px 12px;display:inline-block}
 .hello .wx-pill{position:absolute;top:16px;right:16px;z-index:2;font-size:12px;font-weight:500;background:color-mix(in srgb,var(--surface) 45%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border:1px solid color-mix(in srgb,var(--surface) 60%,transparent);border-radius:999px;padding:5px 12px;color:var(--ink);max-width:calc(100% - 90px)}
+#snd .x{display:none}#snd[aria-pressed="false"] .w{display:none}#snd[aria-pressed="false"] .x{display:inline}
+#snd[aria-pressed="true"]{color:var(--accent)}
+.swing{transform-box:fill-box;transform-origin:50% 0;animation:swing 3s ease-in-out infinite alternate}
+@keyframes swing{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+.bob{animation:bob 3.2s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-10px)}}
+.wave{transform-box:fill-box;transform-origin:0 50%;animation:wave 1.4s ease-in-out infinite alternate}
+@keyframes wave{to{transform:skewY(-6deg) scaleX(.92)}}
+.g-occ{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--ink-3)}
+.fs-btn{width:44px;height:44px;border:0;border-radius:50%;background:var(--surface);color:var(--ink-2);display:grid;place-items:center}
+.fs-btn svg{width:18px;height:18px}
+.fs-btn:hover{background:var(--surface-2);color:var(--ink)}
+#fs-btn .out{display:none}:fullscreen #fs-btn .in,:-webkit-full-screen #fs-btn .in{display:none}:fullscreen #fs-btn .out,:-webkit-full-screen #fs-btn .out{display:inline}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -385,6 +398,7 @@ button{cursor:pointer}
       <button id="ws-moremedia" data-ws="moremedia" aria-pressed="false">More Media <span class="n" id="n-moremedia">0</span></button>
       <button id="ws-islamic" data-ws="islamic" aria-pressed="false">Islamic <span class="n" id="n-islamic">0</span></button>
     </nav>
+    <button class="fs-btn" id="fs-btn" aria-label="شاشة كاملة" title="شاشة كاملة"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="in" d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/><path class="out" d="M7 3v4H3M17 7h-4V3M13 17v-4h4M3 13h4v4"/></svg></button>
     <div class="theme" role="group" aria-label="المظهر">
       <button id="th-light" aria-pressed="false" aria-label="الوضع الفاتح" title="الوضع الفاتح"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v1.9M10 16.3v1.9M1.8 10h1.9M16.3 10h1.9M4.2 4.2l1.3 1.3M14.5 14.5l1.3 1.3M4.2 15.8l1.3-1.3M14.5 5.5l1.3-1.3"/></svg></button>
       <button id="th-dark" aria-pressed="false" aria-label="الوضع الليلي" title="الوضع الليلي"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M16.5 12.3A7 7 0 0 1 7.7 3.5a7 7 0 1 0 8.8 8.8z"/></svg></button>
@@ -397,6 +411,7 @@ button{cursor:pointer}
     <div class="zoom" role="group" aria-label="تكبير الحديقة">
       <button id="z-in" aria-label="تكبير" title="تكبير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
       <button id="z-out" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 8h9"/></svg></button>
+      <button id="snd" aria-pressed="false" aria-label="أصوات الحديقة" title="أصوات الحديقة"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6h2.5l3.5-3v10L5 10H2.5z"/><path class="w" d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4"/><path class="x" d="M11 6l3.5 4M14.5 6L11 10"/></svg></button>
     </div>
     <div class="hello-t">
     <h1 class="quote" id="quote" aria-live="polite"></h1>
@@ -489,6 +504,7 @@ button{cursor:pointer}
   <div class="g-scene" id="g-scene"></div>
   <div class="g-prog"><div class="g-bar"><i id="g-bar"></i></div><div class="g-next" id="g-next"></div></div>
   <div class="g-list" id="g-list"></div>
+  <div class="g-occ"><span>معاينة المناسبات:</span><div class="types" id="g-occ"></div></div>
 </div>
 
 <script>
@@ -1009,6 +1025,46 @@ function mixHex(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));co
 function dryFilter(d){const k=d*0.8,sat=1-d*0.55,S=[[.393,.769,.189],[.349,.686,.168],[.272,.534,.131]];
   const m=[0,1,2].map(r=>[0,1,2].map(c=>((1-k)*(r===c?1:0)+k*S[r][c]).toFixed(3)).join(' ')+' 0 0').join(' ')+' 0 0 0 1 0';
   return `<filter id="gd"><feColorMatrix type="saturate" values="${sat.toFixed(2)}"/><feColorMatrix type="matrix" values="${m}"/></filter>`}
+/* ---------- occasions: Ramadan, the two Eids (Umm al-Qura calendar), Saudi National Day ---------- */
+let previewOcc=null;
+const OCC={ramadan:{name:'رمضان',greet:'🌙 رمضان كريم'},eid:{name:'العيد',greet:'🎉 عيدكم مبارك'},national:{name:'اليوم الوطني',greet:'💚 يوم وطن سعيد'}};
+function hijri(d=new Date()){try{const pr=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric'}).formatToParts(d);return{m:+pr.find(x=>x.type==='month').value,d:+pr.find(x=>x.type==='day').value}}catch(e){return null}}
+function occasionNow(){
+  if(previewOcc)return previewOcc;
+  const now=new Date(),h=hijri(now);
+  if(h){if(h.m===9)return 'ramadan';if((h.m===10&&h.d<=3)||(h.m===12&&h.d>=10&&h.d<=13))return 'eid'}
+  if(now.getMonth()===8&&now.getDate()>=22&&now.getDate()<=24)return 'national';
+  return null;
+}
+// text that stays readable inside the mirrored banner
+const label=(x,y,txt,wide,attrs)=>`<g transform="translate(${x} ${y})${wide?' scale(-1 1)':''}"><text text-anchor="middle" ${attrs}>${txt}</text></g>`;
+function occasionSVG(occ,has,night,wide){
+  if(!occ)return '';let o='';
+  const str='M30 196Q500 236 970 196',at=t=>[30+940*t,196+80*t*(1-t)];
+  if(occ==='ramadan'){
+    o+=`<path d="${str}" stroke="#8B6B4A" stroke-width="1.6" fill="none"/>`;
+    const cols=['#E8B54A','#0EA89C','#D46F7A','#8E7CC3'];
+    for(let i=1;i<14;i++){const [x,y]=at(i/14),c=cols[i%cols.length];
+      o+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><g class="swing" style="animation-delay:-${(i*.37%3).toFixed(2)}s"><path d="M0 0v10" stroke="#8B6B4A" stroke-width="1.2"/><path d="M-6 14l6-5 6 5z" fill="#4A3B2E"/><rect x="-7" y="14" width="14" height="18" rx="3" fill="${c}"/><rect x="-3.5" y="17" width="7" height="12" rx="2" fill="#FFE7A0" class="${night?'glow':''}" opacity="${night?1:.85}"/><path d="M-5 32h10l-5 5z" fill="#4A3B2E"/></g></g>`}
+    o+=`<g transform="translate(140 110)"><circle r="22" fill="#F4D27A"/><circle cx="9" cy="-6" r="20" fill="${night?'#132834':'#BFE8E3'}"/><path d="M26-14l2.4 5 5.5.6-4 3.8 1 5.4-4.9-2.6-4.9 2.6 1-5.4-4-3.8 5.5-.6z" fill="#F4D27A"/></g>`;
+  }
+  if(occ==='eid'||occ==='national'){
+    const cols=occ==='eid'?['#E86A8A','#F4B740','#5B9BD5','#7FD3A0','#B48CE8']:['#1B7A43','#FFFFFF'];
+    o+=`<path d="${str}" stroke="#8B6B4A" stroke-width="1.6" fill="none"/>`;
+    for(let i=0;i<32;i++){const t=(i+.5)/32,[x,y]=at(t);o+=`<path d="M${(x-10).toFixed(1)} ${(y-1).toFixed(1)}L${(x+10).toFixed(1)} ${(y+1).toFixed(1)}L${x.toFixed(1)} ${(y+18).toFixed(1)}z" fill="${cols[i%cols.length]}" stroke="#383838" stroke-opacity=".12"/>`}
+  }
+  if(occ==='eid'){
+    const bc=['#E86A8A','#F4B740','#5B9BD5','#7FD3A0','#B48CE8'];
+    [[880,150],[905,175],[855,180],[930,140],[830,150]].forEach(([x,y],i)=>{o+=`<g transform="translate(${x} ${y})"><g class="bob" style="animation-delay:-${i*.6}s"><path d="M0 22q-5 18 4 40" stroke="#8B6B4A" stroke-width="1.2" fill="none"/><ellipse rx="13" ry="16" fill="${bc[i]}"/><path d="M-3 16h6l-3 5z" fill="${bc[i]}"/><ellipse cx="-4" cy="-6" rx="3" ry="5" fill="#fff" opacity=".35"/></g></g>`});
+    o+=`<g transform="translate(410 300)"><path d="M0 0v52" stroke="#8B6B4A" stroke-width="4"/><rect x="-52" y="-30" width="104" height="30" rx="7" fill="#383838"/>${label(0,-9,'عيد مبارك',wide,'font-size="15" font-weight="600" fill="#fff" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif"')}</g>`;
+  }
+  if(occ==='national'){
+    const flag=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M0 0v-34" stroke="#6B5038" stroke-width="2.2"/><g class="wave"><rect x="1" y="-34" width="26" height="17" rx="1.5" fill="#1B7A43"/><path d="M6-22h15" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="M8-27c2-1 5 1 7 0s4-1 5 0" stroke="#fff" stroke-width="1.1" fill="none"/></g></g>`;
+    if(has(5))for(let i=0;i<26;i+=4)o+=flag(40+i*36,246);else[150,350,650,850].forEach(x=>o+=flag(x,300));
+    o+=`<g transform="translate(410 300)"><path d="M0 0v52" stroke="#8B6B4A" stroke-width="4"/><rect x="-56" y="-30" width="112" height="30" rx="7" fill="#1B7A43"/>${label(0,-9,'يوم الوطن',wide,'font-size="15" font-weight="600" fill="#fff" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif"')}</g>`;
+  }
+  return o;
+}
 function gardenSVG(n,palms,seen,animate,wide){
   const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow(),dry=dryLevel();
   let c=skyFor(per);
@@ -1032,7 +1088,8 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(has(10))o+='<g transform="translate(215 300)"><ellipse cy="62" rx="34" ry="9" fill="#7E8B8A"/><rect x="-34" y="30" width="68" height="32" fill="#A9B4B2"/><path d="M-34 40h68M-34 51h68" stroke="#8D9997" stroke-width="2"/><ellipse cy="30" rx="34" ry="9" fill="#5F6B6A"/><path d="M-26 30V-6M26 30V-6" stroke="#8B6B4A" stroke-width="5"/><path d="M-40-4L0-26 40-4z" fill="#383838"/><path d="M0-6v24" stroke="#555" stroke-width="2"/><rect x="-6" y="16" width="12" height="10" rx="2" fill="#8B6B4A"/></g>';
   if(has(40))o+='<g><ellipse cx="335" cy="470" rx="125" ry="38" fill="#7FC9E0"/><ellipse cx="335" cy="466" rx="110" ry="30" fill="#5FB7D4"/><path d="M270 460q20-8 40 0M350 474q20-8 40 0" stroke="#fff" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/><g fill="#3E9E6A"><ellipse cx="300" cy="476" rx="11" ry="4"/><ellipse cx="380" cy="458" rx="9" ry="3.5"/></g><circle cx="382" cy="456" r="3" fill="#E86A8A"/></g>';
   if(has(15))o+='<g transform="translate(560 470)"><rect x="-30" y="-14" width="60" height="7" rx="3" fill="#8B6B4A"/><rect x="-30" y="-26" width="60" height="6" rx="3" fill="#8B6B4A"/><path d="M-24-7v14M24-7v14" stroke="#6B5038" stroke-width="4"/></g>';
-  if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/><text y="-32" text-anchor="middle" font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff">محمية</text></g>';
+  if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/>'+label(0,-32,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>';
+  o+=occasionSVG(occasionNow(),has,night,wide);
   const pts=slots(Math.min(n,260));
   const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
   if(dry>0)o+='<g filter="url(#gd)">';
@@ -1073,8 +1130,11 @@ function renderGarden(animate){
   for(const x of STRUCTS){const sp=document.createElement('span');sp.className=n>=x.at?'on':'';sp.textContent=(n>=x.at?'✓ ':'')+x.name+(n>=x.at?'':` · ${x.at}`);list.append(sp)}
   if(animate&&n>(state.garden.seen||0)){state.garden.seen=n;saveGarden()}
 }
-function openGarden(){$('g-scrim').hidden=false;$('gview').hidden=false;renderGarden(true);$('g-close').focus()}
-function closeGarden(){$('g-scrim').hidden=true;$('gview').hidden=true}
+function renderOccChips(){const w=$('g-occ');w.replaceChildren();const real=(()=>{const k=previewOcc;previewOcc=null;const r=occasionNow();previewOcc=k;return r})();
+  for(const [k,v] of Object.entries(OCC)){const b=document.createElement('button');b.type='button';b.textContent=v.name+(real===k?' (الحين)':'');b.setAttribute('aria-pressed',String(occasionNow()===k));
+    b.onclick=()=>{previewOcc=previewOcc===k?null:k;lastPeriod=null;renderGarden(false);renderSky();renderOccChips()};w.append(b)}}
+function openGarden(){$('g-scrim').hidden=false;$('gview').hidden=false;renderGarden(true);renderOccChips();$('g-close').focus()}
+function closeGarden(){if(previewOcc){previewOcc=null;lastPeriod=null;renderSky()}$('g-scrim').hidden=true;$('gview').hidden=true}
 $('garden-btn').onclick=openGarden;$('plant').onclick=openGarden;
 $('g-close').onclick=closeGarden;$('g-scrim').onclick=closeGarden;
 
@@ -1135,6 +1195,31 @@ const SKY={
 function nightSky(){const r=rnd(7);let st='';for(let i=0;i<60;i++){const x=(r()*800).toFixed(0),y=(r()*150).toFixed(0),rad=(r()*1.4+.4).toFixed(1),tw=r()<.35;st+=`<circle cx="${x}" cy="${y}" r="${rad}" fill="#fff" ${tw?`class="twinkle" style="animation-delay:${(r()*3).toFixed(2)}s"`:'opacity=".7"'}/>`}
   return `<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid slice">${st}<g transform="translate(360 52)"><circle r="24" fill="#FFF4D6"/><circle cx="10" cy="-6" r="22" fill="#132834"/></g></svg>`}
 let lastPeriod=null,bannerN=null;
+const sound={on:false,ctx:null,master:null,layers:{},timer:null,mode:''};
+function noiseBuf(ctx){const b=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
+function noiseLayer(type,freq,q,gain){const c=sound.ctx,src=c.createBufferSource();src.buffer=sound.noise;src.loop=true;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;const g=c.createGain();g.gain.value=0;src.connect(f).connect(g).connect(sound.master);src.start();g.gain.linearRampToValueAtTime(gain,c.currentTime+1.5);return{src,g,f}}
+function chirp(){const c=sound.ctx,t=c.currentTime,notes=2+Math.floor(Math.random()*3),base=2600+Math.random()*1400;
+  for(let i=0;i<notes;i++){const o=c.createOscillator(),g=c.createGain(),s0=t+i*.13;o.type='sine';o.frequency.setValueAtTime(base,s0);o.frequency.exponentialRampToValueAtTime(base*1.5,s0+.05);o.frequency.exponentialRampToValueAtTime(base*.9,s0+.1);
+    g.gain.setValueAtTime(0,s0);g.gain.linearRampToValueAtTime(.05,s0+.02);g.gain.exponentialRampToValueAtTime(.0005,s0+.11);o.connect(g).connect(sound.master);o.start(s0);o.stop(s0+.12)}}
+function cricket(){const c=sound.ctx,t=c.currentTime;for(let i=0;i<3;i++){const o=c.createOscillator(),g=c.createGain(),s0=t+i*.07;o.frequency.value=4300;g.gain.setValueAtTime(0,s0);g.gain.linearRampToValueAtTime(.018,s0+.01);g.gain.linearRampToValueAtTime(0,s0+.045);o.connect(g).connect(sound.master);o.start(s0);o.stop(s0+.05)}}
+function stopLayers(){for(const k in sound.layers){const l=sound.layers[k];try{l.g.gain.linearRampToValueAtTime(0,sound.ctx.currentTime+.8);l.src.stop(sound.ctx.currentTime+.9)}catch(e){}}sound.layers={};clearTimeout(sound.timer)}
+// soundscape follows the garden: rain in spring, wind in the desert, birds by day, crickets at night
+function updateSound(){
+  if(!sound.on||!sound.ctx)return;
+  const night=periodOf(new Date().getHours())==='night',w=weatherNow(),mode=w+'|'+night;
+  if(mode===sound.mode)return;sound.mode=mode;stopLayers();
+  if(w==='spring')sound.layers.rain=noiseLayer('bandpass',2400,.6,.22);
+  if(w==='desert'){const l=noiseLayer('lowpass',380,.8,.5);const lfo=sound.ctx.createOscillator(),lg=sound.ctx.createGain();lfo.frequency.value=.12;lg.gain.value=.25;lfo.connect(lg).connect(l.g.gain);lfo.start();sound.layers.wind=l}
+  const tick=()=>{if(!sound.on)return;if(night)cricket();else if(w!=='desert'||Math.random()<.3)chirp();sound.timer=setTimeout(tick,night?900+Math.random()*700:1500+Math.random()*3500)};tick();
+}
+async function toggleSound(){
+  try{
+    if(!sound.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC){toast('الأصوات مو مدعومة في هذا المتصفح');return}sound.ctx=new AC();sound.master=sound.ctx.createGain();sound.master.gain.value=.6;sound.master.connect(sound.ctx.destination);sound.noise=noiseBuf(sound.ctx)}
+    sound.on=!sound.on;
+    if(sound.on){await sound.ctx.resume();sound.mode='';updateSound();toast('أصوات الحديقة شغّالة 🎧')}else{stopLayers();sound.mode='';toast('طفّيت الأصوات')}
+    $('snd').setAttribute('aria-pressed',String(sound.on));
+  }catch(e){toast('تعذّر تشغيل الأصوات')}
+}
 // banner zoom: + to get closer to the plant, − to see more of the garden
 const ZOOMS=[0.5,0.7,1,1.4,2,2.8];let zoomI=2;
 try{const z=parseInt(localStorage.getItem('tb-zoom'),10);if(z>=0&&z<ZOOMS.length)zoomI=z}catch(e){}
@@ -1144,10 +1229,11 @@ function plusBubble(w){const el=document.createElement('span');el.className='plu
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow()+'|'+openCount();
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow()+'|'+openCount()+'|'+occasionNow();
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
-  {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: الجو في أحسن حالاته':''}
+  {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();const oc=occasionNow();pill.hidden=!dn&&w!=='spring'&&!oc;pill.textContent=[oc?OCC[oc].greet:'',dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: الجو في أحسن حالاته':''].filter(Boolean).join(' · ')}
+  updateSound();
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
@@ -1233,7 +1319,12 @@ $('th-light').onclick=()=>setTheme('light');$('th-dark').onclick=()=>setTheme('d
 function setShelf(open){$('medals').hidden=!open;$('shelf-toggle').setAttribute('aria-expanded',String(open));try{localStorage.setItem('tb-shelf',open?'1':'0')}catch(e){}}
 try{if(localStorage.getItem('tb-shelf')==='1'){$('medals').hidden=false;$('shelf-toggle').setAttribute('aria-expanded','true')}}catch(e){}
 $('shelf-toggle').onclick=()=>setShelf($('medals').hidden);
-$('z-in').onclick=()=>setZoom(1);$('z-out').onclick=()=>setZoom(-1);showZoom();
+$('snd').onclick=toggleSound;
+// full screen where the browser allows it; iPhone Safari only allows it for videos
+$('fs-btn').onclick=async()=>{const d=document,el=d.documentElement,fsEl=d.fullscreenElement||d.webkitFullscreenElement;
+  try{if(fsEl){await(d.exitFullscreen||d.webkitExitFullscreen).call(d);return}
+    const req=el.requestFullscreen||el.webkitRequestFullscreen;if(!req)throw 0;await req.call(el)}
+  catch(e){toast(/iPhone|iPad|iPod/.test(navigator.userAgent)?'الآيفون ما يسمح بالشاشة الكاملة للصفحات. افتحها من اختصار الشاشة الرئيسية وتطلع أكبر':'الشاشة الكاملة مو متاحة هنا. جرّب تفتح اللوحة في المتصفح مباشرة')}};$('z-in').onclick=()=>setZoom(1);$('z-out').onclick=()=>setZoom(-1);showZoom();
 $('new-top').onclick=()=>createTask('todo');
 $('done-toggle').onclick=()=>{state.showDone=!state.showDone;render()};
 $('q').addEventListener('input',e=>{state.q=e.target.value;render()});
