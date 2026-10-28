@@ -149,7 +149,7 @@ button{cursor:pointer}
   body{padding-block:10px}
   .app{padding:14px;border-radius:22px;gap:18px}
   .board{grid-template-columns:1fr}
-  .switch{order:3;width:100%;margin:0}.switch button{flex:1;justify-content:center;padding:9px 10px}
+  .switch{order:3;width:100%;margin:0}.switch button{flex:1;justify-content:center;padding:9px 6px;gap:6px;font-size:13px;white-space:nowrap}
   .top .btn-accent{margin-inline-start:auto}
   .bar h2{flex-basis:100%}
   .search{flex:1 1 160px}
@@ -168,6 +168,7 @@ button{cursor:pointer}
     <nav class="switch" aria-label="مساحة العمل">
       <button id="ws-freelance" data-ws="freelance" aria-pressed="true">Freelance <span class="n" id="n-freelance">0</span></button>
       <button id="ws-moremedia" data-ws="moremedia" aria-pressed="false">More Media <span class="n" id="n-moremedia">0</span></button>
+      <button id="ws-islamic" data-ws="islamic" aria-pressed="false">Islamic <span class="n" id="n-islamic">0</span></button>
     </nav>
     <button class="btn btn-accent" id="new-top"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>مهمة جديدة</button>
   </header>
@@ -233,7 +234,7 @@ const STATUSES=[
   {id:'review',label:'مراجعة',color:'var(--warn)'},
   {id:'done',label:'مكتملة',color:'var(--solid)'}
 ];
-const WS={freelance:'Freelance',moremedia:'More Media'};
+const WS={freelance:'Freelance',moremedia:'More Media',islamic:'Islamic'};
 const PR={low:'منخفضة',med:'متوسطة',high:'عالية'};
 const $=id=>document.getElementById(id);
 const state={ws:'freelance',tasks:[],q:'',client:'',openId:null};
