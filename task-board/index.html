@@ -202,7 +202,15 @@ button{cursor:pointer}
 .hello h1,.hello p{color:var(--sky-ink,var(--ink))}
 .hello p{opacity:.85}
 .hello .status-note{color:inherit;opacity:.75}
-.hello .quote{font-size:clamp(20px,2.6vw,30px);line-height:1.45;max-width:24ch;transition:opacity .5s}
+.hello .quote{font-size:clamp(15px,1.6vw,18px);font-weight:500;line-height:1.6;max-width:30ch;transition:opacity .5s}
+/* the motivational line sits in a small box over the garden */
+.hello .hello-t{flex:0 1 auto;margin-inline-end:auto;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:16px;padding:10px 16px;box-shadow:0 2px 10px rgba(30,30,30,.08)}
+.hello .hello-t h1,.hello .hello-t p{color:var(--ink)}
+.sky-deco::after{display:none}
+/* streak card keeps only the plant and the garden button */
+.streak .st-l,.streak .st-n,.streak .st-s{display:none}
+.streak{padding:8px;gap:10px}
+.streak .garden-btn{margin-top:0}
 .hello .quote.fade{opacity:0}
 .hello .status-note:empty{display:none}
 .sky-deco{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -267,7 +275,7 @@ button{cursor:pointer}
   .app{padding:14px;border-radius:22px;gap:18px}
   .switch{order:3;width:100%;margin:0}.switch button{flex:1 1 0;min-width:0;justify-content:center;padding:8px 2px;gap:4px;font-size:12px;white-space:nowrap}.switch .n{min-width:18px;padding:0 4px}
   .top .theme{margin-inline-start:auto}
-  .streak{flex:1 1 100%}
+  .streak{flex:0 0 auto}
   .hello{padding:18px}
   .medal .nm{font-size:10px}
   .gview{width:100%;max-height:100%;top:0;left:0;transform:none;inset:0;border-radius:0;animation:none;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
