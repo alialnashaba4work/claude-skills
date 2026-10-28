@@ -275,6 +275,11 @@ button{cursor:pointer}
 @keyframes sway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
 .plus{position:absolute;left:50%;top:48%;z-index:3;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:15px;border-radius:999px;padding:5px 14px;box-shadow:0 6px 20px rgba(10,120,110,.35);pointer-events:none;animation:floatUp 1.9s ease-out forwards}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,14px) scale(.8)}18%{opacity:1;transform:translate(-50%,0) scale(1.05)}100%{opacity:0;transform:translate(-50%,-56px) scale(1)}}
+.hello .zoom{position:absolute;top:12px;left:12px;z-index:2;display:flex;flex-direction:column;gap:2px;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:12px;padding:3px;box-shadow:0 2px 10px rgba(30,30,30,.08)}
+.zoom button{width:30px;height:30px;border:0;border-radius:9px;background:transparent;color:var(--ink);display:grid;place-items:center}
+.zoom button:hover:not(:disabled){background:var(--surface-2)}
+.zoom button:disabled{color:var(--ink-3);opacity:.5;cursor:default}
+.zoom svg{width:15px;height:15px}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -321,6 +326,10 @@ button{cursor:pointer}
 
   <section class="hello" id="hello">
     <div class="sky-deco" id="sky-deco" aria-hidden="true"></div>
+    <div class="zoom" role="group" aria-label="تكبير الحديقة">
+      <button id="z-in" aria-label="تكبير" title="تكبير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
+      <button id="z-out" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 8h9"/></svg></button>
+    </div>
     <div class="hello-t">
     <h1 class="quote" id="quote" aria-live="polite"></h1>
     <p class="status-note" id="store-note"></p>
@@ -885,12 +894,14 @@ function skyFor(per){
   if(per==='dawn')return{a:'#FFE3C4',b:'#F9E6DC',hill:'#B9D8A8',g1:'#A8DB98',g2:'#7DC27D'};
   return{a:'#9FE3DC',b:'#E6F8F5',hill:'#A6DDB0',g1:'#9ED9A0',g2:'#6BBF7A'};
 }
-function gardenSVG(n,palms,seen,animate){
+function gardenSVG(n,palms,seen,animate,wide){
   const per=periodOf(new Date().getHours()),c=skyFor(per),night=per==='night';
-  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient></defs>`;
-  o+=`<rect width="1000" height="560" fill="url(#gs)"/>`;
+  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient></defs>`;
+  o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
   if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+='<g transform="translate(860 70)"><circle r="26" fill="#FFF4D6"/><circle cx="11" cy="-7" r="24" fill="#132834"/></g>'}
   else o+=per==='sunset'?'<circle cx="820" cy="215" r="60" fill="#FFB054"/>':'<circle cx="860" cy="80" r="34" fill="#FFD25E"/><g class="cloud" fill="#fff" opacity=".85"><ellipse cx="200" cy="80" rx="60" ry="16"/><ellipse cx="232" cy="66" rx="32" ry="17"/><ellipse cx="560" cy="55" rx="44" ry="12"/></g>';
+  // wide mode (banner zoomed out): carry the hills and ground past the scene edges
+  if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
   o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
   o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
   if(has(15))o+='<path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#E8D7B5" stroke-width="34" fill="none" stroke-linecap="round" opacity=".9"/><path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#D9C59E" stroke-width="2" stroke-dasharray="6 14" fill="none"/>';
@@ -989,22 +1000,28 @@ const SKY={
 function nightSky(){const r=rnd(7);let st='';for(let i=0;i<60;i++){const x=(r()*800).toFixed(0),y=(r()*150).toFixed(0),rad=(r()*1.4+.4).toFixed(1),tw=r()<.35;st+=`<circle cx="${x}" cy="${y}" r="${rad}" fill="#fff" ${tw?`class="twinkle" style="animation-delay:${(r()*3).toFixed(2)}s"`:'opacity=".7"'}/>`}
   return `<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid slice">${st}<g transform="translate(360 52)"><circle r="24" fill="#FFF4D6"/><circle cx="10" cy="-6" r="22" fill="#132834"/></g></svg>`}
 let lastPeriod=null,bannerN=null;
+// banner zoom: + to get closer to the plant, − to see more of the garden
+const ZOOMS=[0.5,0.7,1,1.4,2,2.8];let zoomI=2;
+try{const z=parseInt(localStorage.getItem('tb-zoom'),10);if(z>=0&&z<ZOOMS.length)zoomI=z}catch(e){}
+function setZoom(d){const nz=Math.max(0,Math.min(ZOOMS.length-1,zoomI+d));if(nz===zoomI)return;zoomI=nz;try{localStorage.setItem('tb-zoom',String(zoomI))}catch(e){}showZoom();renderSky()}
+function showZoom(){$('z-in').disabled=zoomI===ZOOMS.length-1;$('z-out').disabled=zoomI===0}
 function plusBubble(w){const el=document.createElement('span');el.className='plus';el.textContent=`+${w} 🌱`;$('hello').append(el);setTimeout(()=>el.remove(),2000)}
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms;
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI;
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
-  const full=gardenSVG(n,palms,from,from<n).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
+  const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
   // empty garden: put the shoot in the middle of the banner
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 192) scale(2)':'translate(576 300) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
     .replace('<circle cx="860" cy="80" r="34"','<circle cx="860" cy="172" r="26"').replace('cy="80" rx="60"','cy="160" rx="60"').replace('cy="66" rx="32"','cy="146" rx="32"').replace('cy="55" rx="44"','cy="140" rx="44"').replace('cx="560" cy="140"','cx="640" cy="140"').replace('translate(860 70)','translate(860 172) scale(.85)');
-  $('sky-deco').innerHTML=`<svg viewBox="0 90 1000 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
+  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,vy=Math.min(260-H/2,560-H*0.55);
+  $('sky-deco').innerHTML=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
@@ -1064,6 +1081,7 @@ $('th-light').onclick=()=>setTheme('light');$('th-dark').onclick=()=>setTheme('d
 function setShelf(open){$('medals').hidden=!open;$('shelf-toggle').setAttribute('aria-expanded',String(open));try{localStorage.setItem('tb-shelf',open?'1':'0')}catch(e){}}
 try{if(localStorage.getItem('tb-shelf')==='1'){$('medals').hidden=false;$('shelf-toggle').setAttribute('aria-expanded','true')}}catch(e){}
 $('shelf-toggle').onclick=()=>setShelf($('medals').hidden);
+$('z-in').onclick=()=>setZoom(1);$('z-out').onclick=()=>setZoom(-1);showZoom();
 $('new-top').onclick=()=>createTask('todo');
 $('done-toggle').onclick=()=>{state.showDone=!state.showDone;render()};
 $('q').addEventListener('input',e=>{state.q=e.target.value;render()});
