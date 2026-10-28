@@ -291,6 +291,8 @@ button{cursor:pointer}
   .streak{flex:0 0 auto}
   .hello{padding:18px}
   .medal .nm{font-size:10px}
+  /* phones: no motivational line in the banner, the garden gets the space */
+  .hello .hello-t{display:none}
   .gview{width:100%;max-height:100%;top:0;left:0;transform:none;inset:0;border-radius:0;animation:none;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
   .g-lvl{font-size:22px}
   .top{gap:8px}.theme button{width:32px;height:32px}.top .btn-accent{padding:9px 13px}.brand{padding:6px}.brand span{display:none}
@@ -1017,10 +1019,10 @@ function renderSky(){
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
   const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
   // empty garden: put the shoot in the middle of the banner
-  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 192) scale(2)':'translate(576 300) scale(2.6)')
+  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 292) scale(2.3)':'translate(576 300) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
     .replace('<circle cx="860" cy="80" r="34"','<circle cx="860" cy="172" r="26"').replace('cy="80" rx="60"','cy="160" rx="60"').replace('cy="66" rx="32"','cy="146" rx="32"').replace('cy="55" rx="44"','cy="140" rx="44"').replace('cx="560" cy="140"','cx="640" cy="140"').replace('translate(860 70)','translate(860 172) scale(.85)');
-  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,vy=Math.min(260-H/2,560-H*0.55);
+  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,cy=innerWidth<=620?300:260,vy=Math.min(cy-H/2,560-H*0.55);
   $('sky-deco').innerHTML=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
