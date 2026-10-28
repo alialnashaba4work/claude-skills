@@ -995,8 +995,8 @@ function weatherNow(){
   if(recent.length>=2){const d=recent.map(t=>t.completedAt-t.createdAt).sort((a,b)=>a-b);if(d[Math.floor(d.length/2)]<=2*864e5)return 'spring'}
   return 'normal';
 }
-function dryNote(){const n=openCount();if(n<=BEST_OPEN)return '';const x=n-BEST_OPEN;return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} مهمة مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: خلّص ${x===1?'مهمة وحدة':x===2?'مهمتين':x+' مهام'} وترجع خضراء`}
-const WEATHER_NOTE={desert:'',spring:'ربيع ومطر خفيف: قاعد تخلّص مهامك بسرعة 🌸',normal:''};
+function dryNote(){const n=openCount();if(n<=BEST_OPEN)return '';const x=n-BEST_OPEN;return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} ${n<=10?'مهام':'مهمة'} مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: خلّص ${x===1?'مهمة وحدة':x===2?'مهمتين':x+' مهام'} وترجع خضراء`}
+const WEATHER_NOTE={desert:'',spring:'ربيع ومطر خفيف: باقي عندك 5 مهام أو أقل 🌸',normal:''};
 function skyFor(per){
   if(per==='night')return{a:'#0E1A24',b:'#1F4148',hill:'#1B3A3A',g1:'#2D5E4A',g2:'#22493A'};
   if(per==='sunset')return{a:'#5B3F7A',b:'#F2A25E',hill:'#7C6A55',g1:'#7FB06B',g2:'#5E9555'};
@@ -1147,7 +1147,7 @@ function renderSky(){
   const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow()+'|'+openCount();
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
-  {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: قاعد تخلّص بسرعة':''}
+  {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: الجو في أحسن حالاته':''}
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
