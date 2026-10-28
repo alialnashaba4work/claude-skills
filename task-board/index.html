@@ -307,6 +307,15 @@ button{cursor:pointer}
   .streak{flex:0 0 auto}
   .hello{padding:18px}
   .medal .nm{font-size:10px}
+  /* phones: tasks as squares, two per row */
+  .board{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+  .card{padding:12px;gap:6px;border-radius:16px;min-height:150px}
+  .card .t{font-size:13px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .card .client{font-size:11.5px}
+  .card-foot{margin-top:auto;gap:4px}
+  .card-foot .chip{font-size:10.5px;padding:1px 7px}
+  .card-foot .done-btn{width:100%;justify-content:center;margin:4px 0 0;padding:5px 8px;font-size:12px}
+  .card .cover{margin:-12px -12px 2px;height:84px;border-radius:15px 15px 0 0}
 
   .gview{width:100%;max-height:100%;top:0;left:0;transform:none;inset:0;border-radius:0;animation:none;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
   .g-lvl{font-size:22px}
