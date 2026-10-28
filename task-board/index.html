@@ -197,7 +197,7 @@ button{cursor:pointer}
 .att-off{font-size:12.5px;color:var(--ink-3)}
 .card .cover{margin:-14px -16px 2px;height:130px;border-radius:17px 17px 0 0;overflow:hidden;background:var(--surface-2)}
 .card .cover img{width:100%;height:100%;object-fit:cover;display:block}
-.hello{position:relative;overflow:hidden;border-radius:26px;padding:22px 24px;background:var(--sky,var(--surface));min-height:250px;transition:background .6s}
+.hello{position:relative;overflow:hidden;border-radius:26px;padding:22px 24px;background:var(--sky,var(--surface));min-height:290px;transition:background .6s}
 .hello>*:not(.sky-deco){position:relative;z-index:1}
 .hello h1,.hello p{color:var(--sky-ink,var(--ink))}
 .hello p{opacity:.85}
@@ -1000,8 +1000,9 @@ function renderSky(){
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
   const full=gardenSVG(n,palms,from,from<n).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
-  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>'));
-  $('sky-deco').innerHTML=`<svg viewBox="0 195 1000 380" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
+  // empty garden: put the shoot in the middle of the banner
+  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 300) scale(2.2)':'translate(576 400) scale(2.6)');
+  $('sky-deco').innerHTML=`<svg viewBox="0 215 1000 330" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
