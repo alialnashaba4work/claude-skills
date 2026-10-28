@@ -271,6 +271,10 @@ button{cursor:pointer}
 .g-list{display:flex;flex-wrap:wrap;gap:6px}
 .g-list span{font-size:12px;border-radius:999px;padding:4px 10px;background:var(--surface-2);color:var(--ink-3)}
 .g-list span.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.pl{transform-box:fill-box;transform-origin:50% 100%;animation:sway 4.5s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.plus{position:absolute;left:50%;top:48%;z-index:3;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:15px;border-radius:999px;padding:5px 14px;box-shadow:0 6px 20px rgba(10,120,110,.35);pointer-events:none;animation:floatUp 1.9s ease-out forwards}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,14px) scale(.8)}18%{opacity:1;transform:translate(-50%,0) scale(1.05)}100%{opacity:0;transform:translate(-50%,-56px) scale(1)}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -824,7 +828,7 @@ function celebrate(finishing,t){
   const first=logToday();const n=streakNow();const after=stageOf(cycleOf(n)).name,palmsAfter=palmCount();
   const nowOn=weekBadges().filter(b=>b.on);const newOnes=nowOn.filter(b=>!oldIds.includes(b.id));
   if(newOnes.length){saveBadges([...new Set(oldIds.concat(nowOn.map(b=>b.id)))]);popIds=newOnes.map(b=>b.id)}
-  renderStreak();renderMedals();renderGardenBtn();
+  renderStreak();renderMedals();renderGardenBtn();if(gAfter>gBefore)plusBubble(gAfter-gBefore);
   const wsName=t?WS[t.workspace||'freelance']:'';
   const sectionClear=t&&!state.tasks.some(x=>(x.workspace||'freelance')===(t.workspace||'freelance')&&x.status!=='done');
   if(newStruct){confetti();toast(`${newStruct.msg} افتح حديقتك وشوف 🌿`)}
@@ -873,7 +877,7 @@ function plantSVG(i,p){
     else if(k===2)g='<circle cx="-8" cy="-8" r="9" fill="#2E8A62"/><circle cx="8" cy="-8" r="9" fill="#2E8A62"/><circle cy="-14" r="10" fill="#3EA374"/>';
     else if(k===5)g='<rect x="-2.5" y="-24" width="5" height="24" rx="2" fill="#8B6B4A"/><circle cy="-30" r="14" fill="#0EA89C"/><circle cx="-9" cy="-22" r="9" fill="#0B8F84"/><circle cx="9" cy="-22" r="9" fill="#0B8F84"/>';
     else{const c=FLOWERS[Math.floor(p.v*FLOWERS.length)];g=`<path d="M0 0v-14" stroke="#3E9E6A" stroke-width="2"/><path d="M0-6c-4-1-6-4-6-6c3 0 5 2 6 6z" fill="#3E9E6A"/><g fill="${c}"><circle cy="-19" r="3.6"/><circle cx="4.5" cy="-15" r="3.6"/><circle cx="-4.5" cy="-15" r="3.6"/><circle cy="-11" r="3.6"/></g><circle cy="-15" r="2.4" fill="#FFE08A"/>`}}
-  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})">${g}</g>`;
+  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"><g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
 function skyFor(per){
   if(per==='night')return{a:'#0E1A24',b:'#1F4148',hill:'#1B3A3A',g1:'#2D5E4A',g2:'#22493A'};
@@ -886,7 +890,7 @@ function gardenSVG(n,palms,seen,animate){
   const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient></defs>`;
   o+=`<rect width="1000" height="560" fill="url(#gs)"/>`;
   if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+='<g transform="translate(860 70)"><circle r="26" fill="#FFF4D6"/><circle cx="11" cy="-7" r="24" fill="#132834"/></g>'}
-  else o+=per==='sunset'?'<circle cx="820" cy="215" r="60" fill="#FFB054"/>':'<circle cx="860" cy="80" r="34" fill="#FFD25E"/><g fill="#fff" opacity=".85"><ellipse cx="200" cy="80" rx="60" ry="16"/><ellipse cx="232" cy="66" rx="32" ry="17"/><ellipse cx="560" cy="55" rx="44" ry="12"/></g>';
+  else o+=per==='sunset'?'<circle cx="820" cy="215" r="60" fill="#FFB054"/>':'<circle cx="860" cy="80" r="34" fill="#FFD25E"/><g class="cloud" fill="#fff" opacity=".85"><ellipse cx="200" cy="80" rx="60" ry="16"/><ellipse cx="232" cy="66" rx="32" ry="17"/><ellipse cx="560" cy="55" rx="44" ry="12"/></g>';
   o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
   o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
   if(has(15))o+='<path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#E8D7B5" stroke-width="34" fill="none" stroke-linecap="round" opacity=".9"/><path d="M505 560C500 480 520 420 560 380S660 330 700 330" stroke="#D9C59E" stroke-width="2" stroke-dasharray="6 14" fill="none"/>';
@@ -907,7 +911,7 @@ function gardenSVG(n,palms,seen,animate){
   if(has(100))o+=oryx(860,470)+oryx(930,430,-0.85);
   if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-14 0v16M-6 1v15M8 1v15M14 0v16" stroke="#B9875A" stroke-width="2.6"/><ellipse cy="-2" rx="18" ry="8" fill="#D9A46F"/><path d="M12-6l8-10" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><ellipse cx="22" cy="-18" rx="5" ry="4" fill="#D9A46F"/><path d="M21-21l-3-10M24-21l1-10" stroke="#4A3B2E" stroke-width="1.6"/></g>`;o+=gz(780,520)+gz(700,540)}
   if(has(80)&&!night)o+='<g stroke="#383838" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"><path d="M420 90q8-8 16 0q8-8 16 0"/><path d="M470 120q6-6 12 0q6-6 12 0"/><path d="M390 130q5-5 10 0q5-5 10 0"/></g>';
-  if(!n)o+='<g transform="translate(500 420) scale(1.4)"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g>';
+  if(!n)o+='<g transform="translate(500 430) scale(3.2)"><g class="pl"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g></g>';
   return o+'</svg>';
 }
 function renderGarden(animate){
@@ -984,16 +988,18 @@ const SKY={
 };
 function nightSky(){const r=rnd(7);let st='';for(let i=0;i<60;i++){const x=(r()*800).toFixed(0),y=(r()*150).toFixed(0),rad=(r()*1.4+.4).toFixed(1),tw=r()<.35;st+=`<circle cx="${x}" cy="${y}" r="${rad}" fill="#fff" ${tw?`class="twinkle" style="animation-delay:${(r()*3).toFixed(2)}s"`:'opacity=".7"'}/>`}
   return `<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid slice">${st}<g transform="translate(360 52)"><circle r="24" fill="#FFF4D6"/><circle cx="10" cy="-6" r="22" fill="#132834"/></g></svg>`}
-let lastPeriod=null;
+let lastPeriod=null,bannerN=null;
+function plusBubble(w){const el=document.createElement('span');el.className='plus';el.textContent=`+${w} 🌱`;$('hello').append(el);setTimeout(()=>el.remove(),2000)}
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
   const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms;
   if(key===lastPeriod)return;lastPeriod=key;
+  const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
   const el=$('hello');el.classList.remove('sky-dawn','sky-day','sky-sunset','sky-night');el.classList.add('sky-'+per);
   // the banner shows your garden as it is now, cropped to the fence, house and plants
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
-  const full=gardenSVG(n,palms,n,false).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
+  const full=gardenSVG(n,palms,from,from<n).replace(/id="g([sg])"/g,'id="b$1"').replace(/url\(#g([sg])\)/g,'url(#b$1)');
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>'));
   $('sky-deco').innerHTML=`<svg viewBox="0 195 1000 380" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
