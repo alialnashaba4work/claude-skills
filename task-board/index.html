@@ -515,17 +515,22 @@ function useLocal(){
   render();
 }
 function body(t){const{id,...rest}=t;return JSON.parse(JSON.stringify(rest))}
+// writes still on their way to the database: snapshots must not overwrite these tasks yet
+const inFlight=new Map(),deletedIds=new Set();
+const track=id=>inFlight.set(id,(inFlight.get(id)||0)+1);
+const untrack=id=>{const n=(inFlight.get(id)||1)-1;if(n>0)inFlight.set(id,n);else inFlight.delete(id)};
 function persist(t){
   t.updatedAt=Date.now();
   if(mode==='db'){
-    const ref=db.collection('tasks').doc(t.id),b=body(t);
-    queues[t.id]=(queues[t.id]||Promise.resolve()).then(()=>ref.set(b)).then(()=>flashSaved()).catch(err=>{toast(err&&err.code==='permission_denied'?'ليس لديك صلاحية التعديل':'تعذّر الحفظ، حاول مرة أخرى')});
+    const ref=db.collection('tasks').doc(t.id),b=body(t),id=t.id;track(id);
+    queues[id]=(queues[id]||Promise.resolve()).then(()=>ref.set(b)).then(()=>flashSaved()).catch(err=>{toast(err&&err.code==='permission_denied'?'ليس لديك صلاحية التعديل':'تعذّر الحفظ، حاول مرة أخرى')}).finally(()=>untrack(id));
   }else{localSave();flashSaved()}
 }
 function remove(id){
   state.tasks=state.tasks.filter(t=>t.id!==id);
   if(mode==='db'){
-    queues[id]=(queues[id]||Promise.resolve()).then(()=>db.collection('tasks').doc(id).delete()).catch(()=>toast('تعذّر حذف المهمة'));
+    deletedIds.add(id);
+    queues[id]=(queues[id]||Promise.resolve()).then(()=>db.collection('tasks').doc(id).delete()).catch(()=>{deletedIds.delete(id);toast('تعذّر حذف المهمة')}).finally(()=>setTimeout(()=>deletedIds.delete(id),5000));
   }else localSave();
   render();
 }
@@ -1223,15 +1228,22 @@ if(window.claude&&typeof window.claude.use==='function'){
     if(!d){useLocal();return}
     db=d;mode='db';$('store-note').textContent='';
     db.collection('tasks').onSnapshot(snap=>{
-      const incoming=snap.docs.map(s=>Object.assign({id:s.id},s.data()));
-      // keep the open task's in-progress edits
-      if(state.openId&&draftDirty){const cur=state.tasks.find(t=>t.id===state.openId);const i=incoming.findIndex(t=>t.id===state.openId);if(cur&&i>-1)incoming[i]=cur}
-      state.tasks=incoming;render();
+      // merge, don't replace: a snapshot can lag behind this page's own writes
+      const map=new Map(snap.docs.map(s=>[s.id,Object.assign({id:s.id},s.data())]));
+      for(const t of state.tasks){
+        const inc=map.get(t.id);
+        const keepLocal=inFlight.has(t.id)||(t.id===state.openId&&(draftDirty||saveTimer))||(inc&&(t.updatedAt||0)>(inc.updatedAt||0));
+        if(keepLocal)map.set(t.id,t);
+      }
+      for(const id of deletedIds)map.delete(id);
+      state.tasks=[...map.values()];render();
     },()=>{toast('انقطع الاتصال بقاعدة البيانات');});
     db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.garden=Object.assign({count:0,seen:0},d||{});renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
     db.doc('meta/badges').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.badges=d&&d.weeks&&typeof d.weeks==='object'?d.weeks:{};renderMedals()},()=>{});
     db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
-    db.collection('clients').onSnapshot(snap=>{state.clients=snap.docs.map(s=>Object.assign({id:s.id},s.data()));render();if(state.openId)renderClients()},()=>{});
+    db.collection('clients').onSnapshot(snap=>{const inc=snap.docs.map(s=>Object.assign({id:s.id},s.data()));const ids=new Set(inc.map(c=>c.id));
+      // keep clients added in the last few seconds that the snapshot has not caught up with
+      state.clients=inc.concat(state.clients.filter(c=>!ids.has(c.id)&&c.createdAt&&Date.now()-c.createdAt<15000));render();if(state.openId)renderClients()},()=>{});
   }).catch(useLocal);
 }else useLocal();
 })();
