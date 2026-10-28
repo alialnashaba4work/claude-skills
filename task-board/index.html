@@ -301,9 +301,13 @@ button{cursor:pointer}
 .card .t{transition:color .18s ease}
 .switch button,.search,.select,.done-toggle,.shelf-h,.garden-btn,.done-btn,.btn,.theme button,.stat{transition:background-color .18s ease,color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
 @media (hover:hover){
-  .card:hover{transform:translateY(-4px);background:color-mix(in srgb,var(--c,var(--accent)) 20%,var(--surface));border-color:var(--c,var(--accent));box-shadow:0 14px 30px -12px color-mix(in srgb,var(--c,var(--accent)) 80%,transparent)}
-  .card:hover .t{color:color-mix(in srgb,var(--c,var(--accent)) 85%,var(--ink))}
-  .card:hover .done-btn{border-color:var(--c,var(--accent))}
+  /* hovering a task box turns it solid teal with white text */
+  .card:hover{transform:translateY(-4px);background:#0EA89C;border-color:#0EA89C;box-shadow:0 14px 30px -12px rgba(14,168,156,.75)}
+  .card:hover .t,.card:hover .client,.card:hover .client span{color:#fff}
+  .card:hover .chip{background:rgba(255,255,255,.22);color:#fff}
+  .card:hover .done-btn{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.6);color:#fff}
+  .card:hover .done-btn:hover{background:#fff;color:#0EA89C;border-color:#fff}
+  .card:hover .prog{background:rgba(255,255,255,.3)}.card:hover .prog i{background:#fff}
   .card.done:hover{transform:none}
   .switch button:not([aria-pressed="true"]):hover{background:var(--surface-2);color:var(--ink)}
   .search:hover,.select:hover{border-color:var(--accent)}
