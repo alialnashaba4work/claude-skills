@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <style>
 /* Layout: one rounded app panel; top bar with workspace switch, a stat row, then a 4-column status board. Card opens a side panel. */
 :root{
@@ -12,8 +12,9 @@
   --solid:#383838; --on-solid:#FFFFFF;
   --warn:#B97E00; --warn-soft:#FBF1D9; --danger:#C8423E; --danger-soft:#FBE6E5;
   --shadow:0 1px 2px rgba(56,56,56,.05),0 8px 24px rgba(56,56,56,.06);
-  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans Arabic","Readex Pro",system-ui,sans-serif;
+  /* Montserrat first: it has no Arabic glyphs, so Latin text and digits use it and Arabic falls through to Thmanyah Sans (installed on the device), then IBM Plex Sans Arabic */
+  --f-display:"Montserrat","Thmanyah Sans","ThmanyahSans","Thmanyah Sans Display","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"Montserrat","Thmanyah Sans","ThmanyahSans","IBM Plex Sans Arabic",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#262626; --panel:#2E2E2E; --surface:#383838; --surface-2:#414141; --line:#4A4A4A;
@@ -181,7 +182,7 @@ button{cursor:pointer}
   <section class="stats" aria-label="ملخص">
     <div class="stat hl"><div class="lbl">مهام مفتوحة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="3"/><path d="M5.5 8h5M5.5 5.5h5M5.5 10.5h3"/></svg></span></div><div class="num" id="s-open">0</div><div class="sub" id="s-open-sub">في هذه المساحة</div></div>
     <div class="stat"><div class="lbl">متأخرة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg></span></div><div class="num" id="s-late-n">0</div><div class="sub">فات موعد تسليمها</div></div>
-    <div class="stat"><div class="lbl">تسليم خلال ٧ أيام<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="11" height="10" rx="2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg></span></div><div class="num" id="s-soon">0</div><div class="sub">قرب موعدها</div></div>
+    <div class="stat"><div class="lbl">تسليم خلال 7 أيام<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="11" height="10" rx="2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg></span></div><div class="num" id="s-soon">0</div><div class="sub">قرب موعدها</div></div>
     <div class="stat"><div class="lbl">مكتملة<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3.5 8.5l3 3 6-6.5"/></svg></span></div><div class="num" id="s-done">0</div><div class="sub" id="s-done-sub">من أصل 0</div></div>
   </section>
 
