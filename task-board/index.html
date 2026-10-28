@@ -466,6 +466,7 @@ button{cursor:pointer}
     <div class="field"><label for="f-notes">التفاصيل والملاحظات</label><textarea id="f-notes" placeholder="المتطلبات، الملاحظات، أي شيء تحتاج تتذكره..."></textarea></div>
   </div>
   <div class="d-foot">
+    <button class="btn btn-accent" id="d-save"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-6.5"/></svg>احفظ المهمة</button>
     <button class="btn btn-ghost" id="d-copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="2"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5"/></svg>نسخ المهمة</button>
     <button class="btn btn-danger" id="d-delete">حذف المهمة</button>
     <span class="meta" id="d-meta"></span>
@@ -1024,9 +1025,8 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(wx!=='gloomy'&&!night){const cols=['#F4B740','#E86A8A','#B48CE8','#FFFFFF','#5B9BD5'];const r=rnd(23);const count=wx==='spring'?7:4;
     for(let i=0;i<count;i++){const x=(120+r()*760).toFixed(0),y=(300+r()*170).toFixed(0),c1=cols[i%cols.length];
       o+=`<g transform="translate(${x} ${y})"><g class="bfly" style="animation-duration:${(10+r()*8).toFixed(1)}s;animation-delay:-${(r()*8).toFixed(1)}s"><g class="wl" fill="${c1}" stroke="#383838" stroke-opacity=".25"><ellipse cx="-5" cy="-3" rx="5" ry="6"/><ellipse cx="-4" cy="5" rx="3.5" ry="4"/></g><g class="wr" fill="${c1}" stroke="#383838" stroke-opacity=".25"><ellipse cx="5" cy="-3" rx="5" ry="6"/><ellipse cx="4" cy="5" rx="3.5" ry="4"/></g><rect x="-1" y="-6" width="2" height="13" rx="1" fill="#383838"/></g></g>`}}
-  // spring: soft light rain and a faint rainbow
+  // spring: soft light rain
   if(wx==='spring'){
-    if(!night)o+='<path d="M120 300A380 230 0 0 1 880 300" fill="none" stroke-width="10" stroke="url(#gr)" opacity=".35"/>';
     const r=rnd(41);let drops='';for(let i=0;i<120;i++){const x=(r()*1100-50).toFixed(0),y=(r()*560-80).toFixed(0);drops+=`<path d="M${x} ${y}l-4 14"/>`}
     o+=`<g class="rain" stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.6" stroke-linecap="round" opacity=".7">${drops}</g>`;
   }
@@ -1175,6 +1175,8 @@ $('d-delete').onclick=()=>{
   if(assets)(async()=>{for(const a of assetIds){try{await assets.delete(a)}catch(e){}}})();
 };
 $('d-close').onclick=closeTask;$('scrim').onclick=closeTask;
+// save now and close (changes also save on their own while typing)
+$('d-save').onclick=()=>{const t=cur();if(!t)return;clearTimeout(saveTimer);saveTimer=null;persist(t);draftDirty=false;closeTask();toast('تم حفظ المهمة')};
 // copy a task: same details and steps (unticked), no due date or attachments, opens the copy
 $('d-copy').onclick=()=>{
   const t=cur();if(!t)return;flush();
