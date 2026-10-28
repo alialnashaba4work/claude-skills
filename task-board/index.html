@@ -122,8 +122,12 @@ button{cursor:pointer}
 
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(30,30,30,.35);z-index:20}
-.drawer{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(480px,100%);background:var(--surface);z-index:21;display:flex;flex-direction:column;box-shadow:var(--shadow);
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px)}
+.drawer{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(820px,calc(100% - 48px));height:min(860px,calc(100% - 48px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));background:var(--surface);z-index:21;display:flex;flex-direction:column;border-radius:28px;overflow:hidden;box-shadow:0 24px 80px rgba(20,20,20,.28);animation:pop .22s ease-out}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-48%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.scrim{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.drawer .d-body{padding:24px 32px 32px;gap:18px}
+.drawer .d-head,.drawer .d-foot{padding-inline:32px}
+.drawer .d-title{font-size:30px}
 .d-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
 .d-head .ws{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:999px;padding:4px 12px}
 .d-head .saved{font-size:12px;color:var(--ink-3);margin-inline-start:auto}
@@ -184,9 +188,13 @@ button{cursor:pointer}
   .bar h2{flex-basis:100%}
   .search{flex:1 1 160px}
   .grid2{grid-template-columns:1fr}
+  .drawer{inset:0;top:0;left:0;transform:none;width:100%;height:100%;border-radius:0;animation:none;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .drawer .d-body{padding:18px 20px 28px}
+  .drawer .d-head,.drawer .d-foot{padding-inline:20px}
+  .drawer .d-title{font-size:24px}
   .stat .num{font-size:26px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
 <div class="app" dir="rtl" lang="ar">
