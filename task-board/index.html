@@ -296,6 +296,23 @@ button{cursor:pointer}
 .zoom button:hover:not(:disabled){background:var(--surface-2)}
 .zoom button:disabled{color:var(--ink-3);opacity:.5;cursor:default}
 .zoom svg{width:15px;height:15px}
+/* hover feedback (mouse only) */
+.card{transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease}
+.card .t{transition:color .18s ease}
+.switch button,.search,.select,.done-toggle,.shelf-h,.garden-btn,.done-btn,.btn,.theme button,.stat{transition:background-color .18s ease,color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+@media (hover:hover){
+  .card:hover{transform:translateY(-3px);background:color-mix(in srgb,var(--c,var(--accent)) 9%,var(--surface));border-color:color-mix(in srgb,var(--c,var(--accent)) 45%,transparent);box-shadow:0 12px 26px -12px color-mix(in srgb,var(--c,var(--accent)) 70%,transparent)}
+  .card:hover .t{color:color-mix(in srgb,var(--c,var(--accent)) 72%,var(--ink))}
+  .card.done:hover{transform:none}
+  .switch button:not([aria-pressed="true"]):hover{background:var(--surface-2);color:var(--ink)}
+  .search:hover,.select:hover{border-color:var(--accent)}
+  .done-toggle:hover,.shelf-h:hover b{color:var(--accent)}
+  .done-toggle:hover{background:var(--accent-soft)}
+  .btn-accent:hover{filter:brightness(1.06);box-shadow:0 6px 16px -6px var(--accent)}
+  .btn-ghost:hover{background:var(--line)}
+  .stat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .theme button:not([aria-pressed="true"]):hover{background:var(--surface-2);color:var(--ink)}
+}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -558,7 +575,7 @@ function toggleDone(t,el){
   if(el&&finishing&&!matchMedia('(prefers-reduced-motion: reduce)').matches){el.classList.add('leaving');setTimeout(go,230)}else go();
 }
 function cardEl(t){
-  const b=document.createElement('div');b.className='card'+(t.status==='done'?' done':'');b.tabIndex=0;b.setAttribute('role','button');
+  const b=document.createElement('div');b.className='card'+(t.status==='done'?' done':'');{const c=TYPE_COLORS[typesOf(t)[0]];if(c)b.style.setProperty('--c',c)}b.tabIndex=0;b.setAttribute('role','button');
   const cov=attsOf(t).find(a=>(a.type||'').startsWith('image/'));
   if(cov){const c=document.createElement('div');c.className='cover';const im=document.createElement('img');im.src='/_blob/'+cov.id;im.alt='';im.loading='lazy';im.onerror=()=>c.remove();c.append(im);b.append(c)}
   const ti=document.createElement('div');ti.className='t';ti.textContent=t.title||'بدون عنوان';b.append(ti);
