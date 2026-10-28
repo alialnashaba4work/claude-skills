@@ -207,6 +207,8 @@ button{cursor:pointer}
 .hello .hello-t{flex:0 1 auto;margin-inline-end:auto;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:16px;padding:10px 16px;box-shadow:0 2px 10px rgba(30,30,30,.08)}
 .hello .hello-t h1,.hello .hello-t p{color:var(--ink)}
 .sky-deco::after{display:none}
+/* no motivational line: the banner is just the garden */
+.hello .hello-t{display:none}
 /* streak card keeps only the plant and the garden button */
 .streak .st-l,.streak .st-n,.streak .st-s{display:none}
 .streak{padding:8px;gap:10px}
@@ -291,8 +293,7 @@ button{cursor:pointer}
   .streak{flex:0 0 auto}
   .hello{padding:18px}
   .medal .nm{font-size:10px}
-  /* phones: no motivational line in the banner, the garden gets the space */
-  .hello .hello-t{display:none}
+
   .gview{width:100%;max-height:100%;top:0;left:0;transform:none;inset:0;border-radius:0;animation:none;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
   .g-lvl{font-size:22px}
   .top{gap:8px}.theme button{width:32px;height:32px}.top .btn-accent{padding:9px 13px}.brand{padding:6px}.brand span{display:none}
