@@ -1,0 +1,7 @@
+# Licensed fonts live in the private repo alialnashaba4work/private-fonts, never here
+*.otf
+*.OTF
+*.ttf
+*.TTF
+*.woff
+*.woff2
