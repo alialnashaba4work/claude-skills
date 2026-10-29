@@ -383,6 +383,13 @@ body.resizing{cursor:ns-resize;user-select:none}
 .pick-row svg{width:64px;height:64px}
 .pick .later{margin-top:12px;border:0;background:transparent;color:var(--ink-3);font-size:12px}
 #pick-scrim{position:fixed;inset:0;background:rgba(30,30,30,.35);z-index:40}
+.hello .snd-panel{position:absolute;top:12px;left:58px;z-index:4;width:220px;background:color-mix(in srgb,var(--surface) 82%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--surface) 70%,transparent);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 24px rgba(20,20,20,.15)}
+.sp-h{font-size:12px;font-weight:600;color:var(--ink-2)}
+.sp-row{display:grid;grid-template-columns:62px 1fr 34px;align-items:center;gap:8px;font-size:12.5px;color:var(--ink)}
+.sp-row b{font-weight:500;font-size:11px;color:var(--ink-3);text-align:end;font-variant-numeric:tabular-nums}
+.sp-row input{width:100%;accent-color:#0EA89C}
+.sp-off{border:0;border-radius:999px;background:var(--surface-2);color:var(--ink);font-size:12px;padding:6px 10px}
+.sp-off:hover{background:var(--line)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -441,6 +448,12 @@ body.resizing{cursor:ns-resize;user-select:none}
     <div class="sky-deco" id="sky-deco" aria-hidden="true"></div>
     <div class="wx-pill" id="wx-pill" hidden></div>
     <div class="resize-h" id="resize-h" role="separator" aria-orientation="horizontal" aria-label="اسحب لتكبير أو تصغير الحديقة" title="اسحب لتحت تكبر، ولفوق تصغر" tabindex="0"><span></span></div>
+    <div class="snd-panel" id="snd-panel" hidden>
+      <div class="sp-h">الأصوات</div>
+      <label class="sp-row"><span>🌧️ المطر</span><input type="range" id="vol-rain" min="0" max="100" step="1" dir="ltr" aria-label="مستوى صوت المطر"><b id="vol-rain-v"></b></label>
+      <label class="sp-row"><span>🐦 الطيور</span><input type="range" id="vol-birds" min="0" max="100" step="1" dir="ltr" aria-label="مستوى صوت الطيور"><b id="vol-birds-v"></b></label>
+      <button class="sp-off" id="snd-toggle" type="button">إيقاف الأصوات</button>
+    </div>
     <div class="zoom" role="group" aria-label="تكبير الحديقة">
       <button id="z-in" aria-label="تكبير" title="تكبير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
       <button id="z-out" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 8h9"/></svg></button>
@@ -1289,29 +1302,56 @@ const SKY={
 function nightSky(){const r=rnd(7);let st='';for(let i=0;i<60;i++){const x=(r()*800).toFixed(0),y=(r()*150).toFixed(0),rad=(r()*1.4+.4).toFixed(1),tw=r()<.35;st+=`<circle cx="${x}" cy="${y}" r="${rad}" fill="#fff" ${tw?`class="twinkle" style="animation-delay:${(r()*3).toFixed(2)}s"`:'opacity=".7"'}/>`}
   return `<svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid slice">${st}<g transform="translate(360 52)"><circle r="24" fill="#FFF4D6"/><circle cx="10" cy="-6" r="22" fill="#132834"/></g></svg>`}
 let lastPeriod=null,bannerN=null;
-const sound={on:false,ctx:null,master:null,layers:{},timer:null,mode:''};
-function noiseBuf(ctx){const b=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
-function noiseLayer(type,freq,q,gain){const c=sound.ctx,src=c.createBufferSource();src.buffer=sound.noise;src.loop=true;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;const g=c.createGain();g.gain.value=0;src.connect(f).connect(g).connect(sound.master);src.start();g.gain.linearRampToValueAtTime(gain,c.currentTime+1.5);return{src,g,f}}
+// garden sounds, made with Web Audio (no files). Two mixer channels the viewer controls: rain (and wind) and birds (and crickets)
+const sound={on:false,ctx:null,master:null,rainBus:null,birdBus:null,layers:{},timer:null,dropTimer:null,mode:'',vol:{rain:45,birds:60}};
+try{const v=JSON.parse(localStorage.getItem('tb-sound')||'null');if(v&&typeof v.rain==='number')sound.vol=Object.assign(sound.vol,v)}catch(e){}
+const volCurve=v=>Math.pow(Math.max(0,Math.min(100,v))/100,1.6);
+function noiseBuf(ctx,brown){const b=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate),d=b.getChannelData(0);let last=0;
+  for(let i=0;i<d.length;i++){const w=Math.random()*2-1;if(brown){last=(last+.02*w)/1.02;d[i]=last*3.5}else d[i]=w}return b}
+function loop(buf,dest,filters,gain){const c=sound.ctx,src=c.createBufferSource();src.buffer=buf;src.loop=true;let node=src;
+  for(const [type,f,q] of filters){const fl=c.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;node.connect(fl);node=fl}
+  const g=c.createGain();g.gain.value=0;node.connect(g).connect(dest);src.start(0,Math.random()*2);g.gain.linearRampToValueAtTime(gain,c.currentTime+2);return{src,g}}
+// rain: a deep steady body, a soft high hiss, slow swells, and single drops landing at random
+function startRain(){
+  const c=sound.ctx,L=sound.layers;if(L.rainBody)return;
+  L.rainBody=loop(sound.brown,sound.rainBus,[['lowpass',1100,.4]],.55);
+  L.rainHiss=loop(sound.noise,sound.rainBus,[['highpass',2800,.3],['lowpass',9000,.3]],.09);
+  const lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=.06;lg.gain.value=.12;lfo.connect(lg).connect(L.rainBody.g.gain);lfo.start();L.rainLfo={src:lfo,g:lg};
+  const drop=()=>{const t=c.currentTime,src=c.createBufferSource();src.buffer=sound.noise;const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1800+Math.random()*4200;bp.Q.value=6+Math.random()*8;
+    const g=c.createGain(),peak=.03+Math.random()*.09;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+.05+Math.random()*.06);
+    src.connect(bp).connect(g).connect(sound.rainBus);src.start(t,Math.random()*2,.12)};
+  const tick=()=>{if(!sound.on)return;const n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++)setTimeout(drop,Math.random()*60);sound.dropTimer=setTimeout(tick,35+Math.random()*60)};tick();
+}
 function chirp(){const c=sound.ctx,t=c.currentTime,notes=2+Math.floor(Math.random()*3),base=2600+Math.random()*1400;
   for(let i=0;i<notes;i++){const o=c.createOscillator(),g=c.createGain(),s0=t+i*.13;o.type='sine';o.frequency.setValueAtTime(base,s0);o.frequency.exponentialRampToValueAtTime(base*1.5,s0+.05);o.frequency.exponentialRampToValueAtTime(base*.9,s0+.1);
-    g.gain.setValueAtTime(0,s0);g.gain.linearRampToValueAtTime(.05,s0+.02);g.gain.exponentialRampToValueAtTime(.0005,s0+.11);o.connect(g).connect(sound.master);o.start(s0);o.stop(s0+.12)}}
-function cricket(){const c=sound.ctx,t=c.currentTime;for(let i=0;i<3;i++){const o=c.createOscillator(),g=c.createGain(),s0=t+i*.07;o.frequency.value=4300;g.gain.setValueAtTime(0,s0);g.gain.linearRampToValueAtTime(.018,s0+.01);g.gain.linearRampToValueAtTime(0,s0+.045);o.connect(g).connect(sound.master);o.start(s0);o.stop(s0+.05)}}
-function stopLayers(){for(const k in sound.layers){const l=sound.layers[k];try{l.g.gain.linearRampToValueAtTime(0,sound.ctx.currentTime+.8);l.src.stop(sound.ctx.currentTime+.9)}catch(e){}}sound.layers={};clearTimeout(sound.timer)}
-// soundscape follows the garden: rain in spring, wind in the desert, birds by day, crickets at night
+    g.gain.setValueAtTime(0,s0);g.gain.linearRampToValueAtTime(.06,s0+.02);g.gain.exponentialRampToValueAtTime(.0005,s0+.11);o.connect(g).connect(sound.birdBus);o.start(s0);o.stop(s0+.12)}}
+function cricket(){const c=sound.ctx,t=c.currentTime;for(let i=0;i<3;i++){const o=c.createOscillator(),g=c.createGain(),s0=t+i*.07;o.frequency.value=4300;g.gain.setValueAtTime(0,s0);g.gain.linearRampToValueAtTime(.022,s0+.01);g.gain.linearRampToValueAtTime(0,s0+.045);o.connect(g).connect(sound.birdBus);o.start(s0);o.stop(s0+.05)}}
+function stopLayers(){const c=sound.ctx;for(const k in sound.layers){const l=sound.layers[k];try{if(l.g)l.g.gain.linearRampToValueAtTime(0,c.currentTime+.8);l.src.stop(c.currentTime+.9)}catch(e){}}sound.layers={};clearTimeout(sound.timer);clearTimeout(sound.dropTimer)}
+function applyVolumes(){if(!sound.ctx)return;const t=sound.ctx.currentTime;sound.rainBus.gain.setTargetAtTime(volCurve(sound.vol.rain),t,.15);sound.birdBus.gain.setTargetAtTime(volCurve(sound.vol.birds),t,.15)}
+// rain plays whenever its slider is up; wind joins in the desert; birds by day, crickets at night
 function updateSound(){
   if(!sound.on||!sound.ctx)return;
   const night=periodOf(new Date().getHours())==='night',w=weatherNow(),mode=w+'|'+night;
   if(mode===sound.mode)return;sound.mode=mode;stopLayers();
-  if(w==='spring')sound.layers.rain=noiseLayer('bandpass',2400,.6,.22);
-  if(w==='desert'){const l=noiseLayer('lowpass',380,.8,.5);const lfo=sound.ctx.createOscillator(),lg=sound.ctx.createGain();lfo.frequency.value=.12;lg.gain.value=.25;lfo.connect(lg).connect(l.g.gain);lfo.start();sound.layers.wind=l}
-  const tick=()=>{if(!sound.on)return;if(night)cricket();else if(w!=='desert'||Math.random()<.3)chirp();sound.timer=setTimeout(tick,night?900+Math.random()*700:1500+Math.random()*3500)};tick();
+  startRain();
+  if(w==='desert'){const l=loop(sound.noise,sound.rainBus,[['lowpass',380,.8]],.45);const lfo=sound.ctx.createOscillator(),lg=sound.ctx.createGain();lfo.frequency.value=.12;lg.gain.value=.22;lfo.connect(lg).connect(l.g.gain);lfo.start();sound.layers.wind=l;sound.layers.windLfo={src:lfo,g:lg}}
+  const tick=()=>{if(!sound.on)return;if(night)cricket();else if(w!=='desert'||Math.random()<.3)chirp();sound.timer=setTimeout(tick,night?900+Math.random()*700:1400+Math.random()*3200)};tick();
 }
+async function soundOn(){
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC){toast('الأصوات مو مدعومة في هذا المتصفح');return false}
+  if(!sound.ctx){sound.ctx=new AC();sound.master=sound.ctx.createGain();sound.master.gain.value=.8;sound.master.connect(sound.ctx.destination);
+    sound.rainBus=sound.ctx.createGain();sound.birdBus=sound.ctx.createGain();sound.rainBus.connect(sound.master);sound.birdBus.connect(sound.master);
+    sound.noise=noiseBuf(sound.ctx,false);sound.brown=noiseBuf(sound.ctx,true)}
+  await sound.ctx.resume();sound.on=true;sound.mode='';applyVolumes();updateSound();return true;
+}
+function soundOff(){sound.on=false;if(sound.ctx)stopLayers();sound.mode=''}
+function syncSoundUI(){$('snd').setAttribute('aria-pressed',String(sound.on));$('snd-toggle').textContent=sound.on?'إيقاف الأصوات':'تشغيل الأصوات';$('vol-rain').value=sound.vol.rain;$('vol-birds').value=sound.vol.birds;
+  $('vol-rain-v').textContent=sound.vol.rain+'%';$('vol-birds-v').textContent=sound.vol.birds+'%'}
 async function toggleSound(){
-  try{
-    if(!sound.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC){toast('الأصوات مو مدعومة في هذا المتصفح');return}sound.ctx=new AC();sound.master=sound.ctx.createGain();sound.master.gain.value=.6;sound.master.connect(sound.ctx.destination);sound.noise=noiseBuf(sound.ctx)}
-    sound.on=!sound.on;
-    if(sound.on){await sound.ctx.resume();sound.mode='';updateSound();toast('أصوات الحديقة شغّالة 🎧')}else{stopLayers();sound.mode='';toast('طفّيت الأصوات')}
-    $('snd').setAttribute('aria-pressed',String(sound.on));
+  try{const panel=$('snd-panel');
+    if(!sound.on){if(await soundOn()){panel.hidden=false;toast('أصوات الحديقة شغّالة 🎧')}}
+    else panel.hidden=!panel.hidden;
+    syncSoundUI();
   }catch(e){toast('تعذّر تشغيل الأصوات')}
 }
 // banner zoom: + to get closer to the plant, − to see more of the garden
@@ -1433,7 +1473,12 @@ $('th-light').onclick=()=>setTheme('light');$('th-dark').onclick=()=>setTheme('d
 function setShelf(open){$('medals').hidden=!open;$('shelf-toggle').setAttribute('aria-expanded',String(open));try{localStorage.setItem('tb-shelf',open?'1':'0')}catch(e){}}
 try{if(localStorage.getItem('tb-shelf')==='1'){$('medals').hidden=false;$('shelf-toggle').setAttribute('aria-expanded','true')}}catch(e){}
 $('shelf-toggle').onclick=()=>setShelf($('medals').hidden);
-$('snd').onclick=toggleSound;
+$('snd').onclick=e=>{e.stopPropagation();toggleSound()};
+for(const k of ['rain','birds'])$('vol-'+k).addEventListener('input',e=>{sound.vol[k]=+e.target.value;$('vol-'+k+'-v').textContent=sound.vol[k]+'%';applyVolumes();try{localStorage.setItem('tb-sound',JSON.stringify(sound.vol))}catch(err){}});
+$('snd-toggle').onclick=async()=>{if(sound.on){soundOff();toast('طفّيت الأصوات')}else await soundOn();syncSoundUI()};
+$('snd-panel').addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',()=>{$('snd-panel').hidden=true});
+syncSoundUI();
 // drag the handle under the garden: down = taller, up = shorter (remembered)
 {const hello=$('hello'),h=$('resize-h'),MIN=150,MAX=()=>Math.max(320,Math.round(innerHeight*0.85));
   const apply=v=>{v=Math.round(Math.max(MIN,Math.min(MAX(),v)));hello.style.minHeight=v+'px';hello.style.height=v+'px';return v};
