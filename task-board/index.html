@@ -120,6 +120,8 @@ button{cursor:pointer}
 .card .t{font-weight:600;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
 .card.done .t{color:var(--ink-3);text-decoration:line-through}
 .card .client{color:var(--ink-2);font-size:12.5px;display:flex;align-items:center;gap:6px;min-width:0}
+.card .note{color:var(--ink-3);font-size:11.5px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.card:hover .note{color:rgba(255,255,255,.85)}
 .card .client span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .types{display:flex;flex-wrap:wrap;gap:6px}
@@ -657,6 +659,8 @@ function cardEl(t){
   if(cov){const c=document.createElement('div');c.className='cover';const im=document.createElement('img');im.src='/_blob/'+cov.id;im.alt='';im.loading='lazy';im.onerror=()=>c.remove();c.append(im);b.append(c)}
   const ti=document.createElement('div');ti.className='t';ti.textContent=t.title||'بدون عنوان';b.append(ti);
   if(t.client){const c=document.createElement('div');c.className='client';c.innerHTML=userSvg;const sp=document.createElement('span');sp.textContent=t.client;c.append(sp);b.append(c)}
+  // a short preview of the notes, in small text
+  {const nt=(t.notes||'').trim();if(nt){const n=document.createElement('div');n.className='note';n.textContent=nt.replace(/\s+/g,' ');b.append(n)}}
   const ch=Array.isArray(t.checklist)?t.checklist:[];
   if(ch.length&&t.status!=='done'){const pr=document.createElement('div');pr.className='prog';const i=document.createElement('i');i.style.width=(ch.filter(x=>x.done).length/ch.length*100)+'%';pr.append(i);b.append(pr)}
   const m=document.createElement('div');m.className='card-foot';
