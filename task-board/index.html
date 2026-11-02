@@ -173,7 +173,8 @@ button{cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-weight:600}
 .checks{display:flex;flex-direction:column;gap:6px}
 .chk{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:12px;padding:8px 10px}
-.chk input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.chk input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent);flex:none;cursor:pointer;margin:0}
+.chk{cursor:pointer}
 .chk input[type=text]{border:0;background:transparent;flex:1;min-width:0;outline:0}
 .chk.done input[type=text]{text-decoration:line-through;color:var(--ink-3)}
 .chk .x{border:0;background:transparent;color:var(--ink-3);width:24px;height:24px;border-radius:50%}
@@ -585,6 +586,8 @@ const inFlight=new Map(),deletedIds=new Set();
 const track=id=>inFlight.set(id,(inFlight.get(id)||0)+1);
 const untrack=id=>{const n=(inFlight.get(id)||1)-1;if(n>0)inFlight.set(id,n);else inFlight.delete(id)};
 function persist(t){
+  // the object being saved is the live one: if a snapshot swapped in a copy meanwhile, put this one back
+  {const i=state.tasks.findIndex(x=>x.id===t.id);if(i>-1&&state.tasks[i]!==t)state.tasks[i]=t}
   t.updatedAt=Date.now();
   if(mode==='db'){
     const ref=db.collection('tasks').doc(t.id),b=body(t),id=t.id;track(id);
@@ -870,7 +873,8 @@ $('f-title').addEventListener('input',()=>{
 const dayKey=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 function daySet(){const set=new Set(state.days);for(const t of state.tasks)if(t.status==='done'&&t.completedAt)set.add(dayKey(t.completedAt));return set}
-function streakNow(fromYesterday){const set=daySet();let d=new Date();if(fromYesterday||!set.has(dayKey(d)))d=addDays(d,-1);let n=0;while(set.has(dayKey(d))){n++;d=addDays(d,-1)}return n}
+function streakNow(fromYesterday){const set=daySet();let d=new Date();if(fromYesterday||!set.has(dayKey(d)))d=addDays(d,-1);let n=0,lastGap=-99;const bell=lvlOf('bell')>0;
+  for(;;){if(set.has(dayKey(d))){n++;d=addDays(d,-1);continue}if(bell&&n>0&&n-lastGap>=6&&set.has(dayKey(addDays(d,-1)))){lastGap=n;d=addDays(d,-1);continue}break}return n}
 function daysAr(n){if(n===1)return 'يوم واحد';if(n===2)return 'يومين';if(n>=3&&n<=10)return n+' أيام';return n+' يوم'}
 const POT='<path d="M18 46h28l-3 13a3 3 0 0 1-3 2H24a3 3 0 0 1-3-2z" fill="var(--solid)"/><rect x="15" y="43" width="34" height="6" rx="3" fill="var(--solid)"/><ellipse cx="32" cy="44" rx="14" ry="2.4" fill="#8B6B4A"/>';
 const LEAF=(x,y,r,s=1)=>`<path transform="translate(${x} ${y}) rotate(${r}) scale(${s})" d="M0 0c4-6 12-7 16-4c-3 5-10 8-16 4z" fill="var(--accent)"/>`;
@@ -990,16 +994,19 @@ function celebrate(finishing,t){
   const before=stageOf(cycleOf(nBefore)).name,palmsBefore=palmCount();
   const wk=weekId(),oldIds=(state.badges[wk]||[]).slice();
   // the task is already marked done here, so leave its own weight out of the 'before' count
-  const gBefore=Math.max(state.garden.count||0,doneWeight()-(t&&inGarden(t)?WEIGHT[sizeOf(t)]:0));const gAfter=growGarden(t);const w=t?WEIGHT[sizeOf(t)]:1;const newStruct=STRUCTS.filter(x=>x.at>gBefore&&x.at<=gAfter).pop();
+  const gBefore=state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight()-(t&&inGarden(t)?WEIGHT[sizeOf(t)]:0));
+  if(t&&inGarden(t)){const bonus=sizeOf(t)==='big'?lvlOf('basket'):0;addDates(WEIGHT[sizeOf(t)]+bonus,`خلّصت «${(t.title||'مهمة').slice(0,40)}»`+(bonus?' + سلة الحصاد':''))}
+  const gAfter=growGarden(t);const w=t?WEIGHT[sizeOf(t)]:1;const newStruct=STRUCTS.filter(x=>x.at>gBefore&&x.at<=gAfter).pop();
   const first=logToday();const n=streakNow();const after=stageOf(cycleOf(n)).name,palmsAfter=palmCount();
   const nowOn=weekBadges().filter(b=>b.on);const newOnes=nowOn.filter(b=>!oldIds.includes(b.id));
-  if(newOnes.length){saveBadges([...new Set(oldIds.concat(nowOn.map(b=>b.id)))]);popIds=newOnes.map(b=>b.id)}
-  renderStreak();renderMedals();renderGardenBtn();if(gAfter>gBefore)plusBubble(gAfter-gBefore);
+  if(newOnes.length){saveBadges([...new Set(oldIds.concat(nowOn.map(b=>b.id)))]);popIds=newOnes.map(b=>b.id);addDates(5*newOnes.length,'وسام جديد');saveGarden()}
+  if(newStruct){addDates(10,`انبنى ${structName(newStruct)}`);saveGarden()}
+  renderStreak();renderMedals();renderGardenBtn();if(gAfter>gBefore)plusBubble(gAfter-gBefore,t&&inGarden(t)?WEIGHT[sizeOf(t)]+(sizeOf(t)==='big'?lvlOf('basket'):0):0);
   if(periodOf(new Date().getHours())==='night')shootingStar();
   if(t&&inGarden(t)&&sizeOf(t)==='big'&&gAfter>gBefore)setTimeout(()=>pickPlant(gBefore,gAfter),900);
   const wsName=t?WS[t.workspace||'freelance']:'';
   const sectionClear=t&&!state.tasks.some(x=>(x.workspace||'freelance')===(t.workspace||'freelance')&&x.status!=='done');
-  if(newStruct){confetti();toast(`${newStruct.msg} افتح حديقتك وشوف 🌿`)}
+  if(newStruct){confetti();toast(`${structMsg(newStruct)} افتح حديقتك وشوف 🌿 (+10 تمرات)`)}
   else if(palmsAfter>palmsBefore){confetti();toast(`نخلة جديدة انضافت لحديقتك! 🌴 ${daysAr(n)} ورا بعض`)}
   else if(newOnes.length){confetti();toast(`حصلت على وسام «${newOnes[0].name}» 🏅`)}
   else if(sectionClear){confetti();toast(`خلّصت كل مهام ${wsName}! 🎉`)}
@@ -1022,28 +1029,105 @@ const STRUCTS=[
   {at:100,name:'بوابة المحمية والمها',msg:'حديقتك صارت محمية! وجاها المها 🦌'},
   {at:150,name:'غزلان',msg:'الغزلان وصلت محميتك!'}
 ];
+/* ---------- worlds: garden, beach, mountain, oasis (new ones open at 100 plantings) ---------- */
+const WORLDS={garden:{name:'الحديقة الخضراء',icon:'🌳'},beach:{name:'الشاطئ',icon:'🏖️'},mountain:{name:'الجبل',icon:'⛰️'},oasis:{name:'الواحة',icon:'🏜️'}};
+const curWorld=()=>state.garden.world||'garden';
+const WORLD_NAMES={beach:{'بئر':'قارب','بيت صغير':'كوخ صغير','بيت كبير':'كوخ كبير','بركة':'بركة صخرية','بوابة المحمية والمها':'المنارة والسلاطعين','غزلان':'نوارس'},
+  mountain:{'بئر':'بئر حجري','بيت صغير':'كوخ خشبي','بيت كبير':'شاليه','بركة':'بحيرة صغيرة','بوابة المحمية والمها':'بوابة المحمية والوعول','غزلان':'غزلان الجبل'},
+  oasis:{'بيت صغير':'خيمة','بيت كبير':'بيت شعر كبير','بركة':'عين ماء','بوابة المحمية والمها':'بوابة المحمية والجمال','غزلان':'غزلان الريم'}};
+const structName=x=>((WORLD_NAMES[curWorld()]||{})[x.name])||x.name;
+const structMsg=x=>WORLD_NAMES[curWorld()]&&WORLD_NAMES[curWorld()][x.name]?`صار عندك ${structName(x)}!`:x.msg;
+function switchWorld(id){
+  const g=state.garden,cur=curWorld();if(id===cur)return;
+  g.worlds=Object.assign({},g.worlds||{});g.worlds[cur]={count:gardenCount(),picks:g.picks||{},seen:g.seen||0};
+  const nx=g.worlds[id]||{count:0,picks:{},seen:0};
+  g.world=id;g.count=nx.count;g.picks=nx.picks;g.seen=nx.seen;g.noFallback=true;saveGarden();
+  lastPeriod=null;bannerN=null;renderSky();renderGarden(true);renderGardenBtn();toast(`انتقلت إلى ${WORLDS[id].icon} ${WORLDS[id].name}`);
+}
+
+/* ---------- garden market: dates economy, item levels, tools with effects, rare daily items, sets ---------- */
+const ITEMS=[
+  {id:'flowerbed',cat:'decor',name:'حوض زهور',prices:[8,14,22],desc:['حوض صغير فيه زهور ملونة','حوض أكبر بزهور أكثر','حوض فخم بسياج أبيض']},
+  {id:'lanterns',cat:'decor',name:'فوانيس الممشى',prices:[12,20,30],desc:['3 فوانيس على الممشى','5 فوانيس','7 فوانيس تنوّر الممشى كله بالليل']},
+  {id:'umbrella',cat:'decor',name:'مظلة وطاولة',prices:[15,25],desc:['طاولة بمظلة مخططة','وكرسيين للجلسة']},
+  {id:'swing',cat:'decor',name:'أرجوحة',prices:[22,35],desc:['أرجوحة خشب تتمايل','أرجوحة مزدوجة مزينة بالورد']},
+  {id:'fountain',cat:'decor',name:'نافورة',prices:[30,50,80],desc:['نافورة صغيرة','نافورة بطابقين','نافورة كبيرة بثلاث نوافير']},
+  {id:'flowercart',cat:'decor',name:'عربة ورد',prices:[18],desc:['عربة خشب مليانة ورد']},
+  {id:'archway',cat:'decor',name:'قوس ورد',prices:[40],desc:['قوس مغطى بالورد على مدخل الممشى']},
+  {id:'birdhouse',cat:'animals',name:'بيت طيور',prices:[8,16],desc:['بيت صغير على عمود','بيتين وطير ساكن فيهم']},
+  {id:'ducks',cat:'animals',name:'بط',prices:[20,35,50],desc:['بطة تسبح في البركة','بطتين','عائلة بط كاملة'],req:()=>gardenCount()>=40,reqText:'تحتاج بركة (40 زرعة)'},
+  {id:'cat',cat:'animals',name:'قطة نايمة',prices:[25],desc:['قطة تنام عند الباب وتحرك ذيلها']},
+  {id:'sprinkler',cat:'tools',name:'رشّاش ماء',prices:[25,45,70],desc:['يخفف التصحّر: كأن عندك مهمتين أقل','4 مهام أقل في حساب الجو','6 مهام أقل في حساب الجو']},
+  {id:'hive',cat:'tools',name:'خلية نحل',prices:[30,55,90],desc:['تعطيك تمرتين كل يوم','4 تمرات كل يوم','6 تمرات كل يوم'],note:'اجمعها من السوق، وتتجمع لين 5 أيام'},
+  {id:'greenhouse',cat:'tools',name:'بيت زراعي',prices:[50,90],desc:['المهمة السهلة تزرع 2 بدل 1','والمتوسطة تزرع 3 بدل 2']},
+  {id:'basket',cat:'tools',name:'سلة حصاد',prices:[20,40],desc:['المهمة الكبيرة تعطيك تمرة زيادة','تمرتين زيادة']},
+  {id:'bell',cat:'tools',name:'جرس الصباح',prices:[35],desc:['يحمي سلسلة الإنجاز: يوم فايت واحد في الأسبوع ما يكسرها']},
+  {id:'palmgrove',cat:'tools',name:'شتلات نخيل',prices:[40,70],desc:['تحصد تمر من نخيل حديقتك كل يوم','حصاد أكبر من كل نخلة']},
+  {id:'balloon',cat:'rare',name:'منطاد',prices:[75],desc:['منطاد ملون يطير فوق حديقتك'],rare:true},
+  {id:'windmill',cat:'rare',name:'طاحونة هواء',prices:[65],desc:['طاحونة تدور مع الريح'],rare:true},
+  {id:'peacock',cat:'rare',name:'طاووس',prices:[60],desc:['طاووس يفتح ريشه'],rare:true},
+  {id:'goldtree',cat:'rare',name:'شجرة ليمون ذهبية',prices:[100],desc:['شجرة نادرة بليمون ذهبي يلمع'],rare:true}
+];
+const ITEM=Object.fromEntries(ITEMS.map(x=>[x.id,x]));
+const CATS=[['all','الكل'],['decor','زينة'],['animals','حيوانات'],['tools','أدوات'],['rare','نادر'],['sets','مجموعات'],['log','السجل']];
+const SETS=[{id:'rest',name:'ركن الاستراحة',items:['umbrella','swing','lanterns'],reward:25,rtext:'25 تمرة'},
+  {id:'nature',name:'أصوات الطبيعة',items:['birdhouse','ducks','hive'],reward:30,rtext:'30 تمرة'},
+  {id:'farmer',name:'المزارع المحترف',items:['sprinkler','greenhouse','basket','palmgrove'],reward:'goldtree',rtext:'شجرة الليمون الذهبية مجانًا'}];
+const lvlOf=id=>((state.garden.inv||{})[id])||0;
+const owned=id=>lvlOf(id)>0;
+function datesBal(){const g=state.garden;return typeof g.dates==='number'?g.dates:gardenCount()}
+function addDates(n,why){const g=state.garden;g.dates=datesBal()+n;g.log=[{t:Date.now(),d:n,why}].concat(g.log||[]).slice(0,40)}
+const todayKey=()=>dayKey(new Date());
+const hashStr=x=>{let h=2166136261;for(const ch of x){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+function rareToday(){const pool=ITEMS.filter(x=>x.rare).map(x=>x.id),h=hashStr(todayKey()+'r');const a=pool[h%pool.length];let b=pool[(h>>>8)%pool.length];if(b===a)b=pool[(pool.indexOf(a)+1)%pool.length];return[a,b]}
+function dealToday(){const can=ITEMS.filter(x=>!x.rare&&lvlOf(x.id)<x.prices.length);if(!can.length)return null;return can[hashStr(todayKey()+'d')%can.length].id}
+function priceOf(id){const it=ITEM[id],l=lvlOf(id);if(l>=it.prices.length)return null;const base=it.prices[l];return id===dealToday()?Math.round(base*.7):base}
+function buyable(id){const it=ITEM[id];if(it.rare&&!owned(id)&&!rareToday().includes(id))return 'مو متوفر اليوم';if(it.req&&!it.req())return it.reqText;return ''}
+function buy(id){const it=ITEM[id],pr=priceOf(id);if(pr==null||buyable(id))return;if(datesBal()<pr){toast(`تحتاج ${pr-datesBal()} تمرة زيادة`);return}
+  const l=lvlOf(id);addDates(-pr,`${l?'طوّرت':'اشتريت'} ${it.name}${l?' للمستوى '+(l+1):''}`);state.garden.inv=Object.assign({},state.garden.inv||{},{[id]:l+1});
+  if(id==='hive'&&!state.garden.hiveAt)state.garden.hiveAt=Date.now();
+  saveGarden();confetti();toast(l?`طوّرت ${it.name} 🎉`:`${it.name} صار في حديقتك 🎉`);lastPeriod=null;renderSky();renderGarden(false)}
+// tool effects
+const sprinklerRelief=()=>[0,2,4,6][lvlOf('sprinkler')];
+const effOpen=()=>Math.max(0,openCount()-sprinklerRelief());
+function plantWeight(t){const z=sizeOf(t),gh=lvlOf('greenhouse');if(z==='easy'&&gh>=1)return 2;if(z==='med'&&gh>=2)return 3;return WEIGHT[z]}
+function hiveReady(){if(!owned('hive'))return 0;const days=Math.min(5,Math.floor((Date.now()-(state.garden.hiveAt||Date.now()))/864e5));return days*lvlOf('hive')*2}
+function collectHive(){const n=hiveReady();if(!n)return;addDates(n,'عسل من خلية النحل');state.garden.hiveAt=Date.now();saveGarden();toast(`جمعت ${n} تمرة من الخلية 🐝`);renderGarden(false)}
+function palmsPlanted(){const n=Math.min(gardenCount(),260);let k=0;for(let i=0;i<n;i++)if(plantKind(i)==='palm')k++;return k}
+function harvestReady(){if(!owned('palmgrove')||state.garden.harvestDay===todayKey())return 0;return Math.min(palmsPlanted(),8)*lvlOf('palmgrove')}
+function harvest(){const n=harvestReady();if(!n)return;addDates(n,'حصاد تمر من النخيل');state.garden.harvestDay=todayKey();saveGarden();confetti();toast(`حصدت ${n} تمرة 🌴`);renderGarden(false)}
+function claimSet(sid){const st=SETS.find(x=>x.id===sid);const g=state.garden;if((g.sets||{})[sid]||!st.items.every(owned))return;g.sets=Object.assign({},g.sets||{},{[sid]:true});
+  if(typeof st.reward==='number')addDates(st.reward,`اكتملت مجموعة ${st.name}`);else{g.inv=Object.assign({},g.inv||{},{[st.reward]:1});addDates(0,`اكتملت مجموعة ${st.name}: ${ITEM[st.reward].name}`)}
+  saveGarden();confetti();toast(`اكتملت مجموعة «${st.name}» 🎁`);lastPeriod=null;renderSky();renderGarden(false)}
+function toggleHide(id){const g=state.garden;g.hidden=Object.assign({},g.hidden||{});g.hidden[id]=!g.hidden[id];saveGarden();lastPeriod=null;renderSky();renderGarden(false)}
 // only Freelance and Islamic tasks touch the garden (growth and weather); More Media does not
 const GARDEN_WS=['freelance','islamic'];
 const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
-function gardenCount(){return Math.max(state.garden.count||0,doneWeight())}
+function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
-function saveGarden(){const body={count:state.garden.count||0,seen:state.garden.seen||0,picks:state.garden.picks||{}};
+function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
-function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?WEIGHT[sizeOf(t)]:1;state.garden.count=Math.max((state.garden.count||0)+w,doneWeight());saveGarden();return state.garden.count}
+function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?plantWeight(t):1;const g=state.garden;g.count=g.noFallback?(g.count||0)+w:Math.max((g.count||0)+w,doneWeight());saveGarden();return g.count}
 const levelOf=n=>{let l=LEVELS[0];for(const x of LEVELS)if(n>=x.min)l=x;return l};
 function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name;renderSky()}
 
 const RES=[{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
 function slots(n){const r=rnd(11),out=[];let guard=0;
   while(out.length<n&&guard<n*40){guard++;const x=25+r()*950,y=285+r()*258;
-    if(RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h))continue;out.push({x,y,v:r()})}return out}
+    if(RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h)||DECOR_RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h))continue;out.push({x,y,v:r()})}return out}
 const FLOWERS=[['#F7C548','#E8A21E'],['#F08AA4','#D45D7E'],['#FFFFFF','#E6E2F0'],['#C4A5F0','#9A78D6'],['#FF9E6B','#E8743E']];
 // shared paint for the garden (gradients are defined once per scene in gardenDefs)
 const CAN=`<circle cx="-8" cy="-27" r="12" fill="#077A70"/><circle cx="8" cy="-26" r="11" fill="#077A70"/>`;
 // which kind of plant a planting is: the gardener's pick for that spot, else the default pattern
-function plantKind(i){const pk=(state.garden.picks||{})[i];if(pk==='palm')return 'palm';if(pk==='tree')return 'big';if(pk==='flower')return 'flower';
+function plantKind(i){const pk=(state.garden.picks||{})[i];if(pk==='palm')return 'palm';if(pk==='tree')return curWorld()==='mountain'?'pine':'big';if(pk==='flower')return 'flower';
+  const base=plantKindBase(i),w=curWorld();
+  if(w==='beach')return {big:'palm',tree:'palm',bush:'rock',flower:i%3?'shell':'flower',grass:'beachgrass',palm:'palm'}[base];
+  if(w==='mountain')return {big:'pine',tree:'pine',palm:'pine'}[base]||base;
+  if(w==='oasis')return {big:'palm',tree:'palm',bush:'shrub',grass:'beachgrass'}[base]||base;
+  return base}
+function plantKindBase(i){
   const k=i%7;return i%25===24?'big':i%10===9?'palm':(k===0||k===4)?'grass':k===2?'bush':k===5?'tree':'flower'}
 function plantSVG(i,p){
   const s=(0.55+(p.y-285)/258*0.6).toFixed(2);let g;const v=p.v,kind=plantKind(i);
@@ -1063,6 +1147,16 @@ function plantSVG(i,p){
     g=`<ellipse cy="-2" rx="16" ry="4" fill="#24704F"/><circle cx="-9" cy="-9" r="9" fill="#2A7E58"/><circle cx="9" cy="-9" r="9" fill="#2A7E58"/>
       <circle cx="-7" cy="-11" r="8" fill="url(#gxLeafB)"/><circle cx="8" cy="-11" r="8" fill="url(#gxLeafB)"/><circle cy="-16" r="9.5" fill="url(#gxLeafB)"/>
       <circle cx="-3" cy="-20" r="3" fill="#fff" opacity=".18"/>${v>.6?'<circle cx="5" cy="-12" r="1.8" fill="#E86A8A"/><circle cx="-6" cy="-8" r="1.6" fill="#E86A8A"/>':''}`}
+  else if(kind==='pine'){ // pine (mountain)
+    const big=(i%25===24)?1.5:1;g=`<g transform="scale(${big})"><rect x="-2.2" y="-10" width="4.4" height="10" fill="url(#gxTrunk)"/><path d="M0-46L-15-18H15Z" fill="#1F6B4F"/><path d="M0-38L-17-8H17Z" fill="#257A5A"/><path d="M0-30L-19 0H19Z" fill="#2E8C66"/><path d="M0-46L-6-30H2Z" fill="#fff" opacity=".12"/></g>`}
+  else if(kind==='rock'){ // beach rocks
+    g=`<ellipse cx="-6" cy="-5" rx="10" ry="7" fill="#9AA3A2"/><ellipse cx="6" cy="-4" rx="8" ry="6" fill="#B5BDBC"/><ellipse cx="-8" cy="-8" rx="3" ry="1.8" fill="#fff" opacity=".35"/>`}
+  else if(kind==='shell'){ // shell or starfish
+    g=v>.5?`<path d="M0-12l3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L-10-4.5l7-.5z" fill="#F29A6A" stroke="#D9784A" stroke-width=".8"/>`:`<path d="M-8 0Q-8-12 0-12Q8-12 8 0Z" fill="#F7E1D0" stroke="#D9B8A0" stroke-width=".8"/><path d="M0 0V-11M-4 0L-3-10M4 0L3-10" stroke="#D9B8A0" stroke-width=".8"/>`}
+  else if(kind==='beachgrass'){ // dune grass
+    g=`<path d="M-5 0C-6-7-9-12-12-15C-8-12-5-8-3 0z" fill="#B8B25A"/><path d="M-1 0C-1-9 0-15 2-19C2-12 2-6 3 0z" fill="#9FA04A"/><path d="M2 0C4-7 7-10 11-12C8-8 6-4 6 0z" fill="#C9C26C"/>`}
+  else if(kind==='shrub'){ // desert shrub
+    g=`<circle cx="-7" cy="-7" r="7" fill="#8C9A55"/><circle cx="6" cy="-7" r="7" fill="#7E8C4A"/><circle cy="-11" r="8" fill="#9DAA62"/><circle cx="-2" cy="-15" r="2.5" fill="#fff" opacity=".15"/>`}
   else if(kind==='tree'){ // small tree
     g=`<path d="M-2.5 0c.8-8 0-16 .5-24h4c.5 8-.3 16 .5 24z" fill="url(#gxTrunk)"/>${CAN}
       <circle cx="-8" cy="-29" r="10" fill="url(#gxLeafA)"/><circle cx="8" cy="-28" r="9.5" fill="url(#gxLeafA)"/><circle cy="-37" r="12" fill="url(#gxLeafA)"/>
@@ -1072,7 +1166,7 @@ function plantSVG(i,p){
     for(let j=0;j<5;j++)pet+=`<ellipse transform="rotate(${j*72})" cy="-3.6" rx="2.6" ry="3.8" fill="${c1}" stroke="${c2}" stroke-width=".6"/>`;
     g=`<path d="M0 0C-1-5 1-10 0-15" stroke="#3E9E6A" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M0-5C-5-6-7-9-7-11C-3-11-1-8 0-5z" fill="#58B47F"/><path d="M0-8C4-9 6-12 6-14C2-14 0-11 0-8z" fill="#3E9E6A"/>
       <g transform="translate(0 -17)">${pet}<circle r="2.4" fill="#F9D36A"/><circle r="1.2" fill="#E0A030"/></g>`}
-  const sh=kind==='big'?28:kind==='palm'?16:kind==='tree'?13:kind==='bush'?17:0;
+  const sh=kind==='big'?28:kind==='palm'?16:kind==='tree'?13:kind==='bush'?17:kind==='pine'?15:kind==='rock'?14:kind==='shrub'?12:0;
   const shadow=sh?`<ellipse cy="1" rx="${sh}" ry="${(sh/4.5).toFixed(1)}" fill="#0B3B2E" opacity=".15"/>`:'';
   return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})">${shadow}<g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
@@ -1082,15 +1176,15 @@ const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.
 const openCount=()=>state.tasks.filter(t=>t.status!=='done'&&inGarden(t)).length;
 // 5 or fewer unfinished tasks = best weather; 15 or more = full desert
 const BEST_OPEN=5,WORST_OPEN=15;
-const dryLevel=()=>Math.max(0,Math.min(1,(openCount()-BEST_OPEN)/(WORST_OPEN-BEST_OPEN)));
+const dryLevel=()=>Math.max(0,Math.min(1,(effOpen()-BEST_OPEN)/(WORST_OPEN-BEST_OPEN)));
 function weatherNow(){
   if(dryLevel()>=0.5)return 'desert';
-  if(openCount()<=BEST_OPEN)return 'spring';
+  if(effOpen()<=BEST_OPEN)return 'spring';
   const now=Date.now(),recent=state.tasks.filter(t=>t.status==='done'&&t.completedAt&&t.createdAt&&now-t.completedAt<7*864e5);
   if(recent.length>=2){const d=recent.map(t=>t.completedAt-t.createdAt).sort((a,b)=>a-b);if(d[Math.floor(d.length/2)]<=2*864e5)return 'spring'}
   return 'normal';
 }
-function dryNote(){const n=openCount();if(n<=BEST_OPEN)return '';const x=n-BEST_OPEN;return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} ${n<=10?'مهام':'مهمة'} مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: خلّص ${x===1?'مهمة وحدة':x===2?'مهمتين':x+' مهام'} وترجع خضراء`}
+function dryNote(){const n=openCount(),e=effOpen();if(e<=BEST_OPEN)return '';const x=e-BEST_OPEN;return dryLevel()>=0.5?`الأرض تصحّرت: عندك ${n} ${n<=10?'مهام':'مهمة'} مو مكتملة. كل مهمة تخلّصها ترجّع الخضرة`:`الأرض بدأت تجف: خلّص ${x===1?'مهمة وحدة':x===2?'مهمتين':x+' مهام'} وترجع خضراء`}
 const WEATHER_NOTE={desert:'',spring:'ربيع ومطر خفيف: باقي عندك 5 مهام أو أقل 🌸',normal:''};
 function skyFor(per){
   if(per==='night')return{a:'#0E1A24',b:'#1F4148',hill:'#1B3A3A',g1:'#2D5E4A',g2:'#22493A'};
@@ -1129,14 +1223,73 @@ function gardenDefs(c,night){
   <linearGradient id="gxDoor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12A093"/><stop offset="1" stop-color="#0A6B62"/></linearGradient>
   <linearGradient id="gxStone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C3CBC9"/><stop offset="1" stop-color="#8D9896"/></linearGradient>
   <radialGradient id="gxWater" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#9BDDEE"/><stop offset="1" stop-color="#4AA3C4"/></radialGradient>
-  <linearGradient id="gxPath" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EFE2C4"/><stop offset="1" stop-color="#DCC89F"/></linearGradient>
+  <linearGradient id="gxPath" x1="0" y1="0" x2="1" y2="0">${{beach:'<stop offset="0" stop-color="#F8EED3"/><stop offset="1" stop-color="#E9D6AA"/>',mountain:'<stop offset="0" stop-color="#DAD6CE"/><stop offset="1" stop-color="#BDB7AD"/>',oasis:'<stop offset="0" stop-color="#F6E8C6"/><stop offset="1" stop-color="#E4CB94"/>'}[curWorld()]||'<stop offset="0" stop-color="#EFE2C4"/><stop offset="1" stop-color="#DCC89F"/>'}</linearGradient>
+  <linearGradient id="gxSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night?'#1C3E52':'#6FCDE0'}"/><stop offset="1" stop-color="${night?'#123040':'#2E95B8'}"/></linearGradient>
   <pattern id="gxGrass" width="64" height="34" patternUnits="userSpaceOnUse"><path d="M6 20l2-6 2 6M30 10l2-5 2 5M50 28l2-6 2 6M18 32l1.5-4 1.5 4M42 18l1.5-4 1.5 4" stroke="${mixHex(c.g2,'#000000',.25)}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".35"/></pattern>`;
 }
 function cloudSVG(x,y,sc){return `<g class="cloud"><g transform="translate(${x} ${y}) scale(${sc})"><ellipse cx="2" cy="10" rx="62" ry="10" fill="#000" opacity=".04"/><g fill="url(#gxCloud)"><circle cx="-30" cy="-2" r="16"/><circle cx="-8" cy="-14" r="22"/><circle cx="18" cy="-8" r="18"/><circle cx="38" cy="0" r="13"/><rect x="-46" y="-2" width="98" height="14" rx="7"/></g><circle cx="-12" cy="-22" r="7" fill="#fff" opacity=".7"/></g></g>`}
+/* ---------- market items: art drawn around 0,0 with the base on the ground ---------- */
+const FLW=['#F7C548','#F08AA4','#FFFFFF','#C4A5F0','#FF9E6B'];
+const SH=(rx,ry=4)=>`<ellipse cy="2" rx="${rx}" ry="${ry}" fill="#0B3B2E" opacity=".14"/>`;
+function lanternArt(night){return `${night?'<circle cy="-40" r="22" fill="url(#gxGlow)"/>':''}<path d="M0 0V-34" stroke="#383838" stroke-width="2.4"/><path d="M-6-34h12" stroke="#383838" stroke-width="2"/><rect x="-5" y="-46" width="10" height="12" rx="2" fill="${night?'#FFD97A':'#F4E7C0'}" stroke="#383838" stroke-width="1.4" class="${night?'glow':''}"/><path d="M-6.5-46h13l-6.5-5z" fill="#383838"/>`}
+function itemArt(id,l,night){
+  switch(id){
+  case 'flowerbed':{const rx=20+l*7,ry=7+l*2,r=rnd(50+l);let f='';for(let i=0;i<4+l*4;i++){const x=(r()-.5)*rx*1.5,y=(r()-.5)*ry*1.1-3;f+=`<path d="M${x.toFixed(1)} ${(y+5).toFixed(1)}v-6" stroke="#3E9E6A" stroke-width="1.2"/><circle cx="${x.toFixed(1)}" cy="${(y-2).toFixed(1)}" r="2.8" fill="${FLW[i%5]}"/><circle cx="${x.toFixed(1)}" cy="${(y-2).toFixed(1)}" r="1" fill="#E0A030"/>`}
+    let fence='';if(l>=3){for(let a=10;a<=170;a+=16){const x=Math.cos(a*Math.PI/180)*(rx+6),y=Math.sin(a*Math.PI/180)*(ry+5);fence+=`<path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v-7" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>`}fence+=`<path d="M${-rx-6} 0Q0 ${ry*2+8} ${rx+6} 0" stroke="#FFFFFF" stroke-width="1.4" fill="none" transform="translate(0 -3)"/>`}
+    return `${SH(rx+6,ry+3)}<ellipse rx="${rx+3}" ry="${ry+2.5}" fill="url(#gxStone)"/><ellipse cy="-1" rx="${rx}" ry="${ry}" fill="#7A5A3C"/>${f}${fence}`}
+  case 'lanterns':return lanternArt(night);
+  case 'umbrella':{let ch='';if(l>=2)ch=`<g fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"><path d="M-30 0v-12h8v12M-30-12v-8"/><path d="M30 0v-12h-8v12M30-12v-8"/></g>`;
+    return `${SH(30)}${ch}<path d="M0-14V0M-8 0h16" stroke="#7A5A3C" stroke-width="2.4"/><ellipse cy="-14" rx="16" ry="4" fill="#C29A70"/><path d="M0-14V-54" stroke="#5A4636" stroke-width="2"/><path d="M-32-46Q0-68 32-46Z" fill="#0EA89C"/><path d="M-32-46Q-18-62 0-58Q-10-52-16-46ZM32-46Q18-62 0-58Q10-52 16-46Z" fill="#FFFFFF" opacity=".9"/><path d="M-32-46Q0-40 32-46" stroke="#0B7D73" stroke-width="1.4" fill="none"/>`}
+  case 'swing':{const seat=x=>`<g class="swingseat" style="animation-delay:-${x?1.1:0}s"><path d="M${x-8}-56V-14M${x+8}-56V-14" stroke="#C9B48A" stroke-width="1.4"/><rect x="${x-11}" y="-15" width="22" height="4" rx="2" fill="#A47E58"/></g>`;
+    const w=l>=2?44:30;return `${SH(w+4)}<path d="M${-w} 0L${-w+8}-58M${-w+16} 0L${-w+8}-58M${w} 0L${w-8}-58M${w-16} 0L${w-8}-58M${-w+6}-58H${w-6}" stroke="#8B6B4A" stroke-width="4" stroke-linecap="round"/>${l>=2?seat(-14)+seat(14):seat(0)}${l>=2?`<g fill="#F08AA4">${[-30,-18,-6,6,18,30].map(x=>`<circle cx="${x}" cy="-60" r="2.6"/>`).join('')}</g><path d="M${-w+6}-60H${w-6}" stroke="#58B47F" stroke-width="2"/>`:''}`}
+  case 'fountain':{const W=l>=3?40:28;let o=`${SH(W+6,6)}<ellipse cy="-4" rx="${W+3}" ry="${W*.32+3}" fill="url(#gxStone)"/><ellipse cy="-7" rx="${W}" ry="${W*.3}" fill="url(#gxWater)"/>`;
+    const jet=(x,h,d)=>`<path class="jet" style="animation-delay:-${d}s" d="M${x}-8Q${x-3}-${h*.6} ${x}-${h}Q${x+3}-${h*.6} ${x}-8Z" fill="#CDEFF8" opacity=".9"/><g class="drops" style="animation-delay:-${d}s" fill="#CDEFF8"><circle cx="${x-7}" cy="-${h*.55}" r="1.4"/><circle cx="${x+7}" cy="-${h*.6}" r="1.4"/><circle cx="${x-4}" cy="-${h*.35}" r="1.1"/><circle cx="${x+5}" cy="-${h*.3}" r="1.1"/></g>`;
+    if(l===1)o+=jet(0,30,0);
+    if(l===2)o+=`<rect x="-3.5" y="-30" width="7" height="22" fill="#9AA5A3"/><ellipse cy="-30" rx="14" ry="4.5" fill="url(#gxStone)"/><ellipse cy="-31" rx="11" ry="3.2" fill="url(#gxWater)"/>${jet(0,52,.3)}`;
+    if(l>=3)o+=`<rect x="-4" y="-34" width="8" height="26" fill="#9AA5A3"/><ellipse cy="-34" rx="16" ry="5" fill="url(#gxStone)"/><ellipse cy="-35" rx="13" ry="3.6" fill="url(#gxWater)"/><circle cy="-44" r="5" fill="url(#gxStone)"/>${jet(0,64,.2)}${jet(-24,26,.6)}${jet(24,26,.9)}`;
+    return o}
+  case 'flowercart':{let f='';const r=rnd(8);for(let i=0;i<14;i++)f+=`<circle cx="${((r()-.5)*30).toFixed(1)}" cy="${(-30-r()*10).toFixed(1)}" r="${(3+r()*2).toFixed(1)}" fill="${FLW[i%5]}"/>`;
+    return `${SH(26)}<path d="M18-14L34-26" stroke="#7A5A3C" stroke-width="3" stroke-linecap="round"/><path d="M-20-26h40l-4 16h-32z" fill="#A47E58"/><path d="M-20-26h40" stroke="#C29A70" stroke-width="2"/><circle cx="-11" cy="-6" r="7" fill="none" stroke="#5A4636" stroke-width="2.6"/><circle cx="11" cy="-6" r="7" fill="none" stroke="#5A4636" stroke-width="2.6"/>${f}<g fill="#3E9E6A"><ellipse cx="-12" cy="-27" rx="5" ry="2"/><ellipse cx="10" cy="-28" rx="5" ry="2"/></g>`}
+  case 'archway':{let rs='';for(let a=200;a<=340;a+=12){const x=Math.cos(a*Math.PI/180)*30,y=-50+Math.sin(a*Math.PI/180)*30;rs+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="${a%24?'#E86A8A':'#F7A8BC'}"/><ellipse cx="${(x+3).toFixed(1)}" cy="${(y+3).toFixed(1)}" rx="3" ry="1.6" fill="#3E9E6A"/>`}
+    return `${SH(36)}<path d="M-30 0V-50A30 30 0 0 1 30-50V0" stroke="#FFFFFF" stroke-width="5" fill="none"/><path d="M-30 0V-50A30 30 0 0 1 30-50V0" stroke="#D9D2C2" stroke-width="1.5" fill="none"/>${rs}<g fill="#E86A8A"><circle cx="-31" cy="-20" r="3.4"/><circle cx="31" cy="-26" r="3.4"/><circle cx="-29" cy="-36" r="3"/><circle cx="30" cy="-40" r="3"/></g>`}
+  case 'birdhouse':{const house=(x,y,sc)=>`<g transform="translate(${x} ${y}) scale(${sc})"><rect x="-9" y="-16" width="18" height="16" rx="2" fill="#E8B54A"/><path d="M-12-16L0-27L12-16Z" fill="#C2410C"/><circle cy="-8" r="3.2" fill="#5A4636"/><path d="M-2-2h4" stroke="#5A4636" stroke-width="2"/></g>`;
+    return `${SH(10)}<path d="M0 0V-40" stroke="#7A5A3C" stroke-width="3"/>${house(0,-38,1)}${l>=2?`<path d="M0-24L14-30" stroke="#7A5A3C" stroke-width="2.2"/>${house(16,-30,.7)}<g transform="translate(-2 -66)"><ellipse rx="5" ry="3.6" fill="#5B9BD5"/><circle cx="4" cy="-3" r="2.6" fill="#5B9BD5"/><path d="M6.4-3l3 .6-3 .9z" fill="#F4A340"/></g>`:''}`}
+  case 'ducks':return `<g class="duckbob"><ellipse rx="10" ry="5.2" fill="#FFFFFF"/><path d="M-10-1q-3-6 2-6" fill="#FFFFFF"/><circle cx="7" cy="-6" r="4.2" fill="#FFFFFF"/><path d="M10.5-6l5 1-5 1.6z" fill="#F4A340"/><circle cx="8" cy="-7" r=".9" fill="#222"/><path d="M-6-1q5-4 10 0" stroke="#D8D8D8" stroke-width="1.2" fill="none"/></g><ellipse cy="4" rx="13" ry="2.4" fill="none" stroke="#fff" stroke-opacity=".55"/>`;
+  case 'cat':return `<ellipse cy="2" rx="16" ry="3" fill="#0B3B2E" opacity=".14"/><g class="tail"><path d="M-12-2q-12-1-10-12" stroke="#E89A4E" stroke-width="4" fill="none" stroke-linecap="round"/></g><ellipse cy="-6" rx="13" ry="7" fill="#E89A4E"/><path d="M-5-12q2 5 0 11M1-13q2 5 0 11" stroke="#C97A35" stroke-width="1.4" fill="none"/><circle cx="10" cy="-9" r="6" fill="#E89A4E"/><path d="M6-14l1.5-5 3 4zM11-14l3-4.5 1 5z" fill="#E89A4E"/><path d="M7-9q1.5 1.2 3 0M11.5-9q1.5 1.2 3 0" stroke="#5A3A20" stroke-width="1" fill="none" stroke-linecap="round"/><circle cx="11" cy="-7" r=".8" fill="#D46F7A"/><g class="zz" fill="#fff" opacity=".85"><circle cx="16" cy="-20" r="1.5"/><circle cx="19" cy="-25" r="2"/><circle cx="23" cy="-31" r="2.5"/></g>`;
+  case 'peacock':{let fan='';for(let a=-165;a<=-15;a+=10){const r1=a*Math.PI/180,x=Math.cos(r1)*34,y=-16+Math.sin(r1)*34;fan+=`<path d="M0-16L${x.toFixed(1)} ${y.toFixed(1)}" stroke="#2E8C66" stroke-width="2"/><ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="4" ry="5" fill="#1F9E8C"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="#1F4FA0"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1" fill="#F4B740"/>`}
+    return `${SH(14)}<g class="fan">${fan}</g><path d="M-3 0v-8M3 0v-8" stroke="#B5751E" stroke-width="1.6"/><ellipse cy="-14" rx="8" ry="7" fill="#1F6FB2"/><path d="M3-19q5-9 3-17" stroke="#1F6FB2" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="6" cy="-37" r="3.2" fill="#1F6FB2"/><path d="M8.6-37l4 .7-4 1z" fill="#E0A030"/><path d="M5-40l-1-5M7-40l1-5" stroke="#1F6FB2" stroke-width=".9"/>`}
+  case 'sprinkler':{const R=18+l*9;return `<ellipse rx="${R+6}" ry="${(R+6)*.3}" fill="#2E7E52" opacity=".18"/><path d="M0 0V-10" stroke="#666" stroke-width="2.4"/><circle cy="-11" r="3" fill="#8A8A8A"/><g class="spray"><path d="M0-12Q${R*.5}-${R*.9} ${R}-2M0-12Q-${R*.5}-${R*.9} -${R}-2" stroke="#BFE8F5" stroke-width="1.8" fill="none" stroke-dasharray="2 5" stroke-linecap="round"/></g>`}
+  case 'hive':{let b='';for(let i=0;i<l;i++)b+=`<rect x="-12" y="${-12-i*11}" width="24" height="11" rx="2" fill="#F2C14E" stroke="#C9922A" stroke-width="1.2"/><path d="M-12 ${-6.5-i*11}h24" stroke="#C9922A" stroke-width=".8"/>`;
+    let bees='';for(let i=0;i<2+l;i++)bees+=`<g class="bee" style="animation-delay:-${(i*.7).toFixed(1)}s"><circle cx="${8+i*3}" cy="${-22-l*8+i*2}" r="2" fill="#F4B740"/><path d="M${7+i*3} ${-22-l*8+i*2}h2" stroke="#383838" stroke-width="1"/></g>`;
+    return `${SH(16)}<path d="M-14 0V-2h28V0" fill="none" stroke="#7A5A3C" stroke-width="3"/>${b}<path d="M-15 ${-12-(l-1)*11}h30l-15-7z" fill="#B07A48"/><rect x="-3" y="-6" width="6" height="2.6" rx="1" fill="#5A3A20"/>${bees}`}
+  case 'greenhouse':{const w=l>=2?46:34,h=l>=2?40:32;let pl='';for(let i=-w+8;i<w-4;i+=9)pl+=`<circle cx="${i}" cy="-8" r="4" fill="#3EA374"/><circle cx="${i}" cy="-10" r="1.6" fill="${FLW[(i+60)%5]}"/>`;
+    return `${SH(w+4)}${pl}<path d="M${-w} 0V${-h}L0 ${-h-18}L${w} ${-h}V0Z" fill="#CFEFF4" fill-opacity=".55" stroke="#FFFFFF" stroke-width="2.4"/><path d="M${-w/2} 0V${-h-9}M0 0V${-h-18}M${w/2} 0V${-h-9}M${-w} ${-h/2}H${w}" stroke="#FFFFFF" stroke-width="1.6"/><path d="M${-w+4} ${-h+4}l14-10" stroke="#fff" stroke-width="2" opacity=".6"/>`}
+  case 'basket':{const k=l>=2?1.3:1;let d='';const r=rnd(3);for(let i=0;i<9;i++)d+=`<ellipse cx="${((r()-.5)*20).toFixed(1)}" cy="${(-14-r()*5).toFixed(1)}" rx="3" ry="2.2" fill="${i%2?'#8B4A20':'#A85A28'}"/>`;
+    return `<g transform="scale(${k})">${SH(14)}${l>=2?'<path d="M-12-14Q0-34 12-14" stroke="#A47E58" stroke-width="2.4" fill="none"/>':''}${d}<path d="M-14-14h28l-4 14h-20z" fill="#C29A70"/><path d="M-13-10h26M-12-6h24M-11-2h22" stroke="#A47E58" stroke-width="1"/><path d="M-8-14v14M0-14v14M8-14v14" stroke="#A47E58" stroke-width=".8"/></g>`}
+  case 'bell':return `${SH(12)}<path d="M-12 0V-44M12 0V-44M-15-44H15" stroke="#7A5A3C" stroke-width="3" stroke-linecap="round"/><g class="bellswing"><path d="M0-44v5" stroke="#5A4636" stroke-width="1.4"/><path d="M-8-22Q-8-38 0-39Q8-38 8-22Z" fill="#E8B54A"/><path d="M-9-22h18" stroke="#C9922A" stroke-width="2"/><circle cy="-19" r="2" fill="#C9922A"/></g>`;
+  case 'palmgrove':{let o='';const n=l>=2?5:3;for(let i=0;i<n;i++){const x=(i-(n-1)/2)*16;o+=`<g transform="translate(${x} 0)"><path d="M-6-8h12l-2 8h-8z" fill="#C2410C"/><path d="M0-8v-8" stroke="#8B6B4A" stroke-width="2"/><path d="M0-16q-7-3-11 1M0-16q7-3 11 1M0-16q-3-6-1-9M0-16q3-6 1-9" stroke="#0EA89C" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>`}return SH(n*9)+o}
+  case 'balloon':return `<g class="float"><path d="M-6 10L-9 0M6 10L9 0" stroke="#7A5A3C" stroke-width="1"/><rect x="-7" y="10" width="14" height="9" rx="2" fill="#A47E58"/><path d="M0-40C-24-40-26-10-9 0H9C26-10 24-40 0-40Z" fill="#E86A8A"/><path d="M0-40C-10-40-12-10-4 0H4C12-10 10-40 0-40Z" fill="#F4B740"/><path d="M0-40C-4-40-5-10-1.5 0H1.5C5-10 4-40 0-40Z" fill="#0EA89C"/><ellipse cx="-10" cy="-26" rx="3" ry="6" fill="#fff" opacity=".3"/></g>`;
+  case 'windmill':return `${SH(16)}<path d="M-12 0L-7-56H7L12 0Z" fill="#F3EDE3" stroke="#D9CDB8" stroke-width="1.4"/><rect x="-4" y="-16" width="8" height="16" rx="3" fill="#8B6B4A"/><path d="M-9-62h18l-9-9z" fill="#C2410C"/><g transform="translate(0 -58)"><g class="blades"><path d="M0 0L-4-38H4ZM0 0L38-4V4ZM0 0L4 38H-4ZM0 0L-38 4V-4Z" fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"/><circle r="3.4" fill="#5A4636"/></g></g>`;
+  case 'goldtree':return `${SH(26)}<path d="M-4 0c1-12 0-22 1-34h6c1 12 0 22 1 34z" fill="url(#gxTrunk)"/><circle cx="-15" cy="-42" r="15" fill="#6E9A2E"/><circle cx="15" cy="-42" r="15" fill="#6E9A2E"/><circle cy="-56" r="18" fill="#86B23A"/><circle cy="-40" r="14" fill="#7AA834"/><g class="glow" fill="#FFD84A" stroke="#E0A030" stroke-width=".8"><ellipse cx="-14" cy="-46" rx="3.6" ry="2.8"/><ellipse cx="8" cy="-58" rx="3.6" ry="2.8"/><ellipse cx="16" cy="-40" rx="3.6" ry="2.8"/><ellipse cx="-4" cy="-36" rx="3.6" ry="2.8"/><ellipse cx="-6" cy="-64" rx="3.2" ry="2.6"/></g><path d="M-20-62l2 2M22-56l2-2M0-78v3" stroke="#FFE27A" stroke-width="1.6" stroke-linecap="round"/>`;
+  }return ''}
+const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[965,388],fountain:[430,345],flowercart:[660,514],archway:[505,550],birdhouse:[300,302],peacock:[770,460],sprinkler:[620,446],hive:[172,546],greenhouse:[892,302],basket:[792,374],bell:[972,306],palmgrove:[352,548],windmill:[34,262],goldtree:[592,520]};
+const DECOR_RES=Object.values(DECOR_POS).map(([x,y])=>({x:x-34,y:y-56,w:68,h:62}));
+function decorSVG(night,has,wide){
+  const show=id=>owned(id)&&!(state.garden.hidden||{})[id];let o='';
+  if(show('balloon'))o+=`<g transform="translate(300 ${wide?165:118})">${itemArt('balloon',1,night)}</g>`;
+  const P='M505 560C500 480 520 420 560 380S660 330 700 330';
+  if(show('lanterns')&&has(15)){const pts=[[495,520],[540,470],[512,432],[575,400],[548,372],[630,352],[680,320]];const n=[0,3,5,7][lvlOf('lanterns')];for(let i=0;i<n;i++)o+=`<g transform="translate(${pts[i][0]} ${pts[i][1]})">${lanternArt(night)}</g>`}
+  if(show('ducks')&&has(40)){const pos=[[300,464],[362,474],[335,452]];for(let i=0;i<lvlOf('ducks');i++)o+=`<g transform="translate(${pos[i][0]} ${pos[i][1]})${i%2?' scale(-1 1)':''}"><g class="paddle" style="animation-delay:-${i*2}s">${itemArt('ducks',1,night)}</g></g>`}
+  if(show('cat')){const at=has(60)?[732,370]:has(25)?[722,366]:has(15)?[560,446]:[300,520];o+=`<g transform="translate(${at[0]} ${at[1]}) scale(.9)">${itemArt('cat',1,night)}</g>`}
+  const items=Object.keys(DECOR_POS).filter(show).sort((a,b)=>DECOR_POS[a][1]-DECOR_POS[b][1]);
+  for(const id of items){const [x,y]=DECOR_POS[id];o+=`<g transform="translate(${x} ${y})">${itemArt(id,lvlOf(id),night)}</g>`}
+  return o;
+}
 function gardenSVG(n,palms,seen,animate,wide){
   const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow(),dry=dryLevel();
-  let c=skyFor(per);
-  if(wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
+  let c=skyFor(per);const W=curWorld();
+  if(W==='garden'&&wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
+  if(W!=='garden'){const T={beach:{hill:'#7FCBDC',g1:'#F3E2B8',g2:'#E2C690'},mountain:{hill:'#7FA88E',g1:'#9CCB8E',g2:'#6FA56E'},oasis:{hill:'#E3BE84',g1:'#EED9A8',g2:'#D9B678'}}[W];c=Object.assign({},c,Object.fromEntries(Object.entries(T).map(([a,v])=>[a,night?mixHex(v,'#0E1A24',.6):v])))}
   if(dry>0){const d=DESERT[per];c=Object.fromEntries(Object.keys(c).map(k=>[k,mixHex(c[k],d[k],dry)]))}
   const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
   o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
@@ -1149,11 +1302,29 @@ function gardenSVG(n,palms,seen,animate,wide){
     o+=cloudSVG(210,cy0,1)+cloudSVG(560,cy0-12,.75)+(wide?'':cloudSVG(380,cy0+40,.5));}
   // wide mode (banner zoomed out): carry the hills and ground past the scene edges
   if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
+  if(W==='beach'){ // sea on the horizon, a sailboat drifting across
+    o+=`<rect x="-2000" y="188" width="5000" height="80" fill="url(#gxSea)"/><path d="M-2000 190H3000" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/>`;
+    {const r=rnd(12);let wv='';for(let i=0;i<26;i++){const x=r()*1000,y=200+r()*55;wv+=`<path d="M${x.toFixed(0)} ${y.toFixed(0)}q6-3 12 0q6-3 12 0"/>`}o+=`<g stroke="#fff" stroke-opacity=".55" stroke-width="1.4" fill="none">${wv}</g>`}
+    o+=`<g transform="translate(0 214)"><g class="fly" style="animation-duration:140s;animation-delay:-40s"><path d="M-22 0h44l-7 8h-30z" fill="#8B5A33"/><path d="M0 0V-34" stroke="#5A4636" stroke-width="2"/><path d="M1-33L20-4H1Z" fill="#FFFFFF"/><path d="M-1-28L-15-4H-1Z" fill="#F08AA4"/></g></g>`;
+  }else if(W==='mountain'){ // snowy peaks behind green hills, a line of pines
+    const pk=mixHex(c.b,c.hill,.45),pk2=mixHex(pk,'#000000',.12);
+    o+=`<path d="M-40 236L90 120L170 180L270 90L380 196L470 130L560 200L660 100L770 190L860 128L1040 236Z" fill="${pk}"/><path d="M-40 236L90 120L120 160L200 200L270 90L320 170L380 196Z M560 200L660 100L700 160L770 190Z" fill="${pk2}" opacity=".5"/>`;
+    o+=`<g fill="#FFFFFF" opacity="${night?.6:.95}"><path d="M90 120L72 136L84 134L92 142L100 134L110 138Z"/><path d="M270 90L250 110L262 108L272 118L282 108L292 112Z"/><path d="M660 100L638 122L652 118L662 128L672 118L684 122Z"/><path d="M860 128L842 144L854 142L862 150L870 142L880 146Z"/></g>`;
+    if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/>`;
+    o+=`<path d="M0 235C140 200 260 212 380 226S640 196 780 214 930 232 1000 220V560H0z" fill="${c.hill}"/>`;
+    {const r=rnd(19);let pn='';for(let x=10;x<1000;x+=18+r()*22){const y=226+Math.sin(x/80)*5,h=14+r()*12;pn+=`<path d="M${x.toFixed(0)} ${(y-h).toFixed(0)}l${(h*.35).toFixed(0)} ${h.toFixed(0)}h${(-h*.7).toFixed(0)}z"/>`}o+=`<g fill="${mixHex(c.hill,'#0B3B2E',.45)}" opacity=".75">${pn}</g>`}
+  }else if(W==='oasis'){ // soft sand dunes, distant palms
+    o+=`<path d="M0 214C160 170 300 196 440 206S720 168 860 190 960 206 1000 200V560H0z" fill="${mixHex(c.hill,c.b,.4)}"/>`;
+    {let pm='';for(const [x,y] of [[140,196],[520,200],[600,196],[880,192]])pm+=`<g transform="translate(${x} ${y}) scale(.5)"><path d="M0 0c0-14 2-28 0-40" stroke="${mixHex(c.hill,'#3A2A1A',.5)}" stroke-width="4" fill="none"/><path d="M0-40c-9-6-19-5-26 3M0-40c9-6 19-5 26 3M0-40c-6-9-15-13-22-11M0-40c6-9 15-13 22-11" stroke="${mixHex(c.hill,'#2A4A2A',.5)}" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;o+=pm}
+    if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/>`;
+    o+=`<path d="M0 238C140 206 280 220 400 230S660 204 800 218 940 236 1000 226V560H0z" fill="${c.hill}"/>`;
+  }else{
   const far=mixHex(c.hill,c.b,.45);
   o+=`<path d="M0 222C120 196 230 200 330 212S560 186 700 198 900 214 1000 204V560H0z" fill="${far}"/>`;
   if(wide)o+=`<rect x="-2000" y="210" width="5000" height="20" fill="${far}"/>`;
   {const r=rnd(9);let tl='';for(let x=10;x<1000;x+=26+r()*30){const y=212+Math.sin(x/90)*6,h=8+r()*10;tl+=`<ellipse cx="${x.toFixed(0)}" cy="${(y-h*.35+6).toFixed(0)}" rx="${(7+r()*7).toFixed(0)}" ry="${(h*.7).toFixed(0)}"/>`}o+=`<g fill="${mixHex(far,c.hill,.6)}" opacity=".7">${tl}</g>`}
   o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
+  }
   o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
   o+=wide?`<rect x="-2000" y="262" width="5000" height="1400" fill="url(#gxGrass)"/>`:`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gxGrass)"/>`;
   if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=300+r()*240,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
@@ -1166,6 +1337,11 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(has(5)){o+='<g><path d="M40 250H940" stroke="#8A6845" stroke-width="3.5"/><path d="M40 260H940" stroke="#8A6845" stroke-width="3.5"/><path d="M40 249H940M40 259H940" stroke="#B89571" stroke-width="1" opacity=".8"/>';
     for(let i=0;i<26;i++){const x=40+i*36;o+=`<path d="M${x-3} 268V246l3-4 3 4V268z" fill="#9C7A55"/><path d="M${x-3} 268V246l3-4V268z" fill="#B89571"/>`}o+='<ellipse cx="490" cy="269" rx="460" ry="3" fill="#0B3B2E" opacity=".08"/></g>'}
   const win=(x,y,w,h)=>`<rect x="${x-2}" y="${y-2}" width="${w+4}" height="${h+4}" rx="3" fill="#FFFFFF"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="url(#gxWin)" class="${night?'glow':''}"/><path d="M${x+w/2} ${y}v${h}M${x} ${y+h/2}h${w}" stroke="#FFFFFF" stroke-width="2"/>${night?'':`<path d="M${x+3} ${y+h-4}l${w*0.35} ${-h*0.6}" stroke="#fff" stroke-width="2" opacity=".55"/>`}<rect x="${x-4}" y="${y+h+1}" width="${w+8}" height="4" rx="1.5" fill="#D9CDB8"/>`;
+  const houseAlt=(big)=>{ // world variants of the house
+    if(W==='beach'){const T=big?'translate(600 200)':'translate(640 228)',k=big?1.45:1;return `<g transform="${T} scale(${k})"><path d="M14 74V96M58 74V96M100 74V96M142 74V96" stroke="#8B6B4A" stroke-width="5"/><rect x="6" y="70" width="150" height="7" rx="2" fill="#A47E58"/><rect x="14" y="30" width="134" height="42" rx="3" fill="#CFEFF2"/><path d="M14 46H148M14 58H148" stroke="#AEDDE3" stroke-width="2"/><rect x="66" y="40" width="28" height="32" rx="3" fill="url(#gxDoor)"/><rect x="24" y="40" width="26" height="18" rx="2" fill="url(#gxWin)"/><rect x="112" y="40" width="26" height="18" rx="2" fill="url(#gxWin)"/><path d="M0 34L81 0L162 34Z" fill="#D9B26A"/><path d="M0 34L81 0L81 34Z" fill="#E6C27E"/><path d="M4 34l6 6M20 34l5 6M36 34l5 6M52 34l5 6M68 34l5 6M84 34l5 6M100 34l5 6M116 34l5 6M132 34l5 6M148 34l5 6" stroke="#C29A50" stroke-width="2"/><path d="M60 77l-6 19M100 77l6 19" stroke="#A47E58" stroke-width="3"/></g>`}
+    if(W==='mountain'){const T=big?'translate(600 196)':'translate(640 228)',k=big?1.5:1;let lg='';for(let y=40;y<76;y+=6)lg+=`<path d="M12 ${y}H152" stroke="#8E5E34" stroke-width="1.6"/>`;return `<g transform="${T} scale(${k})"><rect x="12" y="34" width="140" height="44" rx="3" fill="#B07A48"/>${lg}<rect x="118" y="2" width="14" height="26" fill="#6B5B4E"/><path d="M0 40L82-2L164 40Z" fill="#2F5D4A"/><path d="M0 40L82-2L82 40Z" fill="#3D7360"/><path d="M0 40H164" stroke="#1E3F32" stroke-width="3"/><rect x="66" y="46" width="30" height="32" rx="3" fill="#5A3A20"/><circle cx="90" cy="63" r="2" fill="#F4D27A"/>${'<rect x="26" y="48" width="26" height="18" rx="2" fill="url(#gxWin)" stroke="#FFFFFF" stroke-width="2"/><rect x="110" y="48" width="26" height="18" rx="2" fill="url(#gxWin)" stroke="#FFFFFF" stroke-width="2"/>'}${night?'':'<g class="smoke"><circle cx="125" cy="-6" r="5" fill="#fff" opacity=".5"/><circle cx="130" cy="-16" r="6" fill="#fff" opacity=".35"/></g>'}</g>`}
+    if(W==='oasis'){const T=big?'translate(596 214)':'translate(636 236)',k=big?1.55:1;let sadu='';for(let x=10;x<154;x+=12)sadu+=`<path d="M${x} 30l6 5 6-5" stroke="#C0392B" stroke-width="2" fill="none"/><path d="M${x} 36h12" stroke="#F3EDE3" stroke-width="1.4"/>`;return `<g transform="${T} scale(${k})"><path d="M0 76L18 18Q82 4 146 18L164 76Z" fill="#3A2E26"/><path d="M18 18Q82 4 146 18L150 30Q82 18 14 30Z" fill="#4A3A30"/>${sadu}<path d="M58 76L66 40H98L106 76Z" fill="#2A211B"/><rect x="40" y="76" width="84" height="6" rx="2" fill="#B5422F"/><path d="M40 79h84" stroke="#F4B740" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M18 18V76M146 18V76M82 4V40" stroke="#6B5038" stroke-width="2.4"/>${night?'<circle cx="82" cy="62" r="10" fill="url(#gxGlow)"/><circle cx="82" cy="64" r="3" fill="#FFD97A" class="glow"/>':''}</g>`}
+    return ''};
   const house=has(60)?`<g transform="translate(600 210)"><rect x="186" y="12" width="20" height="40" fill="#5A4636"/><rect x="183" y="8" width="26" height="7" rx="2" fill="#4A3828"/>
       <rect x="18" y="62" width="224" height="92" rx="5" fill="url(#gxWall)"/><rect x="18" y="140" width="224" height="14" fill="#DCCFB9"/>
       <path d="M2 68L130 4L130 68z" fill="#4A4A4A"/><path d="M130 4L258 68L130 68z" fill="#2E2E2E"/><path d="M2 68H258" stroke="#232323" stroke-width="4" stroke-linecap="round"/>
@@ -1177,9 +1353,11 @@ function gardenSVG(n,palms,seen,animate,wide){
       <path d="M0 58L82 6L82 58z" fill="#4A4A4A"/><path d="M82 6L164 58L82 58z" fill="#2E2E2E"/><path d="M0 58H164" stroke="#232323" stroke-width="3.5" stroke-linecap="round"/>
       ${win(26,72,30,24)}${win(108,72,30,24)}
       <rect x="64" y="80" width="34" height="50" rx="4" fill="url(#gxDoor)"/><circle cx="91" cy="106" r="2.3" fill="#F4D27A"/><rect x="58" y="128" width="46" height="6" rx="2" fill="#CBBCA2"/></g>`:'';
+  const house2=W!=='garden'&&house?houseAlt(has(60)):house;
   if(house)o+=`<ellipse cx="${has(60)?730:722}" cy="${has(60)?366:362}" rx="${has(60)?140:90}" ry="12" fill="#0B3B2E" opacity=".14"/>`;
-  o+=house;
-  if(has(10)){let st='';for(let row=0;row<3;row++)for(let j=0;j<5;j++){const x=-34+j*14+(row%2?7:0);if(x>30)continue;st+=`<rect x="${x}" y="${32+row*10}" width="13" height="9" rx="3" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".8"/>`}
+  o+=house2;
+  if(has(10)&&W==='beach')o+=`<g transform="translate(215 335)"><ellipse cy="8" rx="52" ry="7" fill="#0B3B2E" opacity=".14"/><path d="M-50-6H50L38 8H-38Z" fill="#C0392B"/><path d="M-50-6H50L46 0H-46Z" fill="#FFFFFF"/><path d="M-38 8H38" stroke="#8E2A1F" stroke-width="2"/><path d="M-30-6Q-36-20-30-24M30-6Q36-20 30-24" stroke="#8B6B4A" stroke-width="2.4" fill="none"/><path d="M-18-6V-10H18V-6" fill="#8B5A33"/></g>`;
+  else if(has(10)){let st='';for(let row=0;row<3;row++)for(let j=0;j<5;j++){const x=-34+j*14+(row%2?7:0);if(x>30)continue;st+=`<rect x="${x}" y="${32+row*10}" width="13" height="9" rx="3" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".8"/>`}
     o+=`<g transform="translate(215 300)"><ellipse cy="64" rx="40" ry="8" fill="#0B3B2E" opacity=".14"/><path d="M-34 30V60Q0 70 34 60V30z" fill="#9AA5A3"/><clipPath id="gxWellClip"><path d="M-34 30V60Q0 70 34 60V30z"/></clipPath><g clip-path="url(#gxWellClip)">${st}</g>
       <ellipse cy="30" rx="34" ry="9" fill="#8D9896"/><ellipse cy="30" rx="27" ry="6" fill="#2F4A55"/><path d="M-26 30V-4M26 30V-4" stroke="#7A5A3C" stroke-width="5" stroke-linecap="round"/>
       <path d="M-42-2L0-28L0-2z" fill="#4A4A4A"/><path d="M0-28L42-2L0-2z" fill="#2E2E2E"/><path d="M-26 -1H26" stroke="#7A5A3C" stroke-width="3"/>
@@ -1190,7 +1368,9 @@ function gardenSVG(n,palms,seen,animate,wide){
       <path d="M262 462q22-9 44 0M352 478q22-9 44 0M300 486q16-6 32 0" stroke="#fff" stroke-width="2.6" fill="none" opacity=".55" stroke-linecap="round"/>
       ${lily(300,476,11,true)}${lily(382,458,9,false)}${lily(360,484,7,true)}</g>`}
   if(has(15))o+='<g transform="translate(560 470)"><ellipse cy="9" rx="34" ry="4" fill="#0B3B2E" opacity=".14"/><path d="M-24-7v14M24-7v14M-22-20v-6M22-20v-6" stroke="#5A4636" stroke-width="4" stroke-linecap="round"/><rect x="-32" y="-15" width="64" height="8" rx="3" fill="#A47E58"/><rect x="-32" y="-15" width="64" height="3" rx="1.5" fill="#C29A70"/><rect x="-32" y="-29" width="64" height="7" rx="3" fill="#A47E58"/><rect x="-32" y="-29" width="64" height="2.5" rx="1.2" fill="#C29A70"/></g>';
-  if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/>'+label(0,-32,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>';
+  if(has(100)&&W==='beach')o+='<g transform="translate(75 250)"><path d="M-16 120L-9 -40H9L16 120Z" fill="#FFFFFF"/><path d="M-14 80H14L13 100H-13ZM-11 20H11L10 40H-10ZM-10-20H10L9 0H-9Z" fill="#C0392B"/><rect x="-12" y="-62" width="24" height="22" rx="3" fill="#383838"/><rect x="-8" y="-58" width="16" height="14" rx="2" fill="#FFE9A0" class="glow"/><path d="M-14-62L0-76L14-62Z" fill="#C0392B"/></g>';
+  else if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/>'+label(0,-32,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>';
+  o+=decorSVG(night,has,wide);
   const pts=slots(Math.min(n,260));
   const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
   if(dry>0)o+='<g filter="url(#gd)">';
@@ -1200,8 +1380,14 @@ function gardenSVG(n,palms,seen,animate,wide){
   const sp=[[880,330],[530,300],[950,300],[140,520]];
   for(let i=0;i<Math.min(palms,sp.length);i++){const [x,y]=sp[i];o+=`<g transform="translate(${x} ${y}) scale(1.5)"><path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#F4B740" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/></g><g fill="#C2410C"><circle cx="-4" cy="-35" r="2.6"/><circle cx="3" cy="-34" r="2.6"/></g></g>`}
   const oryx=(x,y,f=1)=>`<g transform="translate(${x} ${y}) scale(${f} 1)"><path d="M-30 0v26M-18 2v24M14 2v24M26 0v26" stroke="#E9E4DA" stroke-width="4" stroke-linecap="round"/><path d="M-30 26v-6M26 26v-6" stroke="#383838" stroke-width="4"/><ellipse cy="-4" rx="36" ry="16" fill="#F7F3EC"/><path d="M-36-6c-6 4-8 10-6 16" stroke="#F7F3EC" stroke-width="4" fill="none"/><path d="M26-14l14-18" stroke="#F7F3EC" stroke-width="11" stroke-linecap="round"/><ellipse cx="44" cy="-34" rx="9" ry="7" fill="#F7F3EC"/><path d="M42-40l-12-36M46-40l-6-36" stroke="#4A3B2E" stroke-width="2.4" stroke-linecap="round"/><path d="M48-36l2 6" stroke="#383838" stroke-width="3" stroke-linecap="round"/><path d="M-20-4h34" stroke="#C9B9A2" stroke-width="3" opacity=".6"/></g>`;
-  if(has(100))o+=oryx(860,470)+oryx(930,430,-0.85);
-  if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-14 0v16M-6 1v15M8 1v15M14 0v16" stroke="#B9875A" stroke-width="2.6"/><ellipse cy="-2" rx="18" ry="8" fill="#D9A46F"/><path d="M12-6l8-10" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><ellipse cx="22" cy="-18" rx="5" ry="4" fill="#D9A46F"/><path d="M21-21l-3-10M24-21l1-10" stroke="#4A3B2E" stroke-width="1.6"/></g>`;o+=gz(780,520)+gz(700,540)}
+  const crab=(x,y)=>`<g transform="translate(${x} ${y})"><g class="crab"><ellipse rx="10" ry="6" fill="#E2553A"/><path d="M-9-2l-6-6M9-2l6-6M-8 3l-7 3M8 3l7 3M-6 5l-4 5M6 5l4 5" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/><circle cx="-15" cy="-9" r="3" fill="#E2553A"/><circle cx="15" cy="-9" r="3" fill="#E2553A"/><circle cx="-3" cy="-6" r="1.4" fill="#222"/><circle cx="3" cy="-6" r="1.4" fill="#222"/></g></g>`;
+  const camel=(x,y,f=1)=>`<g transform="translate(${x} ${y}) scale(${f} 1)"><ellipse cy="30" rx="34" ry="5" fill="#0B3B2E" opacity=".12"/><path d="M-22 4v26M-12 6v24M14 6v24M24 4v26" stroke="#B88A55" stroke-width="5" stroke-linecap="round"/><path d="M-30 6Q-30-14-14-12Q-6-30 4-12Q12-24 22-10Q30-6 30 6Z" fill="#D2A26A"/><path d="M28 0Q40-6 38-24" stroke="#D2A26A" stroke-width="9" fill="none" stroke-linecap="round"/><ellipse cx="42" cy="-26" rx="9" ry="6" fill="#D2A26A"/><circle cx="44" cy="-28" r="1.2" fill="#222"/><path d="M-30 4q-6 6-4 14" stroke="#B88A55" stroke-width="3" fill="none"/><path d="M-14-12q8 4 18 0" stroke="#C0392B" stroke-width="3"/></g>`;
+  if(has(100)){if(W==='beach')o+=crab(860,480)+crab(930,450)+crab(800,520);
+    else if(W==='oasis')o+=camel(860,450)+camel(940,470,-.85);
+    else if(W==='mountain')o+=oryx(860,470).replace(/#F7F3EC/g,'#A47E58').replace(/#E9E4DA/g,'#8B6B4A')+oryx(930,430,-0.85).replace(/#F7F3EC/g,'#A47E58').replace(/#E9E4DA/g,'#8B6B4A');
+    else o+=oryx(860,470)+oryx(930,430,-0.85)}
+  if(has(150)&&W==='beach'){const gull=(x,y)=>`<g transform="translate(${x} ${y})"><ellipse rx="9" ry="5" fill="#FFFFFF"/><circle cx="7" cy="-5" r="3.6" fill="#FFFFFF"/><path d="M10-5l4 1-4 1z" fill="#F4A340"/><path d="M-8-2q4-4 10-2" fill="#C9D2D6"/><path d="M-2 4v6M2 4v6" stroke="#F4A340" stroke-width="1.4"/></g>`;o+=gull(760,530)+gull(700,545)}
+  else if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-14 0v16M-6 1v15M8 1v15M14 0v16" stroke="#B9875A" stroke-width="2.6"/><ellipse cy="-2" rx="18" ry="8" fill="#D9A46F"/><path d="M12-6l8-10" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><ellipse cx="22" cy="-18" rx="5" ry="4" fill="#D9A46F"/><path d="M21-21l-3-10M24-21l1-10" stroke="#4A3B2E" stroke-width="1.6"/></g>`;o+=gz(780,520)+gz(700,540)}
   // birds fly across the sky (not at night)
   if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><path class="flap" d="M-10 0q5-7 10 0q5-7 10 0" stroke="#383838" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g></g>`;
     o+=bird(150,34,1,4)+bird(175,40,.8,18)+bird(135,46,.7,30)+(has(80)?bird(190,38,.9,10):'');}
@@ -1379,7 +1565,7 @@ function pickPlant(from,to){
   box.querySelector('.later').onclick=close;sc.onclick=close;
   document.body.append(sc,box);row.querySelector('button').focus();
 }
-function plusBubble(w){const el=document.createElement('span');el.className='plus';el.textContent=`+${w} 🌱`;$('hello').append(el);setTimeout(()=>el.remove(),2000)}
+function plusBubble(w,d){const el=document.createElement('span');el.className='plus';el.textContent=`+${w} 🌱`+(d?`  +${d} 🌴`:'');$('hello').append(el);setTimeout(()=>el.remove(),2000)}
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
@@ -1422,7 +1608,9 @@ function renderChecks(){
   t.checklist.forEach((c,i)=>{
     const row=document.createElement('div');row.className='chk'+(c.done?' done':'');
     const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!c.done;cb.id='chk-'+i;cb.setAttribute('aria-label','تم');
-    cb.onchange=()=>{c.done=cb.checked;persist(t);renderChecks();render()};
+    cb.onchange=()=>{const lt=cur()||t,lc=(lt.checklist||[])[i]||c;lc.done=cb.checked;persist(lt);renderChecks();render()};
+    // clicking anywhere on the row (not the text or the ×) ticks the step
+    row.addEventListener('click',e=>{if(e.target===row){cb.checked=!cb.checked;cb.onchange()}});
     const tx=document.createElement('input');tx.type='text';tx.value=c.text||'';tx.id='chkt-'+i;tx.setAttribute('aria-label','الخطوة');
     tx.oninput=()=>{c.text=tx.value;schedule()};
     const x=document.createElement('button');x.className='x';x.textContent='×';x.setAttribute('aria-label','حذف الخطوة');
