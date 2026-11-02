@@ -391,6 +391,78 @@ body.resizing{cursor:ns-resize;user-select:none}
 .sp-row input{width:100%;accent-color:#0EA89C}
 .sp-off{border:0;border-radius:999px;background:var(--surface-2);color:var(--ink);font-size:12px;padding:6px 10px}
 .sp-off:hover{background:var(--line)}
+.g-worlds{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.g-worlds button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--ink)}
+.g-worlds button[aria-pressed="true"]{background:var(--solid);color:var(--on-solid);border-color:var(--solid)}
+.g-worlds button.new{border-color:#0EA89C;color:#0EA89C;font-weight:600}
+.g-worlds button.locked{opacity:.55;cursor:default}
+.mkt{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.mkt-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mkt-h b{font-family:var(--f-display);font-size:18px;font-weight:600}
+.mkt-h .bal{font-family:var(--f-display);font-weight:600;font-size:16px;background:linear-gradient(135deg,#F7D88A,#E8B54A);color:#5A3A10;border-radius:999px;padding:5px 14px;font-variant-numeric:tabular-nums}
+.mkt-act{display:flex;gap:8px;flex-wrap:wrap}.mkt-act:empty{display:none}
+.mkt-act button{border:0;border-radius:999px;padding:8px 14px;font-weight:600;font-size:13px;background:#0EA89C;color:#fff}
+.mkt-deal{display:flex;flex-direction:column;gap:6px}.mkt-deal:empty{display:none}
+.deal{display:flex;align-items:center;gap:12px;border-radius:16px;padding:10px 14px;background:linear-gradient(135deg,#FFF1DA,#FFE2C2);color:#5A3A10}
+.deal.rare{background:linear-gradient(135deg,#EFE6FF,#E1F3FF);color:#2E2A5A}
+.deal svg{width:46px;height:46px;flex:none}
+.deal .dt{flex:1;min-width:0;font-size:13px;line-height:1.5}.deal .dt b{display:block;font-size:14px}
+.deal button{border:0;border-radius:999px;padding:7px 12px;font-weight:600;font-size:12.5px;background:#383838;color:#fff;white-space:nowrap}
+.mkt-tabs button{font-size:12.5px;padding:5px 12px}
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px}
+.mi{display:flex;gap:10px;border:1px solid var(--line);border-radius:16px;padding:10px;background:var(--surface);min-width:0}
+.mi.max{background:var(--accent-soft);border-color:transparent}
+.mi-ic{width:72px;height:72px;flex:none;border-radius:12px;background:linear-gradient(180deg,#DDF3EF,#BFE6C8);display:grid;place-items:center;overflow:hidden}
+.mi-ic svg{width:72px;height:72px}
+.mi-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.mi-n{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mi-n .lv{font-size:10px;letter-spacing:1px;color:#E0A030}
+.mi-n .tag{font-size:10.5px;font-weight:600;border-radius:999px;padding:1px 7px;background:#EFE6FF;color:#5A3FA0}
+.mi-d{font-size:12px;color:var(--ink-2);line-height:1.5}
+.mi-d small{display:block;color:var(--ink-3)}
+.mi-f{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:auto}
+.mi-f .buy{border:0;border-radius:999px;padding:6px 12px;font-weight:600;font-size:12.5px;background:#0EA89C;color:#fff}
+.mi-f .buy.short{background:var(--surface-2);color:var(--ink-3)}
+.mi-f .buy:disabled{background:var(--surface-2);color:var(--ink-3);cursor:default}
+.mi-f .old{text-decoration:line-through;color:var(--ink-3);font-size:11.5px}
+.mi-f .hide{border:0;background:transparent;color:var(--ink-3);font-size:11.5px;text-decoration:underline}
+.set{border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.set .chips{display:flex;gap:6px;flex-wrap:wrap}.set .chips span{font-size:12px;border-radius:999px;padding:3px 10px;background:var(--surface-2);color:var(--ink-3)}
+.set .chips span.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.set button{align-self:flex-start;border:0;border-radius:999px;padding:6px 14px;font-weight:600;font-size:12.5px;background:#E8B54A;color:#5A3A10}
+.set button:disabled{background:var(--surface-2);color:var(--ink-3)}
+.logrow{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:7px 2px;border-bottom:1px solid var(--line)}
+.logrow b{font-variant-numeric:tabular-nums;white-space:nowrap}.logrow b.p{color:#0EA89C}.logrow b.m{color:var(--danger)}
+.logrow span small{color:var(--ink-3);margin-inline-start:6px}
+/* item motion */
+.swingseat{transform-box:view-box;transform-origin:0 -56px;animation:swingseat 2.6s ease-in-out infinite alternate}
+@keyframes swingseat{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+.jet{transform-box:fill-box;transform-origin:50% 100%;animation:jet 1.4s ease-in-out infinite alternate}
+@keyframes jet{from{transform:scaleY(.86)}to{transform:scaleY(1.06)}}
+.drops{animation:drops 1.4s ease-in infinite}
+@keyframes drops{from{transform:translateY(-4px);opacity:1}to{transform:translateY(8px);opacity:0}}
+.duckbob{animation:bob 2.4s ease-in-out infinite alternate}
+.paddle{animation:paddle 12s ease-in-out infinite alternate}
+@keyframes paddle{from{transform:translateX(-14px)}to{transform:translateX(14px)}}
+.tail{transform-box:fill-box;transform-origin:100% 100%;animation:tailw 1.8s ease-in-out infinite alternate}
+@keyframes tailw{from{transform:rotate(-10deg)}to{transform:rotate(14deg)}}
+.zz{animation:zz 3s ease-in-out infinite}
+@keyframes zz{0%,100%{opacity:0;transform:translateY(4px)}50%{opacity:.85;transform:translateY(-2px)}}
+.fan{transform-box:fill-box;transform-origin:50% 100%;animation:fan 5s ease-in-out infinite}
+@keyframes fan{0%,100%{transform:scale(.55)}40%,70%{transform:scale(1)}}
+.spray{transform-box:fill-box;transform-origin:50% 100%;animation:spray 2.2s ease-in-out infinite alternate}
+@keyframes spray{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+.bee{animation:bee 2.6s ease-in-out infinite}
+@keyframes bee{0%{transform:translate(0,0)}25%{transform:translate(8px,-6px)}50%{transform:translate(-4px,-10px)}75%{transform:translate(-8px,-2px)}100%{transform:translate(0,0)}}
+.bellswing{transform-box:view-box;transform-origin:0 -44px;animation:bellsw 3.4s ease-in-out infinite alternate}
+@keyframes bellsw{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+.float{animation:floatb 6s ease-in-out infinite alternate}
+@keyframes floatb{from{transform:translate(-20px,0)}to{transform:translate(30px,-14px)}}
+.blades{animation:spin 6s linear infinite}
+.crab{animation:crab 4s ease-in-out infinite alternate}
+@keyframes crab{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
+.smoke{animation:smoke 4s ease-out infinite}
+@keyframes smoke{from{transform:translateY(0);opacity:.7}to{transform:translateY(-14px);opacity:0}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -551,6 +623,14 @@ body.resizing{cursor:ns-resize;user-select:none}
   <div class="g-scene" id="g-scene"></div>
   <div class="g-prog"><div class="g-bar"><i id="g-bar"></i></div><div class="g-next" id="g-next"></div></div>
   <div class="g-list" id="g-list"></div>
+  <div class="g-worlds" id="g-worlds"></div>
+  <section class="mkt" id="mkt" aria-label="سوق الحديقة">
+    <div class="mkt-h"><b>🛒 سوق الحديقة</b><span class="bal" id="mkt-bal"></span></div>
+    <div class="mkt-act" id="mkt-act"></div>
+    <div class="mkt-deal" id="mkt-deal"></div>
+    <div class="types mkt-tabs" id="mkt-tabs"></div>
+    <div class="mkt-grid" id="mkt-grid"></div>
+  </section>
 </div>
 
 <script>
@@ -1039,6 +1119,7 @@ const structName=x=>((WORLD_NAMES[curWorld()]||{})[x.name])||x.name;
 const structMsg=x=>WORLD_NAMES[curWorld()]&&WORLD_NAMES[curWorld()][x.name]?`صار عندك ${structName(x)}!`:x.msg;
 function switchWorld(id){
   const g=state.garden,cur=curWorld();if(id===cur)return;
+  if(gardenCount()>=100)g.unlockedNew=true; // reaching a reserve once opens every world for good
   g.worlds=Object.assign({},g.worlds||{});g.worlds[cur]={count:gardenCount(),picks:g.picks||{},seen:g.seen||0};
   const nx=g.worlds[id]||{count:0,picks:{},seen:0};
   g.world=id;g.count=nx.count;g.picks=nx.picks;g.seen=nx.seen;g.noFallback=true;saveGarden();
@@ -1106,7 +1187,7 @@ const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
-function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback};
+function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
 function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?plantWeight(t):1;const g=state.garden;g.count=g.noFallback?(g.count||0)+w:Math.max((g.count||0)+w,doneWeight());saveGarden();return g.count}
@@ -1272,7 +1353,7 @@ function itemArt(id,l,night){
   case 'windmill':return `${SH(16)}<path d="M-12 0L-7-56H7L12 0Z" fill="#F3EDE3" stroke="#D9CDB8" stroke-width="1.4"/><rect x="-4" y="-16" width="8" height="16" rx="3" fill="#8B6B4A"/><path d="M-9-62h18l-9-9z" fill="#C2410C"/><g transform="translate(0 -58)"><g class="blades"><path d="M0 0L-4-38H4ZM0 0L38-4V4ZM0 0L4 38H-4ZM0 0L-38 4V-4Z" fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"/><circle r="3.4" fill="#5A4636"/></g></g>`;
   case 'goldtree':return `${SH(26)}<path d="M-4 0c1-12 0-22 1-34h6c1 12 0 22 1 34z" fill="url(#gxTrunk)"/><circle cx="-15" cy="-42" r="15" fill="#6E9A2E"/><circle cx="15" cy="-42" r="15" fill="#6E9A2E"/><circle cy="-56" r="18" fill="#86B23A"/><circle cy="-40" r="14" fill="#7AA834"/><g class="glow" fill="#FFD84A" stroke="#E0A030" stroke-width=".8"><ellipse cx="-14" cy="-46" rx="3.6" ry="2.8"/><ellipse cx="8" cy="-58" rx="3.6" ry="2.8"/><ellipse cx="16" cy="-40" rx="3.6" ry="2.8"/><ellipse cx="-4" cy="-36" rx="3.6" ry="2.8"/><ellipse cx="-6" cy="-64" rx="3.2" ry="2.6"/></g><path d="M-20-62l2 2M22-56l2-2M0-78v3" stroke="#FFE27A" stroke-width="1.6" stroke-linecap="round"/>`;
   }return ''}
-const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[965,388],fountain:[430,345],flowercart:[660,514],archway:[505,550],birdhouse:[300,302],peacock:[770,460],sprinkler:[620,446],hive:[172,546],greenhouse:[892,302],basket:[792,374],bell:[972,306],palmgrove:[352,548],windmill:[34,262],goldtree:[592,520]};
+const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[965,388],fountain:[430,345],flowercart:[660,514],archway:[505,550],birdhouse:[300,302],peacock:[770,460],sprinkler:[620,446],hive:[172,546],greenhouse:[892,302],basket:[792,374],bell:[972,306],palmgrove:[352,548],windmill:[178,250],goldtree:[592,520]};
 const DECOR_RES=Object.values(DECOR_POS).map(([x,y])=>({x:x-34,y:y-56,w:68,h:62}));
 function decorSVG(night,has,wide){
   const show=id=>owned(id)&&!(state.garden.hidden||{})[id];let o='';
@@ -1403,18 +1484,78 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(!n)o+='<g transform="translate(500 430) scale(3.2)"><g class="pl"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g></g>';
   return o+'</svg>';
 }
+/* ---------- worlds row + market UI ---------- */
+let worldArm=null,mktTab='all';
+function renderWorlds(){
+  const g=state.garden,cur=curWorld(),wrap=$('g-worlds');wrap.replaceChildren();
+  const visited=new Set(['garden',cur,...Object.keys(g.worlds||{})]);
+  const canNew=gardenCount()>=100||!!g.unlockedNew;
+  const lab=document.createElement('span');lab.textContent='🌍 العوالم:';wrap.append(lab);
+  for(const [id,w] of Object.entries(WORLDS)){
+    const b=document.createElement('button');b.type='button';const isNew=!visited.has(id)&&canNew,locked=!visited.has(id)&&!canNew;
+    b.textContent=`${w.icon} ${w.name}`+(locked?' 🔒':isNew?' · جديد':'');b.setAttribute('aria-pressed',String(id===cur));
+    if(isNew)b.className='new';if(locked){b.className='locked';b.title='توصل محمية (100 زرعة) في عالمك الحالي وينفتح'}
+    if(worldArm===id)b.textContent='اضغط مرة ثانية للانتقال';
+    b.onclick=()=>{if(locked||id===cur)return;if(worldArm!==id){worldArm=id;renderWorlds();setTimeout(()=>{if(worldArm===id){worldArm=null;renderWorlds()}},3500);return}worldArm=null;switchWorld(id)};
+    wrap.append(b)}
+}
+function itemIcon(id,l){return `<svg viewBox="-46 -72 92 82" aria-hidden="true"><defs>${gardenDefs(skyFor('day'),false)}</defs>${id==='lanterns'?lanternArt(false):itemArt(id,Math.max(1,l),false)}</svg>`}
+function renderMarket(){
+  const g=state.garden,bal=datesBal();$('mkt-bal').textContent=`🌴 ${bal}`;
+  // daily actions
+  const act=$('mkt-act');act.replaceChildren();
+  const hv=hiveReady();if(hv){const b=document.createElement('button');b.textContent=`🐝 اجمع العسل (+${hv})`;b.onclick=collectHive;act.append(b)}
+  const hr=harvestReady();if(hr){const b=document.createElement('button');b.textContent=`🌴 احصد التمر (+${hr})`;b.onclick=harvest;act.append(b)}
+  // deal of the day + rare items today
+  const dl=$('mkt-deal');dl.replaceChildren();const did=dealToday();
+  if(did){const it=ITEM[did],d=document.createElement('div');d.className='deal';d.innerHTML=itemIcon(did,lvlOf(did)+1);
+    const tx=document.createElement('div');tx.className='dt';tx.innerHTML=`<b>🔥 عرض اليوم</b>`;tx.append(`${it.name}${lvlOf(did)?' (المستوى '+(lvlOf(did)+1)+')':''} بخصم 30%: 🌴 ${priceOf(did)} بدل ${it.prices[lvlOf(did)]}`);
+    const b=document.createElement('button');b.textContent=lvlOf(did)?'طوّر':'اشترِ';b.disabled=!!buyable(did);b.onclick=()=>buy(did);d.append(tx,b);dl.append(d)}
+  {const [a,b2]=rareToday(),d=document.createElement('div');d.className='deal rare';d.innerHTML=itemIcon(a,1);const tx=document.createElement('div');tx.className='dt';tx.innerHTML='<b>✨ النادر اليوم</b>';tx.append(`${ITEM[a].name} و${ITEM[b2].name}: يتغيرون كل يوم، اشترهم قبل ما يروحون`);d.append(tx);dl.append(d)}
+  // tabs
+  const tabs=$('mkt-tabs');tabs.replaceChildren();
+  for(const [k,n] of CATS){const b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-pressed',String(mktTab===k));b.onclick=()=>{mktTab=k;renderMarket()};tabs.append(b)}
+  const grid=$('mkt-grid');grid.replaceChildren();
+  if(mktTab==='sets'){for(const st of SETS){const done=(g.sets||{})[st.id],have=st.items.filter(owned).length;const el=document.createElement('div');el.className='set';
+      el.innerHTML=`<b>${st.name}</b><div class="chips">${st.items.map(i=>`<span class="${owned(i)?'on':''}">${owned(i)?'✓ ':''}${ITEM[i].name}</span>`).join('')}</div><div class="mi-d">الجائزة: ${st.rtext} · ${have}/${st.items.length}</div>`;
+      const b=document.createElement('button');b.textContent=done?'استلمتها ✓':'استلم الجائزة';b.disabled=!!done||have<st.items.length;b.onclick=()=>claimSet(st.id);el.append(b);grid.append(el)}return}
+  if(mktTab==='log'){const lg=(g.log||[]);if(!lg.length){grid.innerHTML='<div class="mi-d">لسا ما فيه حركة. خلّص مهمة وتبدأ تجمع التمر 🌴</div>';return}
+    const box=document.createElement('div');box.style.gridColumn='1/-1';for(const e of lg){const r=document.createElement('div');r.className='logrow';const sp=document.createElement('span');sp.textContent=e.why;const sm=document.createElement('small');sm.textContent=new Intl.DateTimeFormat('ar-u-nu-latn',{day:'numeric',month:'short'}).format(e.t);sp.append(sm);const bb=document.createElement('b');bb.className=e.d>=0?'p':'m';bb.textContent=(e.d>0?'+':'')+e.d+' 🌴';r.append(sp,bb);box.append(r)}grid.append(box);return}
+  const list=ITEMS.filter(x=>mktTab==='all'||x.cat===mktTab).filter(x=>!x.rare||owned(x.id)||rareToday().includes(x.id)||mktTab==='rare');
+  for(const it of list){const l=lvlOf(it.id),max=l>=it.prices.length,pr=priceOf(it.id),why=buyable(it.id);
+    const el=document.createElement('div');el.className='mi'+(max?' max':'');
+    el.innerHTML=`<div class="mi-ic">${itemIcon(it.id,max?l:l+1)}</div>`;
+    const b=document.createElement('div');b.className='mi-b';
+    const nm=document.createElement('div');nm.className='mi-n';nm.textContent=it.name;
+    if(it.prices.length>1){const lv=document.createElement('span');lv.className='lv';lv.textContent='●'.repeat(l)+'○'.repeat(it.prices.length-l);nm.append(lv)}
+    if(it.rare){const tg=document.createElement('span');tg.className='tag';tg.textContent=rareToday().includes(it.id)?'نادر · اليوم':'نادر';nm.append(tg)}
+    const d=document.createElement('div');d.className='mi-d';d.textContent=max?it.desc[it.desc.length-1]:it.desc[l];
+    if(l&&!max){const sm=document.createElement('small');sm.textContent='عندك: '+it.desc[l-1];d.append(sm)}
+    if(it.note){const sm=document.createElement('small');sm.textContent=it.note;d.append(sm)}
+    const f=document.createElement('div');f.className='mi-f';
+    const btn=document.createElement('button');btn.className='buy';
+    if(max){btn.textContent='أعلى مستوى ✓';btn.disabled=true}
+    else if(why){btn.textContent=why;btn.disabled=true}
+    else{btn.textContent=`${l?'طوّر':'اشترِ'} · 🌴 ${pr}`;if(bal<pr)btn.classList.add('short');btn.onclick=()=>buy(it.id)}
+    f.append(btn);
+    if(it.id===dealToday()&&!max){const o=document.createElement('span');o.className='old';o.textContent=it.prices[l];f.append(o)}
+    if(l&&!['sprinkler','hive','greenhouse','basket','bell','palmgrove'].includes(it.id)||(l&&['sprinkler','hive','greenhouse','basket','bell','palmgrove'].includes(it.id))){const h=document.createElement('button');h.className='hide';h.textContent=(g.hidden||{})[it.id]?'إظهار في الحديقة':'إخفاء من الحديقة';h.onclick=()=>toggleHide(it.id);f.append(h)}
+    b.append(nm,d,f);el.append(b);grid.append(el)}
+}
 function renderGarden(animate){
   const n=gardenCount(),lv=levelOf(n),next=STRUCTS.find(x=>x.at>n),nextLv=LEVELS.find(x=>x.min>n);
   $('g-lvl').textContent=lv.name;
+  document.querySelector('#gview .g-l').textContent=`الحديقة · ${WORLDS[curWorld()].icon} ${WORLDS[curWorld()].name}`;
   {let note=dryNote()||WEATHER_NOTE[weatherNow()];if(periodOf(new Date().getHours())==='night'){const m=moonInfo();let mn='';try{mn=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'long'}).format(new Date())}catch(e){}note=(note?note+' · ':'')+`🌙 القمر الليلة: ${m.name}${mn?' ('+mn+')':''}`}$('g-wx').textContent=note;$('g-wx').hidden=!note}
   $('g-sub').textContent=n?`زرعت ${n} ${n===1?'زرعة':n===2?'زرعتين':n<=10?'زرعات':'زرعة'} · السهلة تزرع وحدة، المتوسطة اثنتين، والكبيرة ثلاث`:'خلّص أول مهمة وتنزرع أول نبتة';
   const seen=Math.min(state.garden.seen||0,n);
   $('g-scene').innerHTML=gardenSVG(n,palmCount(),seen,animate);
   const prev=[...STRUCTS].reverse().find(x=>x.at<=n);const from=prev?prev.at:0;
-  if(next){$('g-bar').style.width=((n-from)/(next.at-from)*100)+'%';const left=next.at-n;$('g-next').innerHTML='';$('g-next').append(`باقي ${left} ${left===1?'مهمة':left===2?'مهمتين':left<=10?'مهام':'مهمة'} ويصير عندك: `);const b=document.createElement('b');b.textContent=next.name;$('g-next').append(b);if(nextLv&&nextLv.min===next.at)$('g-next').append(` · وتصير ${nextLv.name}`)}
+  if(next){$('g-bar').style.width=((n-from)/(next.at-from)*100)+'%';const left=next.at-n;$('g-next').innerHTML='';$('g-next').append(`باقي ${left} ${left===1?'مهمة':left===2?'مهمتين':left<=10?'مهام':'مهمة'} ويصير عندك: `);const b=document.createElement('b');b.textContent=structName(next);$('g-next').append(b);if(nextLv&&nextLv.min===next.at)$('g-next').append(` · وتصير ${nextLv.name}`)}
   else{$('g-bar').style.width='100%';$('g-next').textContent='محميتك اكتملت. كل مهمة تخلّصها تزيد فيها زرع.'}
   const list=$('g-list');list.replaceChildren();
-  for(const x of STRUCTS){const sp=document.createElement('span');sp.className=n>=x.at?'on':'';sp.textContent=(n>=x.at?'✓ ':'')+x.name+(n>=x.at?'':` · ${x.at}`);list.append(sp)}
+  for(const x of STRUCTS){const sp=document.createElement('span');sp.className=n>=x.at?'on':'';sp.textContent=(n>=x.at?'✓ ':'')+structName(x)+(n>=x.at?'':` · ${x.at}`);list.append(sp)}
+  renderWorlds();renderMarket();
   if(animate&&n>(state.garden.seen||0)){state.garden.seen=n;saveGarden()}
 }
 function openGarden(){$('g-scrim').hidden=false;$('gview').hidden=false;renderGarden(true);$('g-close').focus()}
