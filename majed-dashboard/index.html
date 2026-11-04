@@ -129,8 +129,17 @@ main{max-width:920px;margin:0 auto;padding:40px clamp(16px,4vw,40px) 80px;min-wi
 .card h4{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.4;margin:0;transition:color .15s}
 .card:hover h4{color:var(--accent)}
 .card .excerpt{color:var(--ink-2);font-size:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .foot{font-size:13px;color:var(--ink-3)}
-.card .foot .m{color:var(--accent)}
+.specs{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px;font-size:13.5px;margin-top:2px}
+.spec{color:var(--ink-2)}
+.spec-k{color:var(--ink-3)}
+.spec.m{color:var(--accent)}
+.spec-v{background:none;border:0;padding:0;font:inherit;color:var(--ink-2);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:4px}
+.spec-v:hover{color:var(--accent);text-decoration-color:currentColor}
+.specs-r{font-size:14px;margin:0}
+.chip .c{font-size:12px;color:var(--ink-3);opacity:.8}
+.chip:disabled{opacity:.35;cursor:default}
+.chip:disabled:hover{color:var(--ink-3)}
+.active-f{color:var(--ink)}
 .empty{padding:60px 0;text-align:center;color:var(--ink-3)}
 
 dialog{border:0;padding:0;background:transparent;max-width:min(820px,calc(100vw - 24px));width:100%;max-height:calc(100vh - 24px)}
@@ -345,18 +354,17 @@ function toast(msg){
 }
 
 /* ===== filtering ===== */
-function filtered(){
+function matches(p, skip){
+  if (state.view !== "home" && state.view !== "all" && p.section !== state.view) return false;
+  if (skip !== "dialect" && state.dialect && p.dialect !== state.dialect) return false;
+  if (skip !== "form" && state.form && p.form !== state.form) return false;
+  if (skip !== "persona" && state.persona && !(p.persona || []).includes(state.persona)) return false;
+  if (skip !== "hasMedia" && state.hasMedia && !mediaOf(p).length) return false;
   const q = norm(state.q.trim());
-  return poems.filter(p => {
-    if (state.view !== "home" && state.view !== "all" && p.section !== state.view) return false;
-    if (state.dialect && p.dialect !== state.dialect) return false;
-    if (state.form && p.form !== state.form) return false;
-    if (state.persona && !(p.persona || []).includes(state.persona)) return false;
-    if (state.hasMedia && !mediaOf(p).length) return false;
-    if (q && !norm([p.title, p.verses, p.occasion, (p.persona||[]).join(" ")].join(" ")).includes(q)) return false;
-    return true;
-  });
+  if (q && !norm([p.title, p.verses, p.occasion, (p.persona||[]).join(" ")].join(" ")).includes(q)) return false;
+  return true;
 }
+function filtered(){ return poems.filter(p => matches(p)); }
 
 
 /* ===== views ===== */
@@ -364,19 +372,30 @@ function excerpt(p){
   const lines = String(p.verses || "").split("\n").map(l => l.trim()).filter(l => l && !/^—.*—$/.test(l));
   return lines.slice(0, 2).map(l => esc(l.replace(/\s*\|\s*/, "  ·  "))).join("<br>");
 }
+function specs(p, cls){
+  const v = (f, id, text) => `<button class="spec-v" data-f="${f}" data-v="${esc(id)}" title="عرض كل ما يطابق">${esc(text)}</button>`;
+  const rows = [];
+  if (p.dialect) rows.push(`<span class="spec"><span class="spec-k">اللهجة</span> ${v("dialect", p.dialect, label(DIALECTS, p.dialect))}</span>`);
+  if ((p.persona || []).length) rows.push(`<span class="spec"><span class="spec-k">الشخصية</span> ${p.persona.map(x => v("persona", x, x)).join("، ")}</span>`);
+  if (p.form) rows.push(`<span class="spec"><span class="spec-k">النوع</span> ${v("form", p.form, label(FORMS, p.form))}</span>`);
+  if (mediaOf(p).length) rows.push(`<span class="spec m">فيه إلقاء ▸</span>`);
+  return rows.length ? `<div class="${cls}">${rows.join("")}</div>` : "";
+}
 function card(p){
-  const tags = [...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ");
   return `<article class="card" tabindex="0" data-id="${esc(p.id)}">
     <div class="sec">${[state.view === p.section ? "" : label(SECTIONS, p.section), p.occasion].filter(Boolean).map(esc).join(" · ")}</div>
     <h4>${esc(p.title)}</h4>
     <div class="excerpt">${excerpt(p)}</div>
-    <div class="foot">${tags}${mediaOf(p).length ? '  ·  <span class="m">إلقاء ▸</span>' : ""}</div>
+    ${specs(p, "specs")}
   </article>`;
 }
 function chips(name, list){
+  const base = poems.filter(p => matches(p, name));
+  const cnt = id => base.filter(p => name === "persona" ? (p.persona || []).includes(id) : p[name] === id).length;
   return `<div class="chips">` +
     `<button class="chip" data-f="${name}" data-v="" aria-pressed="${!state[name]}">الكل</button>` +
-    list.map(x => `<button class="chip" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${state[name] === x.id}">${esc(x.label)}</button>`).join("") +
+    list.map(x => { const n = cnt(x.id); const on = state[name] === x.id;
+      return `<button class="chip" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${on}" ${!n && !on ? "disabled" : ""}>${esc(x.label)}${n ? ` <span class="c">${num(n)}</span>` : ""}</button>`; }).join("") +
     `</div>`;
 }
 function scope(){
@@ -397,6 +416,10 @@ function filtersBar(){
   if (withMedia) rows.push(`<div class="fgroup"><span>الإلقاء</span><button class="chip" id="mediaChip" aria-pressed="${state.hasMedia}">فيه تسجيل فقط</button></div>`);
   return rows.length ? `<div class="filters">${rows.join("")}</div>` : "";
 }
+function activeSummary(){
+  const bits = [state.dialect && label(DIALECTS, state.dialect), state.persona, state.form && label(FORMS, state.form), state.hasMedia && "فيه إلقاء"].filter(Boolean);
+  return bits.length ? `<span class="active-f">${bits.map(esc).join(" + ")}</span> · ` : "";
+}
 function listView(){
   const items = filtered();
   const total = scope().length;
@@ -406,7 +429,7 @@ function listView(){
   return `<a class="crumb" href="#/">→ الأقسام</a>
     <h2 class="page-title">${esc(title)}</h2>
     ${total && !state.q ? filtersBar() : ""}
-    <div class="result-meta">${active ? `${count(items.length)} من ${num(total)} · <a href="#" id="clearF">مسح التصفية</a>` : count(items.length)}</div>` +
+    <div class="result-meta">${active ? `${activeSummary()}${count(items.length)} من ${num(total)} · <a href="#" id="clearF">مسح التصفية</a>` : count(items.length)}</div>` +
     (items.length
       ? `<div class="grid">${items.map(card).join("")}</div>`
       : `<div class="empty">${total ? "لا توجد قصائد مطابقة." : "لا توجد قصائد في هذا القسم بعد."}<br><button class="link" data-add>أضف قصيدة</button></div>`);
@@ -465,7 +488,7 @@ function openReader(id){
       <button class="x" data-close aria-label="رجوع"><span class="xi">×</span><span class="back">→ رجوع</span></button>
     </div>
     <div class="sheet-body">
-      <div class="meta-row"><span>${[...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ")}</span>
+      <div class="meta-row">${specs(p, "specs specs-r")}
         <span class="fs" role="group" aria-label="حجم الخط"><button class="s" data-fs="-1" aria-label="تصغير الخط">أ−</button><span class="sep"></span><button class="l" data-fs="1" aria-label="تكبير الخط">أ+</button></span></div>
       <div class="poem">${poemHTML(p.verses)}</div>
       ${p.notes ? `<div class="notes">${esc(p.notes)}</div>` : ""}
@@ -720,6 +743,14 @@ async function downloadPoem(id, kind){
 /* ===== events ===== */
 document.addEventListener("click", e => {
   const t = e.target;
+  const sv = t.closest(".spec-v");
+  if (sv) {
+    e.stopPropagation();
+    if ($("#reader").open) $("#reader").close();
+    state[sv.dataset.f] = sv.dataset.v; state.q = ""; $("#q").value = "";
+    if (state.view === "home") { keepFilters = true; location.hash = "#/all"; }
+    render(); window.scrollTo({ top: 0, behavior: "smooth" }); return;
+  }
   const cardEl = t.closest(".card"); if (cardEl) return openReader(cardEl.dataset.id);
   const chip = t.closest(".chip[data-f]"); if (chip) { state[chip.dataset.f] = chip.dataset.v; return render(); }
   if (t.closest("#mediaChip")) { state.hasMedia = !state.hasMedia; return render(); }
@@ -781,11 +812,12 @@ function setMore(on){ moreMenu.classList.toggle("on", on); moreBtn.setAttribute(
 moreBtn.onclick = () => setMore(!moreMenu.classList.contains("on"));
 moreMenu.addEventListener("click", e => { if (e.target.closest("button")) setMore(false); });
 
+let keepFilters = false;
 function route(){
   const v = location.hash.replace(/^#\/?/, "") || "home";
   const next = ["home", "all", ...SECTIONS.map(s => s.id)].includes(v) ? v : "home";
-  if (next !== state.view) Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false });
-  state.view = next;
+  if (next !== state.view && !keepFilters) Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false });
+  state.view = next; keepFilters = false;
   render(); window.scrollTo(0, 0);
 }
 addEventListener("hashchange", route);
