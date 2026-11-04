@@ -531,7 +531,20 @@ document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e =
 }));
 
 /* ===== import / export ===== */
-function exportData(){
+let downloadsApi = null;
+if (window.claude && typeof window.claude.use === "function") {
+  window.claude.use("downloads").then(d => { downloadsApi = d; }).catch(() => {});
+}
+async function exportData(){
+  if (downloadsApi) {
+    try {
+      await downloadsApi.save({ filename: "diwan-almajed.json", data: JSON.stringify(poems, null, 2) });
+      toast("تم حفظ الملف — افتحه لاحقاً من «استيراد ملف»");
+    } catch (e) {
+      if (e && e.code !== "declined") toast("تعذّر حفظ الملف هنا");
+    }
+    return;
+  }
   const body = "/* بيانات ديوان السيد محمد الماجد — صُدّرت في " + new Date().toLocaleDateString("ar") + " */\nwindow.POEMS_SEED = " + JSON.stringify(poems, null, 2) + ";\n";
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([body], { type: "text/javascript" }));
