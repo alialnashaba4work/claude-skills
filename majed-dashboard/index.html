@@ -192,6 +192,8 @@ dialog::backdrop{background:rgba(15,12,8,.45)}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink)}
 .field textarea{min-height:220px;line-height:2;resize:vertical;border:1px solid var(--line);padding:10px 12px}
 .hint{font-size:13px;color:var(--ink-3)}
+.chk{display:inline-flex;align-items:center;gap:8px;cursor:pointer;color:var(--ink-2)}
+.chk input{accent-color:var(--accent);margin:0}
 .persona-pick{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;padding:4px 0}
 .persona-pick label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink-2)}
 .persona-pick label:has(input:checked){color:var(--ink)}
@@ -316,6 +318,7 @@ const FORMS = [
   { id: "faizi",   label: "فايزي" },
   { id: "hur",     label: "حر" },
   { id: "abudhiya", label: "أبوذية" },
+  { id: "zamina",   label: "زمينة" },
   { id: "other",   label: "أخرى" }
 ];
 const PERSONAS = [
@@ -341,7 +344,13 @@ let poems;
 try { poems = JSON.parse(store.get(KEY)) || seed(); } catch { poems = seed(); }
 // poems added to data.js later still appear for viewers who have a saved copy (unless they deleted them)
 let deletedIds = []; try { deletedIds = JSON.parse(store.get(KEY + "-deleted")) || []; } catch {}
-seed().forEach(sp => { if (!poems.some(p => p.id === sp.id) && !deletedIds.includes(sp.id)) poems.push(sp); });
+const removedSeed = window.POEMS_REMOVED || [];
+poems = poems.filter(p => !removedSeed.includes(p.id));
+seed().forEach(sp => {
+  const i = poems.findIndex(p => p.id === sp.id);
+  if (i < 0) { if (!deletedIds.includes(sp.id)) poems.push(sp); }
+  else if (!poems[i].edited && (sp.v || 0) > (poems[i].v || 0)) poems[i] = sp;
+});
 const save = () => { if (!store.set(KEY, JSON.stringify(poems))) toast("تعذّر الحفظ في المتصفح — صدّر البيانات لحفظها"); };
 
 /* ===== state ===== */
@@ -463,6 +472,70 @@ function render(){
 }
 
 /* ===== reader ===== */
+/* ===== kashida: stretch shorter lines with tatweel so all lines match the longest ===== */
+const TATWEEL = "ـ";
+const RIGHT_ONLY = "اأإآٱدذرزژوؤة";
+const ALEFS = "اأإآٱ";
+const isLetter = c => /[ؠ-يٮ-ۓۺ-ۼ]/.test(c) && c !== "ء";
+const isMark = c => /[ً-ٰٟۖ-ۭ]/.test(c);
+function joints(word){
+  const out = [];
+  for (let i = 0; i < word.length; i++) {
+    const c = word[i];
+    if (!isLetter(c) || RIGHT_ONLY.includes(c)) continue;
+    let j = i + 1; while (j < word.length && isMark(word[j])) j++;
+    const n = word[j];
+    if (!n || !isLetter(n)) continue;
+    if (c === "ل" && ALEFS.includes(n)) continue;
+    out.push(j);
+  }
+  return out;
+}
+let measureCtx;
+function textWidth(t){
+  measureCtx = measureCtx || document.createElement("canvas").getContext("2d");
+  measureCtx.font = '400 48px "Thmanyah Serif Text", serif';
+  return measureCtx.measureText(t).width;
+}
+function stretch(line, target){
+  const words = line.split(" ");
+  const best = words.map(w => { const j = joints(w); return j.length ? j[j.length - 1] : -1; });
+  const counts = words.map(() => 0);
+  const build = () => words.map((w, i) => counts[i] ? w.slice(0, best[i]) + TATWEEL.repeat(counts[i]) + w.slice(best[i]) : w).join(" ");
+  if (!best.some(b => b >= 0)) return line;
+  const tw = textWidth(TATWEEL) || 1;
+  let out = line, guard = 0;
+  while (textWidth(out) + tw / 2 < target && guard++ < 300) {
+    let k = -1;
+    best.forEach((b, i) => { if (b >= 0 && (k < 0 || counts[i] < counts[k])) k = i; });
+    counts[k]++; out = build();
+  }
+  return out;
+}
+const kashidaCache = new Map();
+function kashidaText(text){
+  const key = String(text || "");
+  if (kashidaCache.has(key)) return kashidaCache.get(key);
+  const rows = key.split("\n").map(r => r.trim());
+  const halves = [], lines = [];
+  rows.forEach(l => {
+    if (!l || /^—.*—$/.test(l)) return;
+    if (l.includes("|")) { const [a, ...b] = l.split("|"); halves.push(a.trim(), b.join("|").trim()); }
+    else lines.push(l);
+  });
+  // half-lines and full lines are equalized separately
+  const tHalf = Math.max(0, ...halves.map(textWidth));
+  const tLine = Math.max(0, ...lines.map(textWidth));
+  const out = rows.map(l => {
+    if (!l || /^—.*—$/.test(l)) return l;
+    if (l.includes("|")) { const [a, ...b] = l.split("|"); return stretch(a.trim(), tHalf) + " | " + stretch(b.join("|").trim(), tHalf); }
+    return stretch(l, tLine);
+  }).join("\n");
+  kashidaCache.set(key, out);
+  return out;
+}
+const versesOf = p => p.kashida ? kashidaText(p.verses) : p.verses;
+
 function poemHTML(text){
   return String(text || "").split("\n").map(raw => {
     const l = raw.trim();
@@ -499,7 +572,7 @@ function openReader(id){
     <div class="sheet-body">
       <div class="meta-row">${specs(p, "specs specs-r")}
         <span class="fs" role="group" aria-label="حجم الخط"><button class="s" data-fs="-1" aria-label="تصغير الخط">أ−</button><span class="sep"></span><button class="l" data-fs="1" aria-label="تكبير الخط">أ+</button></span></div>
-      <div class="poem">${poemHTML(p.verses)}</div>
+      <div class="poem">${poemHTML(versesOf(p))}</div>
       ${p.notes ? `<div class="notes">${esc(p.notes)}</div>` : ""}
       ${m.length ? `<div class="media">${m.map(mediaHTML).join("")}</div>` : ""}
       <div class="sheet-actions">
@@ -511,6 +584,11 @@ function openReader(id){
       </div>
     </div>`;
   showDialog($("#reader")); updateFsButtons();
+  if (p.kashida && !document.fonts.check('16px "Thmanyah Serif Text"')) {
+    document.fonts.load('16px "Thmanyah Serif Text"').then(() => {
+      kashidaCache.clear(); const el = $("#reader .poem"); if (el) el.innerHTML = poemHTML(versesOf(p));
+    });
+  }
 }
 
 /* ===== editor ===== */
@@ -551,6 +629,7 @@ function openEditor(id){
       </div>
       <div class="field"><label for="f-year">السنة</label><input id="f-year" name="year" value="${esc(p.year)}"></div>
       <div class="field"><label for="f-notes">ملاحظات</label><input id="f-notes" name="notes" value="${esc(p.notes)}"></div>
+      <div class="field full"><label class="chk"><input type="checkbox" name="kashida" ${p.kashida ? "checked" : ""}> تساوي طول الأسطر بالكشيدة (ـ)</label><span class="hint">يمدّ الأسطر القصيرة تلقائياً لتصير بطول أطول سطر، بدون تغيير النص المحفوظ.</span></div>
       <div class="full sheet-actions" style="margin-top:4px">
         <button class="btn" type="submit">حفظ</button>
         <button class="link" type="button" data-close>إلغاء</button>
@@ -566,7 +645,8 @@ function submitForm(form){
   const data = {
     title: String(fd.get("title")).trim(), section: fd.get("section"), dialect: fd.get("dialect") || "", form: fd.get("form") || "",
     occasion: String(fd.get("occasion")).trim(), year: String(fd.get("year")).trim(), notes: String(fd.get("notes")).trim(),
-    verses: String(fd.get("verses")).replace(/\r/g, "").trim(), persona: [...new Set(persona)], media
+    verses: String(fd.get("verses")).replace(/\r/g, "").trim(), persona: [...new Set(persona)], media,
+    kashida: fd.get("kashida") === "on", edited: true
   };
   const id = form.dataset.id;
   if (id) Object.assign(poems.find(p => p.id === id), data);
@@ -679,7 +759,7 @@ async function buildPdf(p){
     <div style="font-family:var(--display);font-weight:900;font-size:40px;line-height:1.3;margin:12px 0 10px">${esc(p.title)}</div>
     <div style="font-size:13px;color:#8A8376">${esc(metaText(p))}</div>
     <div style="color:#B5AE9F;letter-spacing:.6em;margin-top:22px">✦ ✦ ✦</div></div>`);
-  parseLines(p.verses).forEach(l => {
+  parseLines(versesOf(p)).forEach(l => {
     if (l.k === "part") add(`<div style="text-align:center;color:#8C6A2F;font-size:16px;padding:22px 0 6px">${esc(l.t)}</div>`);
     else if (l.k === "bayt") add(`<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px;font-size:19px;line-height:2.2"><span style="text-align:center">${esc(l.a)}</span><span style="text-align:center">${esc(l.b)}</span></div>`);
     else add(`<div style="text-align:center;font-size:19px;line-height:2.2">${esc(l.t)}</div>`);
@@ -717,7 +797,7 @@ async function buildDocx(p){
     para(run(metaText(p), { size: 18, color: "8A8376" }), { after: 200 }),
     para(run("✦ ✦ ✦", { size: 20, color: "B5AE9F" }), { after: 360 })
   ];
-  parseLines(p.verses).forEach(l => {
+  parseLines(versesOf(p)).forEach(l => {
     if (l.k === "part") kids.push(para(run(l.t, { size: 24, color: "8C6A2F", bold: true }), { before: 240, after: 120 }));
     else if (l.k === "bayt") kids.push(new D.Table({
       visuallyRightToLeft: true, borders, width: { size: 100, type: D.WidthType.PERCENTAGE },
