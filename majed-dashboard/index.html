@@ -67,8 +67,11 @@ main{max-width:920px;margin:0 auto;padding:40px clamp(16px,4vw,40px) 80px;min-wi
 /* home: sections only */
 .home-label{color:var(--ink-3);font-size:14px;margin:0 0 10px;text-align:center}
 #view{text-align:center}
-.cats{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.cats a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:24px 2px;border-bottom:1px solid var(--line)}
+.cats{list-style:none;margin:0;padding:0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr}
+.cats li{border-bottom:1px solid var(--line)}
+.cats li:nth-child(odd){border-inline-end:1px solid var(--line)}
+.cats li:last-child:nth-child(odd){grid-column:1/-1;border-inline-end:0}
+.cats a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:34px 10px;height:100%}
 .cats .t{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.5vw,34px);line-height:1.3;transition:color .15s}
 .cats .n{color:var(--ink-3);font-size:15px;white-space:nowrap}
 .cats .arr{display:none}
@@ -216,7 +219,9 @@ dialog::backdrop{background:rgba(15,12,8,.45)}
   .head .brand h1{font-size:17px;margin:0}
   .head .search{display:none}
   main{padding-top:26px}
-  .cats a{padding:20px 2px}
+  .cats a{padding:24px 6px}
+  .cats .t{font-size:21px}
+  .cats .n{font-size:13px}
   .head.searching .search{display:block;grid-area:q;max-width:none;padding-bottom:12px}
   .icon-btn{display:inline-block}
   .btn.add{padding:4px 12px}
