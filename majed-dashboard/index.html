@@ -34,10 +34,13 @@ button,input,select,textarea{font:inherit;color:inherit}
 a{color:inherit;text-decoration:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-.head{position:sticky;top:0;z-index:30;height:var(--hh);background:var(--head);color:var(--head-ink);display:flex;align-items:center;gap:24px;padding:0 clamp(16px,3vw,40px)}
-.head .brand{flex:1;min-width:0}
+.head{position:sticky;top:0;z-index:30;min-height:var(--hh);background:var(--head);color:var(--head-ink);display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:"s b e";align-items:center;gap:0 24px;padding:0 clamp(16px,3vw,40px)}
+.head .brand{grid-area:b;text-align:center;min-width:0}
+.head .search{grid-area:s;justify-self:start;width:100%;max-width:280px}
+.head .search-toggle{grid-area:t;justify-self:start}
+.h-end{grid-area:e;justify-self:end;display:flex;align-items:center;gap:14px}
 .head .brand small{color:var(--head-gold)}
-.app{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - var(--hh))}
+.app{display:block;min-height:calc(100vh - var(--hh))}
 .scrim{display:none}
 .side{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));background:var(--side);border-inline-end:1px solid var(--line);padding:32px 22px;display:flex;flex-direction:column;gap:28px;overflow:auto}
 .brand small{display:block;color:var(--gold);font-size:13px}
@@ -53,10 +56,32 @@ a{color:inherit;text-decoration:none}
 .side-foot button{background:none;border:0;text-align:start;padding:4px 0;color:var(--ink-3);cursor:pointer}
 .side-foot button:hover{color:var(--ink)}
 
-main{padding:32px clamp(16px,4vw,56px) 70px;min-width:0}
+main{max-width:920px;margin:0 auto;padding:40px clamp(16px,4vw,40px) 80px;min-width:0}
+.more{position:relative}
+.more-btn{background:none;border:0;cursor:pointer;color:var(--head-ink);padding:4px;line-height:0;opacity:.85}
+.more-btn:hover{opacity:1}
+.more-menu{position:absolute;inset-inline-end:0;top:calc(100% + 10px);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 0;min-width:200px;z-index:50;display:none;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.more-menu.on{display:block}
+.more-menu button{display:block;width:100%;text-align:start;background:none;border:0;padding:8px 16px;cursor:pointer;font-size:15px;color:var(--ink-2)}
+.more-menu button:hover{color:var(--ink);background:var(--side)}
+/* home: sections only */
+.home-label{color:var(--ink-3);font-size:14px;margin:0 0 10px;text-align:center}
+#view{text-align:center}
+.cats{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.cats a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:24px 2px;border-bottom:1px solid var(--line)}
+.cats .t{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.5vw,34px);line-height:1.3;transition:color .15s}
+.cats .n{color:var(--ink-3);font-size:15px;white-space:nowrap}
+.cats .arr{display:none}
+.cats a:hover .t{color:var(--accent)}
+.all-link{display:inline-block;margin-top:22px;color:var(--ink-2);font-size:15px;text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--line)}
+.all-link:hover{color:var(--ink)}
+/* section page */
+.crumb{display:inline-block;color:var(--ink-3);font-size:14px;margin-bottom:10px}
+.crumb:hover{color:var(--ink)}
+.page-title{font-family:var(--display);font-weight:900;font-size:clamp(30px,6vw,44px);line-height:1.25;margin:0 0 6px}
 .top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:34px}
 .top h2{font-family:var(--display);font-weight:900;font-size:32px;margin:0;flex:1 1 auto}
-.search{position:relative;flex:0 1 300px}
+.search{position:relative}
 .search input{width:100%;padding:8px 26px 8px 0;border:0;border-bottom:1px solid rgba(255,255,255,.28);background:none;outline:none;color:var(--head-ink)}
 .search input::placeholder{color:rgba(244,239,228,.6)}
 .search input:focus{border-color:var(--head-ink)}
@@ -86,8 +111,8 @@ main{padding:32px clamp(16px,4vw,56px) 70px;min-width:0}
 .bar .fill{display:block;height:100%;background:var(--gold)}
 .bar .num{text-align:end;color:var(--ink-3)}
 
-.filters{display:flex;flex-wrap:wrap;gap:12px 34px;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line);font-size:15px}
-.fgroup{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.filters{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line);font-size:15px}
+.fgroup{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 14px}
 .fgroup > span{color:var(--ink-3)}
 .chips{display:contents}
 .chip{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-3)}
@@ -98,7 +123,7 @@ main{padding:32px clamp(16px,4vw,56px) 70px;min-width:0}
 .result-meta a{color:var(--ink-2);text-decoration:underline;text-underline-offset:4px}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0 40px}
-.card{padding:22px 0;border-top:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.card{padding:22px 0;border-top:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .card:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
 .card .sec{font-size:13px;color:var(--gold)}
 .card h4{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.4;margin:0;transition:color .15s}
@@ -110,7 +135,7 @@ main{padding:32px clamp(16px,4vw,56px) 70px;min-width:0}
 
 dialog{border:0;padding:0;background:transparent;max-width:min(820px,calc(100vw - 24px));width:100%;max-height:calc(100vh - 24px)}
 dialog::backdrop{background:rgba(15,12,8,.45)}
-.sheet{background:var(--bg);color:var(--ink);border-radius:8px;overflow:auto;max-height:calc(100vh - 24px)}
+.sheet{text-align:start;background:var(--bg);color:var(--ink);border-radius:8px;overflow:auto;max-height:calc(100vh - 24px)}
 .sheet-head{position:sticky;top:0;background:var(--bg);display:flex;align-items:flex-start;gap:12px;padding:26px 30px 16px;border-bottom:1px solid var(--line);z-index:1}
 .sheet-head .t{flex:1}
 .sheet-head h3{font-family:var(--display);font-weight:900;font-size:clamp(24px,4vw,32px);margin:0;line-height:1.35}
@@ -122,6 +147,11 @@ dialog::backdrop{background:rgba(15,12,8,.45)}
 .sheet-body{padding:24px 30px 30px}
 .meta-row{color:var(--ink-3);font-size:14px;margin-bottom:24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
 .fs{display:inline-flex;align-items:center;gap:2px;margin-inline-start:auto}
+#reader .sheet-head .t{text-align:center}
+#reader .meta-row{justify-content:center}
+#reader .fs{margin-inline-start:0}
+#reader .notes{text-align:center}
+#reader .sheet-actions{justify-content:center}
 .fs button{background:none;border:0;cursor:pointer;color:var(--ink-2);padding:2px 8px;line-height:1.2;font-family:var(--display)}
 .fs button:hover{color:var(--ink)}
 .fs button:disabled{color:var(--line);cursor:default}
@@ -171,12 +201,14 @@ dialog::backdrop{background:rgba(15,12,8,.45)}
   .scrim.on{display:block}
   .top h2{font-size:26px}
   .side{top:0;height:100vh}
-  .head{--hh:58px;flex-wrap:wrap;gap:0 14px;padding-block:0;height:auto;min-height:58px}
+  .head{--hh:58px;grid-template-areas:"t b e" "q q q";gap:0 10px;min-height:58px}
   .head .brand{line-height:1.3}
   .head .brand small{font-size:10.5px}
   .head .brand h1{font-size:17px;margin:0}
   .head .search{display:none}
-  .head.searching .search{display:block;flex:1 1 100%;order:5;padding-bottom:12px}
+  main{padding-top:26px}
+  .cats a{padding:20px 2px}
+  .head.searching .search{display:block;grid-area:q;max-width:none;padding-bottom:12px}
   .icon-btn{display:inline-block}
   .btn.add{padding:4px 12px}
   .add-ic{display:inline}
@@ -212,7 +244,6 @@ dialog::backdrop{background:rgba(15,12,8,.45)}
 </head>
 <body>
 <header class="head">
-  <button class="menu-btn" id="menuBtn" aria-label="القائمة">☰</button>
   <a class="brand" href="#/">
     <small>خادم أهل البيت عليهم السلام</small>
     <h1>السيد محمد الماجد</h1>
@@ -223,25 +254,23 @@ dialog::backdrop{background:rgba(15,12,8,.45)}
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
   </label>
   <button class="icon-btn search-toggle" id="searchToggle" aria-label="بحث" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+  <div class="h-end">
   <button class="btn add" id="addBtn" aria-label="إضافة قصيدة"><span class="add-ic">+</span><span class="add-t">إضافة قصيدة</span></button>
-</header>
-<div class="app">
-  <aside class="side" id="side">
-    <nav class="nav" id="nav" aria-label="الأقسام"></nav>
-    <div class="side-foot">
+  <div class="more">
+    <button class="more-btn" id="moreBtn" aria-label="المزيد" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></button>
+    <div class="more-menu" id="moreMenu">
       <button type="button" id="exportBtn">تصدير البيانات</button>
       <button type="button" id="importBtn">استيراد ملف</button>
       <button type="button" id="resetBtn">استعادة البيانات الأصلية</button>
       <button type="button" id="themeBtn">تبديل المظهر</button>
-      <input type="file" id="importFile" accept=".json,.js,application/json,text/javascript" hidden>
     </div>
-  </aside>
-  <div class="scrim" id="scrim"></div>
+    <input type="file" id="importFile" accept=".json,.js,application/json,text/javascript" hidden>
+  </div>
+  </div>
+</header>
+<div class="app">
 
   <main>
-    <div class="top">
-      <h2 id="viewTitle">نظرة عامة</h2>
-    </div>
     <div id="view"></div>
   </main>
 </div>
@@ -283,7 +312,7 @@ const PERSONAS = [
   "مسلم بن عقيل (ع)", "عامة"
 ];
 const num = n => Number(n).toLocaleString("ar-EG");
-const label = (list, id) => (list.find(x => x.id === id) || {}).label || id || "—";
+const label = (list, id) => (list.find(x => x.id === id) || {}).label || id || "";
 
 /* ===== storage ===== */
 const KEY = "majed-diwan-v1";
@@ -329,17 +358,6 @@ function filtered(){
   });
 }
 
-/* ===== nav ===== */
-function renderNav(){
-  const count = id => poems.filter(p => p.section === id).length;
-  const item = (id, text, n) =>
-    `<a href="#/${id}" ${state.view === id ? 'aria-current="page"' : ""}><span>${text}</span>${n != null ? `<span class="n">${num(n)}</span>` : ""}</a>`;
-  $("#nav").innerHTML =
-    item("home", "نظرة عامة") +
-    item("all", "كل القصائد", poems.length) +
-    '<div class="sep"></div>' +
-    SECTIONS.map(s => item(s.id, s.label, count(s.id))).join("");
-}
 
 /* ===== views ===== */
 function excerpt(p){
@@ -349,7 +367,7 @@ function excerpt(p){
 function card(p){
   const tags = [...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ");
   return `<article class="card" tabindex="0" data-id="${esc(p.id)}">
-    <div class="sec">${esc(label(SECTIONS, p.section))}${p.occasion ? " · " + esc(p.occasion) : ""}</div>
+    <div class="sec">${[state.view === p.section ? "" : label(SECTIONS, p.section), p.occasion].filter(Boolean).map(esc).join(" · ")}</div>
     <h4>${esc(p.title)}</h4>
     <div class="excerpt">${excerpt(p)}</div>
     <div class="foot">${tags}${mediaOf(p).length ? '  ·  <span class="m">إلقاء ▸</span>' : ""}</div>
@@ -361,63 +379,54 @@ function chips(name, list){
     list.map(x => `<button class="chip" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${state[name] === x.id}">${esc(x.label)}</button>`).join("") +
     `</div>`;
 }
+function scope(){
+  return poems.filter(p => state.view === "home" || state.view === "all" || p.section === state.view);
+}
 function filtersBar(){
-  const used = new Set(poems.flatMap(p => p.persona || []));
-  const personas = allPersonas().filter(x => used.has(x));
-  return `<div class="filters">
-    <div class="fgroup"><span>اللهجة</span>${chips("dialect", DIALECTS)}</div>
-    <div class="fgroup"><span>النوع</span>${chips("form", FORMS)}</div>
-    <div class="fgroup"><span>الشخصية</span>
-      <select id="personaSel"><option value="">الكل</option>${personas.map(x => `<option ${state.persona === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select>
-    </div>
-    <div class="fgroup"><span>الإلقاء</span>
-      <button class="chip" id="mediaChip" aria-pressed="${state.hasMedia}">فيه تسجيل فقط</button>
-    </div>
-  </div>`;
+  const pool = scope();
+  const has = (key, id) => pool.some(p => p[key] === id);
+  const dialects = DIALECTS.filter(x => has("dialect", x.id));
+  const forms = FORMS.filter(x => has("form", x.id));
+  const used = new Set(pool.flatMap(p => p.persona || []));
+  const personas = allPersonas().filter(x => used.has(x)).map(x => ({ id: x, label: x }));
+  const withMedia = pool.some(p => mediaOf(p).length);
+  const rows = [];
+  if (dialects.length) rows.push(`<div class="fgroup"><span>اللهجة</span>${chips("dialect", dialects)}</div>`);
+  if (personas.length) rows.push(`<div class="fgroup"><span>الشخصية</span>${chips("persona", personas)}</div>`);
+  if (forms.length) rows.push(`<div class="fgroup"><span>النوع</span>${chips("form", forms)}</div>`);
+  if (withMedia) rows.push(`<div class="fgroup"><span>الإلقاء</span><button class="chip" id="mediaChip" aria-pressed="${state.hasMedia}">فيه تسجيل فقط</button></div>`);
+  return rows.length ? `<div class="filters">${rows.join("")}</div>` : "";
 }
 function listView(){
   const items = filtered();
+  const total = scope().length;
   const active = state.dialect || state.form || state.persona || state.hasMedia || state.q;
-  return filtersBar() +
-    `<div class="result-meta">${num(items.length)} ${items.length === 1 ? "قصيدة" : "قصائد"}${active ? ' · <a href="#" id="clearF">مسح التصفية</a>' : ""}</div>` +
+  const title = state.q && state.view === "home" ? "نتائج البحث" : state.view === "all" || state.view === "home" ? "كل القصائد" : label(SECTIONS, state.view);
+  const count = n => `${num(n)} ${n === 1 ? "قصيدة" : "قصائد"}`;
+  return `<a class="crumb" href="#/">→ الأقسام</a>
+    <h2 class="page-title">${esc(title)}</h2>
+    ${total && !state.q ? filtersBar() : ""}
+    <div class="result-meta">${active ? `${count(items.length)} من ${num(total)} · <a href="#" id="clearF">مسح التصفية</a>` : count(items.length)}</div>` +
     (items.length
       ? `<div class="grid">${items.map(card).join("")}</div>`
-      : `<div class="empty">لا توجد قصائد مطابقة.<br><button class="link" data-add>أضف قصيدة</button></div>`);
-}
-function bars(title, rows, filterKey){
-  const max = Math.max(1, ...rows.map(r => r.n));
-  return `<div class="panel"><h3>${title}</h3>${rows.map(r =>
-    `<div class="bar" data-jump="${filterKey}" data-v="${esc(r.id)}"><span class="lbl">${esc(r.label)}</span><span class="track"><span class="fill" style="width:${(r.n / max) * 100}%"></span></span><span class="num">${num(r.n)}</span></div>`
-  ).join("") || '<div class="hint">لا بيانات بعد</div>'}</div>`;
+      : `<div class="empty">${total ? "لا توجد قصائد مطابقة." : "لا توجد قصائد في هذا القسم بعد."}<br><button class="link" data-add>أضف قصيدة</button></div>`);
 }
 function homeView(){
   if (state.q) return listView();
-  const by = (key, list) => list.map(x => ({ id: x.id, label: x.label, n: poems.filter(p => p[key] === x.id).length }));
-  const personaRows = allPersonas()
-    .map(x => ({ id: x, label: x, n: poems.filter(p => (p.persona || []).includes(x)).length }))
-    .filter(r => r.n).sort((a, b) => b.n - a.n).slice(0, 10);
-  const withMedia = poems.filter(p => mediaOf(p).length).length;
-  const recent = poems.slice(-6).reverse();
-  return `<div class="stats">
-      <a class="stat total" href="#/all"><div class="k">مجموع القصائد</div><div class="v">${num(poems.length)}</div></a>
-      ${SECTIONS.map(s => `<a class="stat" href="#/${s.id}"><div class="k">${s.label}</div><div class="v">${num(poems.filter(p => p.section === s.id).length)}</div></a>`).join("")}
-      ${withMedia ? `<a class="stat" href="#/all" data-media><div class="k">مع إلقاء مسجّل</div><div class="v">${num(withMedia)}</div></a>` : ""}
-    </div>
-    <div class="panels">
-      ${bars("حسب اللهجة", by("dialect", DIALECTS), "dialect")}
-      ${bars("حسب النوع", by("form", FORMS), "form")}
-      ${bars("حسب الشخصية", personaRows, "persona")}
-    </div>
-    <h3 class="section-title">أُضيف مؤخراً</h3>
-    ${recent.length ? `<div class="grid">${recent.map(card).join("")}</div>` : `<div class="empty">لا توجد قصائد بعد.</div>`}`;
+  return `<p class="home-label">الأقسام</p>
+    <ul class="cats">
+      ${SECTIONS.map(s => {
+        const n = poems.filter(p => p.section === s.id).length;
+        return `<li><a href="#/${s.id}"><span class="t">${s.label}</span><span class="n">${n ? num(n) + (n === 1 ? " قصيدة" : n === 2 ? " قصيدتان" : n <= 10 ? " قصائد" : " قصيدة") : "—"}</span><span class="arr">←</span></a></li>`;
+      }).join("")}
+    </ul>
+    <a class="all-link" href="#/all">عرض كل القصائد</a>`;
 }
 
 function render(){
-  renderNav();
-  const title = state.view === "home" ? (state.q ? "نتائج البحث" : "نظرة عامة")
+  const title = state.view === "home" ? (state.q ? "نتائج البحث" : "")
               : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
-  $("#viewTitle").textContent = title;
-  document.title = (state.view === "home" ? "" : title + " · ") + "ديوان السيد محمد الماجد";
+  document.title = (title ? title + " · " : "") + "ديوان السيد محمد الماجد";
   $("#view").innerHTML = state.view === "home" ? homeView() : listView();
 }
 
@@ -484,7 +493,7 @@ function mediaRow(m = { type: "video", url: "", label: "" }){
 function openEditor(id){
   const p = poems.find(x => x.id === id) || {
     id: "", title: "", section: SECTIONS.some(s => s.id === state.view) ? state.view : "madh",
-    dialect: "fusha", persona: [], form: "amudi", occasion: "", year: "", verses: "", media: [], notes: ""
+    dialect: "", persona: [], form: "", occasion: "", year: "", verses: "", media: [], notes: ""
   };
   const opts = (list, v) => list.map(x => `<option value="${x.id}" ${x.id === v ? "selected" : ""}>${x.label}</option>`).join("");
   $("#editorSheet").innerHTML = `
@@ -492,10 +501,10 @@ function openEditor(id){
     <form class="sheet-body form" id="poemForm" data-id="${esc(p.id)}">
       <div class="field full"><label for="f-title">العنوان</label><input id="f-title" name="title" required value="${esc(p.title)}"></div>
       <div class="field"><label for="f-section">القسم</label><select id="f-section" name="section">${opts(SECTIONS, p.section)}</select></div>
-      <div class="field"><label for="f-dialect">اللهجة</label><select id="f-dialect" name="dialect">${opts(DIALECTS, p.dialect)}</select></div>
-      <div class="field"><label for="f-form">النوع</label><select id="f-form" name="form">${opts(FORMS, p.form)}</select></div>
-      <div class="field"><label for="f-occ">المناسبة</label><input id="f-occ" name="occasion" value="${esc(p.occasion)}"></div>
-      <div class="field full"><span class="lab">الشخصية</span>
+      <div class="field"><label for="f-dialect">اللهجة <span class="hint">(اختياري)</span></label><select id="f-dialect" name="dialect"><option value="">بدون</option>${opts(DIALECTS, p.dialect)}</select></div>
+      <div class="field"><label for="f-form">النوع <span class="hint">(اختياري)</span></label><select id="f-form" name="form"><option value="">بدون</option>${opts(FORMS, p.form)}</select></div>
+      <div class="field"><label for="f-occ">المناسبة <span class="hint">(اختياري)</span></label><input id="f-occ" name="occasion" value="${esc(p.occasion)}"></div>
+      <div class="field full"><span class="lab">الشخصية <span class="hint">(اختياري — اختر واحدة أو أكثر، أو اتركها)</span></span>
         <div class="persona-pick">${allPersonas().map(x => `<label><input type="checkbox" name="persona" value="${esc(x)}" ${(p.persona || []).includes(x) ? "checked" : ""}>${esc(x)}</label>`).join("")}</div>
         <input name="personaExtra" placeholder="شخصية أخرى غير موجودة؟ اكتبها هنا (افصل بفاصلة)">
       </div>
@@ -503,7 +512,7 @@ function openEditor(id){
         <textarea id="f-verses" name="verses" required>${esc(p.verses)}</textarea>
         <span class="hint">كل بيت في سطر. افصل بين الشطرين بالرمز | — ولعناوين أجزاء المجلس اكتب السطر هكذا: — المقدمة —</span>
       </div>
-      <div class="field full"><span class="lab">روابط الإلقاء (إن وُجدت)</span>
+      <div class="field full"><span class="lab">روابط الإلقاء <span class="hint">(اختياري)</span></span>
         <div class="media-rows" id="mediaRows">${(p.media && p.media.length ? p.media : [undefined]).map(mediaRow).join("")}</div>
         <div><button type="button" class="link" id="addRow" style="font-size:14px">رابط آخر</button></div>
         <span class="hint">روابط يوتيوب تُعرض داخل الصفحة، وروابط ملفات الصوت (mp3) تُشغَّل مباشرة، وغيرها يظهر كزر.</span>
@@ -523,7 +532,7 @@ function submitForm(form){
   const types = fd.getAll("mtype"), urls = fd.getAll("murl"), labels = fd.getAll("mlabel");
   const media = urls.map((u, i) => ({ type: types[i], url: String(u).trim(), label: String(labels[i]).trim() })).filter(m => m.url);
   const data = {
-    title: String(fd.get("title")).trim(), section: fd.get("section"), dialect: fd.get("dialect"), form: fd.get("form"),
+    title: String(fd.get("title")).trim(), section: fd.get("section"), dialect: fd.get("dialect") || "", form: fd.get("form") || "",
     occasion: String(fd.get("occasion")).trim(), year: String(fd.get("year")).trim(), notes: String(fd.get("notes")).trim(),
     verses: String(fd.get("verses")).replace(/\r/g, "").trim(), persona: [...new Set(persona)], media
   };
@@ -715,9 +724,7 @@ document.addEventListener("click", e => {
   const chip = t.closest(".chip[data-f]"); if (chip) { state[chip.dataset.f] = chip.dataset.v; return render(); }
   if (t.closest("#mediaChip")) { state.hasMedia = !state.hasMedia; return render(); }
   if (t.closest("#clearF")) { e.preventDefault(); Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false, q: "" }); $("#q").value = ""; return render(); }
-  const bar = t.closest("[data-jump]");
-  if (bar) { Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false }); state[bar.dataset.jump] = bar.dataset.v; location.hash = "#/all"; return render(); }
-  if (t.closest("a[data-media]")) { Object.assign(state, { dialect: "", form: "", persona: "" }); state.hasMedia = true; }
+  if (!t.closest(".more")) setMore(false);
   if (t.closest("[data-add]")) return openEditor();
   const pdfB = t.closest("[data-pdf]"); if (pdfB) return downloadPoem(pdfB.dataset.pdf, "pdf");
   const docB = t.closest("[data-docx]"); if (docB) return downloadPoem(docB.dataset.docx, "docx");
@@ -730,13 +737,9 @@ document.addEventListener("click", e => {
   if (del && confirm("حذف هذه القصيدة نهائياً؟")) { poems = poems.filter(p => p.id !== del.dataset.del); save(); $("#reader").close(); render(); toast("تم الحذف"); return; }
   if (t.closest("#addRow")) { $("#mediaRows").insertAdjacentHTML("beforeend", mediaRow()); return; }
   const rm = t.closest("[data-rmrow]"); if (rm) { const rows = $("#mediaRows"); rm.parentElement.remove(); if (!rows.children.length) rows.insertAdjacentHTML("beforeend", mediaRow()); return; }
-  if (t.closest(".nav a")) closeMenu();
 });
 document.addEventListener("keydown", e => {
   if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("card")) { e.preventDefault(); openReader(e.target.dataset.id); }
-});
-document.addEventListener("change", e => {
-  if (e.target.id === "personaSel") { state.persona = e.target.value; render(); }
 });
 document.addEventListener("submit", e => { if (e.target.id === "poemForm") { e.preventDefault(); submitForm(e.target); } });
 
@@ -773,14 +776,16 @@ $("#themeBtn").onclick = () => {
   root.dataset.theme = dark ? "light" : "dark"; store.set("majed-theme", root.dataset.theme);
 };
 
-const side = $("#side"), scrim = $("#scrim");
-function closeMenu(){ side.classList.remove("open"); scrim.classList.remove("on"); }
-$("#menuBtn").onclick = () => { side.classList.add("open"); scrim.classList.add("on"); };
-scrim.onclick = closeMenu;
+const moreMenu = $("#moreMenu"), moreBtn = $("#moreBtn");
+function setMore(on){ moreMenu.classList.toggle("on", on); moreBtn.setAttribute("aria-expanded", on); }
+moreBtn.onclick = () => setMore(!moreMenu.classList.contains("on"));
+moreMenu.addEventListener("click", e => { if (e.target.closest("button")) setMore(false); });
 
 function route(){
   const v = location.hash.replace(/^#\/?/, "") || "home";
-  state.view = ["home", "all", ...SECTIONS.map(s => s.id)].includes(v) ? v : "home";
+  const next = ["home", "all", ...SECTIONS.map(s => s.id)].includes(v) ? v : "home";
+  if (next !== state.view) Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false });
+  state.view = next;
   render(); window.scrollTo(0, 0);
 }
 addEventListener("hashchange", route);
