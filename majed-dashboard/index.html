@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ديوان السيد محمد الماجد</title>
-<meta name="description" content="ديوان خادم أهل البيت السيد محمد الماجد: مدح، رثاء، مناجاة، ومجالس كاملة.">
+<meta name="description" content="لوحة تصفّح وإدارة قصائد خادم أهل البيت السيد محمد الماجد: مدح، رثاء، مناجاة، ومجالس كاملة.">
 <style>
 @font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyah-serif-text-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyah-serif-text-Medium.woff2") format("woff2");font-weight:500;font-display:swap}
@@ -14,173 +14,190 @@
 @font-face{font-family:"Thmanyah Serif Display";src:url("fonts/thmanyah-serif-display-Black.woff2") format("woff2");font-weight:900;font-display:swap}
 
 :root{
-  --bg:#FAF8F4; --ink:#1A1814; --ink-2:#6B655A; --ink-3:#A39C8E; --line:#E6E1D7; --accent:#8C6A2F;
+  --bg:#FAF8F4; --side:#F4F1EA; --line:#E6E1D7;
+  --ink:#1A1814; --ink-2:#6B655A; --ink-3:#A39C8E;
+  --accent:#1E4A3B; --gold:#8C6A2F; --danger:#A33A3A;
   --serif:"Thmanyah Serif Text","Amiri","Noto Naskh Arabic",serif;
   --display:"Thmanyah Serif Display","Thmanyah Serif Text","Amiri",serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#121110;--ink:#ECE7DD;--ink-2:#A39C8E;--ink-3:#6B655A;--line:#2A2724;--accent:#C9A766;color-scheme:dark}
+  :root:not([data-theme="light"]){--bg:#121110;--side:#171614;--line:#2A2724;--ink:#ECE7DD;--ink-2:#A39C8E;--ink-3:#6B655A;--accent:#7FB89C;--gold:#C9A766;--danger:#E08585;color-scheme:dark}
 }
-:root[data-theme="dark"]{--bg:#121110;--ink:#ECE7DD;--ink-2:#A39C8E;--ink-3:#6B655A;--line:#2A2724;--accent:#C9A766;color-scheme:dark}
+:root[data-theme="dark"]{--bg:#121110;--side:#171614;--line:#2A2724;--ink:#ECE7DD;--ink-2:#A39C8E;--ink-3:#6B655A;--accent:#7FB89C;--gold:#C9A766;--danger:#E08585;color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.8;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:inherit;text-decoration:none}
-::selection{background:var(--accent);color:var(--bg)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.wrap{max-width:820px;margin:0 auto;padding:0 24px}
 
-/* header */
-header{padding:28px 0 0}
-.bar{display:flex;align-items:center;gap:18px}
-.name{font-family:var(--display);font-weight:700;font-size:19px;flex:1}
-.icon{background:none;border:0;padding:4px;cursor:pointer;color:var(--ink-2);display:inline-flex;line-height:0}
-.icon:hover{color:var(--ink)}
-.more{position:relative}
-.more-menu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);background:var(--bg);border:1px solid var(--line);padding:6px 0;min-width:200px;z-index:20;display:none}
-.more-menu.on{display:block}
-.more-menu button{display:block;width:100%;text-align:start;background:none;border:0;padding:7px 16px;cursor:pointer;font-size:15px;color:var(--ink-2)}
-.more-menu button:hover{color:var(--ink)}
-nav{display:flex;gap:26px;margin-top:22px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav a{padding:0 0 12px;color:var(--ink-3);white-space:nowrap;font-size:16px;border-bottom:1px solid transparent;margin-bottom:-1px}
-nav a:hover{color:var(--ink)}
-nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
-.search{display:none;margin-top:18px}
-.search.on{display:block}
-.search input{width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:8px 0;outline:none;font-size:20px}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.scrim{display:none}
+.side{position:sticky;top:0;height:100vh;background:var(--side);border-inline-end:1px solid var(--line);padding:32px 22px;display:flex;flex-direction:column;gap:28px;overflow:auto}
+.brand small{display:block;color:var(--gold);font-size:13px}
+.brand h1{font-family:var(--display);font-weight:900;font-size:25px;line-height:1.3;margin:4px 0 0}
+.nav{display:flex;flex-direction:column}
+.nav a{display:flex;justify-content:space-between;gap:10px;padding:7px 0;color:var(--ink-2)}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink);font-weight:700}
+.nav a[aria-current="page"] span:first-child::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin-inline-end:8px;vertical-align:middle}
+.nav a .n{font-size:14px;color:var(--ink-3);font-weight:400}
+.nav .sep{height:1px;background:var(--line);margin:10px 0}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.side-foot button{background:none;border:0;text-align:start;padding:4px 0;color:var(--ink-3);cursor:pointer}
+.side-foot button:hover{color:var(--ink)}
+
+main{padding:32px clamp(16px,4vw,56px) 70px;min-width:0}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:34px}
+.top h2{font-family:var(--display);font-weight:900;font-size:32px;margin:0;flex:1 1 auto}
+.search{position:relative;flex:0 1 300px}
+.search input{width:100%;padding:8px 26px 8px 0;border:0;border-bottom:1px solid var(--line);background:none;outline:none}
 .search input:focus{border-color:var(--ink)}
+.search svg{position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:0;background:var(--ink);color:var(--bg);cursor:pointer;font-weight:500;white-space:nowrap;border-radius:6px}
+.btn:hover{opacity:.85}
+.link{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-2);text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--line)}
+.link:hover{color:var(--ink);text-decoration-color:currentColor}
+.link.danger{color:var(--danger)}
+.menu-btn{display:none;background:none;border:0;font-size:22px;cursor:pointer;padding:0}
 
-main{padding:0 0 100px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:24px 20px;padding-bottom:30px;margin-bottom:34px;border-bottom:1px solid var(--line)}
+.stat{display:block}
+.stat .v{font-family:var(--display);font-weight:900;font-size:44px;line-height:1.1}
+.stat .k{color:var(--ink-2);font-size:15px}
+.stat:hover .k{color:var(--ink)}
+.stat.total .v{color:var(--accent)}
+.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px 44px;margin-bottom:44px}
+.panel h3,.section-title{font-size:14px;font-weight:500;color:var(--ink-3);margin:0 0 12px}
+.bar{display:grid;grid-template-columns:minmax(80px,auto) 1fr 24px;align-items:center;gap:12px;padding:4px 0;font-size:15px;cursor:pointer}
+.bar:hover .lbl{color:var(--accent)}
+.bar .track{height:2px;background:var(--line)}
+.bar .fill{display:block;height:100%;background:var(--gold)}
+.bar .num{text-align:end;color:var(--ink-3)}
 
-/* home */
-.hero{padding:clamp(70px,14vw,140px) 0 clamp(50px,9vw,90px);text-align:center}
-.hero .pre{color:var(--accent);font-size:15px;letter-spacing:.02em}
-.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(46px,10vw,92px);line-height:1.15;margin:10px 0 18px}
-.hero .count{color:var(--ink-3);font-size:16px}
-.index{list-style:none;margin:0 0 80px;padding:0;border-top:1px solid var(--line)}
-.index a{display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
-.index .t{font-family:var(--display);font-weight:500;font-size:clamp(22px,4vw,28px);flex:1;transition:color .15s}
-.index .n{color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:15px}
-.index a:hover .t{color:var(--accent)}
-.label{font-size:14px;color:var(--ink-3);margin:0 0 6px}
+.filters{display:flex;flex-wrap:wrap;gap:12px 34px;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line);font-size:15px}
+.fgroup{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.fgroup > span{color:var(--ink-3)}
+.chips{display:contents}
+.chip{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-3)}
+.chip:hover{color:var(--ink)}
+.chip[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-underline-offset:6px;text-decoration-color:var(--gold)}
+.fgroup select{border:0;background:none;padding:0;color:var(--ink);cursor:pointer;max-width:220px}
+.result-meta{color:var(--ink-3);font-size:14px;margin:0 0 6px}
+.result-meta a{color:var(--ink-2);text-decoration:underline;text-underline-offset:4px}
 
-/* list */
-.head{padding:56px 0 8px}
-.head h2{font-family:var(--display);font-weight:900;font-size:clamp(36px,7vw,56px);line-height:1.2;margin:0}
-.filters{display:flex;flex-direction:column;gap:6px;padding:20px 0 26px;font-size:15px}
-.frow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
-.frow > span{color:var(--ink-3);min-width:64px}
-.opt{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-3)}
-.opt:hover{color:var(--ink)}
-.opt[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
-.frow select{border:0;background:none;padding:0;color:var(--ink);cursor:pointer;max-width:100%}
-.meta{color:var(--ink-3);font-size:14px;margin-bottom:6px}
-.meta a,.meta button{background:none;border:0;padding:0;color:var(--ink-2);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0 40px}
+.card{padding:22px 0;border-top:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.card:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+.card .sec{font-size:13px;color:var(--gold)}
+.card h4{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.4;margin:0;transition:color .15s}
+.card:hover h4{color:var(--accent)}
+.card .excerpt{color:var(--ink-2);font-size:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .foot{font-size:13px;color:var(--ink-3)}
+.card .foot .m{color:var(--accent)}
+.empty{padding:60px 0;text-align:center;color:var(--ink-3)}
 
-.items{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.item{padding:26px 0;border-bottom:1px solid var(--line);cursor:pointer}
-.item:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
-.item h3{font-family:var(--display);font-weight:700;font-size:clamp(22px,3.6vw,26px);line-height:1.4;margin:0 0 4px;transition:color .15s}
-.item:hover h3{color:var(--accent)}
-.item .ex{color:var(--ink-2);margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item .tags{color:var(--ink-3);font-size:14px}
-.item .tags .m{color:var(--accent)}
-.empty{padding:70px 0;text-align:center;color:var(--ink-3)}
-.empty button{margin-top:12px}
+dialog{border:0;padding:0;background:transparent;max-width:min(820px,calc(100vw - 24px));width:100%;max-height:calc(100vh - 24px)}
+dialog::backdrop{background:rgba(15,12,8,.45)}
+.sheet{background:var(--bg);color:var(--ink);border-radius:8px;overflow:auto;max-height:calc(100vh - 24px)}
+.sheet-head{position:sticky;top:0;background:var(--bg);display:flex;align-items:flex-start;gap:12px;padding:26px 30px 16px;border-bottom:1px solid var(--line);z-index:1}
+.sheet-head .t{flex:1}
+.sheet-head h3{font-family:var(--display);font-weight:900;font-size:clamp(24px,4vw,32px);margin:0;line-height:1.35}
+.sheet-head .sub{color:var(--ink-3);font-size:14px}
+.x{border:0;background:none;cursor:pointer;font-size:26px;line-height:1;color:var(--ink-3);padding:0}
+.x:hover{color:var(--ink)}
+.sheet-body{padding:24px 30px 30px}
+.meta-row{color:var(--ink-3);font-size:14px;margin-bottom:24px}
 
-/* dialogs */
-dialog{border:0;padding:0;margin:0;max-width:none;max-height:none;width:100%;height:100%;background:var(--bg);color:var(--ink)}
-dialog::backdrop{background:var(--bg)}
-.sheet{height:100%;overflow:auto}
-.sheet .wrap{max-width:720px;padding-top:28px;padding-bottom:90px}
-.close{display:flex;justify-content:flex-start}
-.reader-head{text-align:center;padding:50px 0 34px}
-.reader-head .meta{margin-bottom:12px}
-.reader-head h2{font-family:var(--display);font-weight:900;font-size:clamp(34px,6.5vw,54px);line-height:1.25;margin:0}
-.reader-head .tags{color:var(--ink-3);font-size:15px;margin-top:14px}
-.orn{text-align:center;color:var(--ink-3);letter-spacing:.6em;margin:0 0 34px}
-
-.poem{font-size:clamp(19px,2.6vw,22px);line-height:2.2}
-.poem .bayt{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(24px,6vw,64px);padding:3px 0}
+.poem{margin:8px 0 26px;font-size:clamp(18px,2.4vw,21px);line-height:2.15}
+.poem .bayt{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(18px,5vw,56px);padding:3px 0}
 .poem .bayt span{text-align:center}
 .poem .line{text-align:center}
-.poem .part{text-align:center;color:var(--accent);font-size:.8em;margin:34px 0 8px}
+.poem .part{color:var(--gold);text-align:center;margin:24px 0 6px;font-size:.85em}
 .poem .part:first-child{margin-top:0}
-.notes{color:var(--ink-2);font-size:15px;text-align:center;margin:44px 0 0}
-.media{margin-top:54px;display:flex;flex-direction:column;gap:26px}
-.media .label{text-align:center}
+.notes{color:var(--ink-2);font-size:15px;margin-bottom:22px}
+.media{display:flex;flex-direction:column;gap:18px}
+.media h5{font-size:14px;font-weight:500;color:var(--ink-3);margin:0 0 6px}
 .embed{position:relative;aspect-ratio:16/9;background:#000}
 .embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .media audio,.media video{width:100%}
-.media .ext{text-align:center}
-.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-top:70px;padding-top:22px;border-top:1px solid var(--line);font-size:15px}
+.sheet-actions{display:flex;gap:10px 24px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:18px;margin-top:26px;font-size:15px}
 
-.link{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-2);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
-.link:hover{color:var(--ink)}
-.link.danger{color:#A33A3A}
-.btn{background:var(--ink);color:var(--bg);border:0;padding:10px 26px;cursor:pointer;font-size:16px}
-.btn:hover{opacity:.85}
-
-/* form */
-.form{display:grid;grid-template-columns:1fr 1fr;gap:26px 28px;padding-top:30px}
-.form h2{grid-column:1/-1;font-family:var(--display);font-weight:900;font-size:clamp(30px,5vw,42px);margin:20px 0 6px}
-.full{grid-column:1/-1}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:22px 26px}
+.form .full{grid-column:1/-1}
 .field{display:flex;flex-direction:column;gap:4px}
 .field > label,.field > .lab{font-size:14px;color:var(--ink-3)}
 .field input,.field select,.field textarea{border:0;border-bottom:1px solid var(--line);background:none;padding:6px 0;outline:none;width:100%;border-radius:0}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink)}
-.field textarea{min-height:240px;line-height:2.1;resize:vertical;border:1px solid var(--line);padding:12px 14px}
+.field textarea{min-height:220px;line-height:2;resize:vertical;border:1px solid var(--line);padding:10px 12px}
 .hint{font-size:13px;color:var(--ink-3)}
-.picks{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;padding:4px 0 6px}
-.picks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink-2)}
-.picks label:has(input:checked){color:var(--ink)}
-.picks input{accent-color:var(--ink);margin:0}
-.mrows{display:flex;flex-direction:column;gap:10px}
-.mrow{display:grid;grid-template-columns:90px 1fr 1fr 24px;gap:14px;align-items:end}
-.mrow select,.mrow input{border:0;border-bottom:1px solid var(--line);background:none;padding:6px 0;outline:none;min-width:0}
-.mrow button{background:none;border:0;cursor:pointer;color:var(--ink-3);font-size:20px;padding:0}
-.form-actions{grid-column:1/-1;display:flex;align-items:center;gap:26px;margin-top:14px}
+.persona-pick{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;padding:4px 0}
+.persona-pick label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink-2)}
+.persona-pick label:has(input:checked){color:var(--ink)}
+.persona-pick input{accent-color:var(--accent);margin:0}
+.media-rows{display:flex;flex-direction:column;gap:10px}
+.media-row{display:grid;grid-template-columns:90px 1fr 1fr 24px;gap:14px;align-items:end}
+.media-row select,.media-row input{border:0;border-bottom:1px solid var(--line);background:none;padding:6px 0;outline:none;min-width:0}
+.media-row button{background:none;border:0;cursor:pointer;color:var(--ink-3);font-size:20px;padding:0}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 18px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 18px;border-radius:6px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
 .toast.on{opacity:1}
 
-@media (max-width:600px){
-  .wrap{padding:0 18px}
-  nav{gap:20px}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;inset-block:0;inset-inline-start:0;width:270px;z-index:40;transform:translateX(100%);transition:transform .25s}
+  .side.open{transform:none}
+  .menu-btn{display:inline-block}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:39}
+  .scrim.on{display:block}
+  .top h2{font-size:26px}
+  .search{flex:1 1 100%;order:3}
   .form{grid-template-columns:1fr}
-  .mrow{grid-template-columns:1fr 24px}
-  .mrow select,.mrow input{grid-column:1}
-  .mrow button{grid-column:2;grid-row:1}
-  .poem .bayt{grid-template-columns:1fr;text-align:center;padding:6px 0}
+  .media-row{grid-template-columns:1fr 24px}
+  .media-row select,.media-row input{grid-column:1}
+  .media-row button{grid-column:2;grid-row:1}
+}
+@media (max-width:520px){
+  .poem .bayt{grid-template-columns:1fr;padding:6px 0}
+  .sheet-head,.sheet-body{padding-inline:18px}
+  .stat .v{font-size:36px}
 }
 </style>
 </head>
 <body>
-<header class="wrap">
-  <div class="bar">
-    <a href="#/" class="name">السيد محمد الماجد</a>
-    <button class="icon" id="searchBtn" aria-label="بحث"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
-    <button class="icon" id="addBtn" aria-label="إضافة قصيدة"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button class="icon" id="themeBtn" aria-label="تبديل المظهر"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
-    <div class="more">
-      <button class="icon" id="moreBtn" aria-label="المزيد" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button>
-      <div class="more-menu" id="moreMenu">
-        <button type="button" id="exportBtn">تصدير البيانات</button>
-        <button type="button" id="importBtn">استيراد ملف</button>
-        <button type="button" id="resetBtn">استعادة البيانات الأصلية</button>
-      </div>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand">
+      <small>خادم أهل البيت عليهم السلام</small>
+      <h1>السيد محمد الماجد</h1>
+    </div>
+    <nav class="nav" id="nav" aria-label="الأقسام"></nav>
+    <div class="side-foot">
+      <button type="button" id="exportBtn">تصدير البيانات</button>
+      <button type="button" id="importBtn">استيراد ملف</button>
+      <button type="button" id="resetBtn">استعادة البيانات الأصلية</button>
+      <button type="button" id="themeBtn">تبديل المظهر</button>
       <input type="file" id="importFile" accept=".json,.js,application/json,text/javascript" hidden>
     </div>
-  </div>
-  <div class="search" id="searchBox"><label><span class="sr">بحث</span><input type="search" id="q" placeholder="ابحث في العناوين والأبيات…"></label></div>
-  <nav id="nav" aria-label="الأقسام"></nav>
-</header>
+  </aside>
+  <div class="scrim" id="scrim"></div>
 
-<main class="wrap" id="view"></main>
+  <main>
+    <div class="top">
+      <button class="menu-btn" id="menuBtn" aria-label="القائمة">☰</button>
+      <h2 id="viewTitle">نظرة عامة</h2>
+      <label class="search">
+        <span class="sr">بحث</span>
+        <input type="search" id="q" placeholder="ابحث في العناوين والأبيات…">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </label>
+      <button class="btn" id="addBtn">إضافة قصيدة</button>
+    </div>
+    <div id="view"></div>
+  </main>
+</div>
 
 <dialog id="reader"><div class="sheet" id="readerSheet"></div></dialog>
 <dialog id="editor"><div class="sheet" id="editorSheet"></div></dialog>
@@ -193,16 +210,22 @@ dialog::backdrop{background:var(--bg)}
 
 /* ===== taxonomy ===== */
 const SECTIONS = [
-  { id: "madh",    label: "أبيات مدح",    short: "مدح" },
-  { id: "ritha",   label: "أبيات رثاء",   short: "رثاء" },
-  { id: "munajat", label: "أبيات مناجاة", short: "مناجاة" },
-  { id: "other",   label: "أخرى",         short: "أخرى" },
-  { id: "majlis",  label: "مجالس كاملة",  short: "مجالس" }
+  { id: "madh",    label: "أبيات مدح" },
+  { id: "ritha",   label: "أبيات رثاء" },
+  { id: "munajat", label: "أبيات مناجاة" },
+  { id: "other",   label: "أخرى" },
+  { id: "majlis",  label: "مجالس كاملة" }
 ];
-const DIALECTS = [{ id: "fusha", label: "فصيح" }, { id: "shaabi", label: "شعبي" }];
+const DIALECTS = [
+  { id: "fusha",  label: "فصيح" },
+  { id: "shaabi", label: "شعبي" }
+];
 const FORMS = [
-  { id: "amudi", label: "عمودي" }, { id: "majarid", label: "مجاريد" }, { id: "faizi", label: "فايزي" },
-  { id: "hur", label: "حر" }, { id: "other", label: "أخرى" }
+  { id: "amudi",   label: "عمودي" },
+  { id: "majarid", label: "مجاريد" },
+  { id: "faizi",   label: "فايزي" },
+  { id: "hur",     label: "حر" },
+  { id: "other",   label: "أخرى" }
 ];
 const PERSONAS = [
   "الرسول الأعظم (ص)", "الإمام علي (ع)", "السيدة فاطمة الزهراء (ع)", "الإمام الحسن (ع)",
@@ -212,7 +235,8 @@ const PERSONAS = [
   "علي الأكبر (ع)", "القاسم بن الحسن (ع)", "السيدة رقية (ع)", "أم البنين (ع)",
   "مسلم بن عقيل (ع)", "عامة"
 ];
-const label = (list, id) => (list.find(x => x.id === id) || {}).label || id || "";
+const num = n => Number(n).toLocaleString("ar-EG");
+const label = (list, id) => (list.find(x => x.id === id) || {}).label || id || "—";
 
 /* ===== storage ===== */
 const KEY = "majed-diwan-v1";
@@ -234,9 +258,11 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const norm = s => String(s || "").replace(/[ً-ْـ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").toLowerCase();
 const mediaOf = p => (p.media || []).filter(m => m && m.url && m.url.trim());
-const allPersonas = () => { const s = new Set(PERSONAS); poems.forEach(p => (p.persona || []).forEach(x => s.add(x))); return [...s]; };
-const num = n => Number(n).toLocaleString("ar-EG");
-const plural = n => n === 1 ? "قصيدة واحدة" : n === 2 ? "قصيدتان" : n >= 3 && n <= 10 ? num(n) + " قصائد" : num(n) + " قصيدة";
+const allPersonas = () => {
+  const s = new Set(PERSONAS);
+  poems.forEach(p => (p.persona || []).forEach(x => s.add(x)));
+  return [...s];
+};
 function toast(msg){
   const t = $("#toast"); t.textContent = msg; t.classList.add("on");
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("on"), 2400);
@@ -258,65 +284,93 @@ function filtered(){
 
 /* ===== nav ===== */
 function renderNav(){
-  const item = (id, text) => `<a href="#/${id}" ${state.view === id ? 'aria-current="page"' : ""}>${text}</a>`;
-  $("#nav").innerHTML = item("all", "الكل") + SECTIONS.map(s => item(s.id, s.short)).join("");
+  const count = id => poems.filter(p => p.section === id).length;
+  const item = (id, text, n) =>
+    `<a href="#/${id}" ${state.view === id ? 'aria-current="page"' : ""}><span>${text}</span>${n != null ? `<span class="n">${num(n)}</span>` : ""}</a>`;
+  $("#nav").innerHTML =
+    item("home", "نظرة عامة") +
+    item("all", "كل القصائد", poems.length) +
+    '<div class="sep"></div>' +
+    SECTIONS.map(s => item(s.id, s.label, count(s.id))).join("");
 }
 
 /* ===== views ===== */
-function firstLine(p){
-  const l = String(p.verses || "").split("\n").map(x => x.trim()).find(x => x && !/^—.*—$/.test(x)) || "";
-  return esc(l.replace(/\s*\|\s*/, "  ·  "));
+function excerpt(p){
+  const lines = String(p.verses || "").split("\n").map(l => l.trim()).filter(l => l && !/^—.*—$/.test(l));
+  return lines.slice(0, 2).map(l => esc(l.replace(/\s*\|\s*/, "  ·  "))).join("<br>");
 }
-function tagLine(p){
-  const bits = [...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc);
-  if (mediaOf(p).length) bits.push('<span class="m">إلقاء ▸</span>');
-  return bits.join("  ·  ");
+function card(p){
+  const tags = [...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ");
+  return `<article class="card" tabindex="0" data-id="${esc(p.id)}">
+    <div class="sec">${esc(label(SECTIONS, p.section))}${p.occasion ? " · " + esc(p.occasion) : ""}</div>
+    <h4>${esc(p.title)}</h4>
+    <div class="excerpt">${excerpt(p)}</div>
+    <div class="foot">${tags}${mediaOf(p).length ? '  ·  <span class="m">إلقاء ▸</span>' : ""}</div>
+  </article>`;
 }
-function item(p){
-  return `<li class="item" tabindex="0" data-id="${esc(p.id)}">
-    <h3>${esc(p.title)}</h3>
-    <p class="ex">${firstLine(p)}</p>
-    <div class="tags">${tagLine(p)}</div>
-  </li>`;
+function chips(name, list){
+  return `<div class="chips">` +
+    `<button class="chip" data-f="${name}" data-v="" aria-pressed="${!state[name]}">الكل</button>` +
+    list.map(x => `<button class="chip" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${state[name] === x.id}">${esc(x.label)}</button>`).join("") +
+    `</div>`;
 }
-function opts(name, list){
-  return `<button class="opt" data-f="${name}" data-v="" aria-pressed="${!state[name]}">الكل</button>` +
-    list.map(x => `<button class="opt" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${state[name] === x.id}">${esc(x.label)}</button>`).join("");
+function filtersBar(){
+  const used = new Set(poems.flatMap(p => p.persona || []));
+  const personas = allPersonas().filter(x => used.has(x));
+  return `<div class="filters">
+    <div class="fgroup"><span>اللهجة</span>${chips("dialect", DIALECTS)}</div>
+    <div class="fgroup"><span>النوع</span>${chips("form", FORMS)}</div>
+    <div class="fgroup"><span>الشخصية</span>
+      <select id="personaSel"><option value="">الكل</option>${personas.map(x => `<option ${state.persona === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select>
+    </div>
+    <div class="fgroup"><span>الإلقاء</span>
+      <button class="chip" id="mediaChip" aria-pressed="${state.hasMedia}">فيه تسجيل فقط</button>
+    </div>
+  </div>`;
 }
 function listView(){
   const items = filtered();
-  const used = new Set(poems.flatMap(p => p.persona || []));
-  const personas = allPersonas().filter(x => used.has(x));
   const active = state.dialect || state.form || state.persona || state.hasMedia || state.q;
-  const title = state.view === "home" ? "نتائج البحث" : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
-  return `<div class="head"><h2>${esc(title)}</h2></div>
-    <div class="filters">
-      <div class="frow"><span>اللهجة</span>${opts("dialect", DIALECTS)}</div>
-      <div class="frow"><span>النوع</span>${opts("form", FORMS)}</div>
-      <div class="frow"><span>الشخصية</span><select id="personaSel" aria-label="الشخصية"><option value="">الكل</option>${personas.map(x => `<option ${state.persona === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
-      <div class="frow"><span>الإلقاء</span><button class="opt" id="mediaOpt" aria-pressed="${state.hasMedia}">فيه تسجيل فقط</button></div>
-    </div>
-    <div class="meta">${plural(items.length)}${active ? ' — <button id="clearF">مسح التصفية</button>' : ""}</div>
-    ${items.length ? `<ul class="items">${items.map(item).join("")}</ul>`
-      : `<div class="empty">لا شيء هنا بعد.<br><button class="link" data-add>أضف قصيدة</button></div>`}`;
+  return filtersBar() +
+    `<div class="result-meta">${num(items.length)} ${items.length === 1 ? "قصيدة" : "قصائد"}${active ? ' · <a href="#" id="clearF">مسح التصفية</a>' : ""}</div>` +
+    (items.length
+      ? `<div class="grid">${items.map(card).join("")}</div>`
+      : `<div class="empty">لا توجد قصائد مطابقة.<br><button class="link" data-add>أضف قصيدة</button></div>`);
+}
+function bars(title, rows, filterKey){
+  const max = Math.max(1, ...rows.map(r => r.n));
+  return `<div class="panel"><h3>${title}</h3>${rows.map(r =>
+    `<div class="bar" data-jump="${filterKey}" data-v="${esc(r.id)}"><span class="lbl">${esc(r.label)}</span><span class="track"><span class="fill" style="width:${(r.n / max) * 100}%"></span></span><span class="num">${num(r.n)}</span></div>`
+  ).join("") || '<div class="hint">لا بيانات بعد</div>'}</div>`;
 }
 function homeView(){
   if (state.q) return listView();
-  const recent = poems.slice(-5).reverse();
-  return `<section class="hero">
-      <div class="pre">خادم أهل البيت عليهم السلام</div>
-      <h1>السيد محمد الماجد</h1>
-      <div class="count">${plural(poems.length)}</div>
-    </section>
-    <ul class="index">
-      ${SECTIONS.map(s => `<li><a href="#/${s.id}"><span class="t">${s.label}</span><span class="n">${num(poems.filter(p => p.section === s.id).length)}</span></a></li>`).join("")}
-    </ul>
-    ${recent.length ? `<p class="label">أُضيف مؤخراً</p><ul class="items">${recent.map(item).join("")}</ul>` : ""}`;
+  const by = (key, list) => list.map(x => ({ id: x.id, label: x.label, n: poems.filter(p => p[key] === x.id).length }));
+  const personaRows = allPersonas()
+    .map(x => ({ id: x, label: x, n: poems.filter(p => (p.persona || []).includes(x)).length }))
+    .filter(r => r.n).sort((a, b) => b.n - a.n).slice(0, 10);
+  const withMedia = poems.filter(p => mediaOf(p).length).length;
+  const recent = poems.slice(-6).reverse();
+  return `<div class="stats">
+      <a class="stat total" href="#/all"><div class="k">مجموع القصائد</div><div class="v">${num(poems.length)}</div></a>
+      ${SECTIONS.map(s => `<a class="stat" href="#/${s.id}"><div class="k">${s.label}</div><div class="v">${num(poems.filter(p => p.section === s.id).length)}</div></a>`).join("")}
+      <a class="stat" href="#/all" data-media><div class="k">مع إلقاء مسجّل</div><div class="v">${num(withMedia)}</div></a>
+    </div>
+    <div class="panels">
+      ${bars("حسب اللهجة", by("dialect", DIALECTS), "dialect")}
+      ${bars("حسب النوع", by("form", FORMS), "form")}
+      ${bars("حسب الشخصية", personaRows, "persona")}
+    </div>
+    <h3 class="section-title">أُضيف مؤخراً</h3>
+    ${recent.length ? `<div class="grid">${recent.map(card).join("")}</div>` : `<div class="empty">لا توجد قصائد بعد.</div>`}`;
 }
+
 function render(){
   renderNav();
-  const t = state.view === "home" ? "" : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
-  document.title = (t ? t + " · " : "") + "ديوان السيد محمد الماجد";
+  const title = state.view === "home" ? (state.q ? "نتائج البحث" : "نظرة عامة")
+              : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
+  $("#viewTitle").textContent = title;
+  document.title = (state.view === "home" ? "" : title + " · ") + "ديوان السيد محمد الماجد";
   $("#view").innerHTML = state.view === "home" ? homeView() : listView();
 }
 
@@ -326,7 +380,10 @@ function poemHTML(text){
     const l = raw.trim();
     if (!l) return "";
     if (/^—.*—$/.test(l)) return `<div class="part">${esc(l.replace(/^—\s*|\s*—$/g, ""))}</div>`;
-    if (l.includes("|")) { const [a, ...b] = l.split("|"); return `<div class="bayt"><span>${esc(a.trim())}</span><span>${esc(b.join("|").trim())}</span></div>`; }
+    if (l.includes("|")) {
+      const [a, ...b] = l.split("|");
+      return `<div class="bayt"><span>${esc(a.trim())}</span><span>${esc(b.join("|").trim())}</span></div>`;
+    }
     return `<div class="line">${esc(l)}</div>`;
   }).join("");
 }
@@ -337,40 +394,42 @@ function ytId(url){
 function mediaHTML(m){
   const url = m.url.trim(), lab = esc(m.label || (m.type === "audio" ? "تسجيل صوتي" : "تسجيل مرئي"));
   const id = ytId(url);
-  if (id) return `<div><p class="label">${lab}</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${lab}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
-  if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(url)) return `<div><p class="label">${lab}</p><audio controls preload="none" src="${esc(url)}"></audio></div>`;
-  if (/\.(mp4|webm)(\?|$)/i.test(url)) return `<div><p class="label">${lab}</p><video controls preload="none" src="${esc(url)}"></video></div>`;
-  if (/^https?:\/\//i.test(url)) return `<div class="ext"><a class="link" href="${esc(url)}" target="_blank" rel="noopener">${lab} ↗</a></div>`;
+  if (id) return `<div><h5>${lab}</h5><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${lab}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+  if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(url)) return `<div><h5>${lab}</h5><audio controls preload="none" src="${esc(url)}"></audio></div>`;
+  if (/\.(mp4|webm)(\?|$)/i.test(url)) return `<div><h5>${lab}</h5><video controls preload="none" src="${esc(url)}"></video></div>`;
+  if (/^https?:\/\//i.test(url)) return `<div><a class="link" href="${esc(url)}" target="_blank" rel="noopener">${lab} ↗</a></div>`;
   return "";
 }
-const closeBtn = '<div class="close"><button class="icon" data-close aria-label="إغلاق"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
 function openReader(id){
   const p = poems.find(x => x.id === id); if (!p) return;
   const m = mediaOf(p);
-  const meta = [label(SECTIONS, p.section), p.occasion, p.year].filter(Boolean).map(esc).join("  ·  ");
-  $("#readerSheet").innerHTML = `<div class="wrap">${closeBtn}
-    <div class="reader-head"><div class="meta">${meta}</div><h2>${esc(p.title)}</h2>
-      <div class="tags">${[...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ")}</div></div>
-    <div class="orn">✦ ✦ ✦</div>
-    <div class="poem">${poemHTML(p.verses)}</div>
-    ${p.notes ? `<p class="notes">${esc(p.notes)}</p>` : ""}
-    ${m.length ? `<div class="media">${m.map(mediaHTML).join("")}</div>` : ""}
-    <div class="actions">
-      <button class="link" data-pdf="${esc(p.id)}">تنزيل PDF</button>
-      <button class="link" data-docx="${esc(p.id)}">تنزيل Word</button>
-      <button class="link" data-edit="${esc(p.id)}">تعديل</button>
-      <button class="link" data-copy="${esc(p.id)}">نسخ النص</button>
-      <button class="link danger" data-del="${esc(p.id)}">حذف</button>
-    </div></div>`;
+  $("#readerSheet").innerHTML = `
+    <div class="sheet-head">
+      <div class="t"><div class="sub">${esc(label(SECTIONS, p.section))}${p.occasion ? " · " + esc(p.occasion) : ""}${p.year ? " · " + esc(p.year) : ""}</div><h3>${esc(p.title)}</h3></div>
+      <button class="x" data-close aria-label="إغلاق">×</button>
+    </div>
+    <div class="sheet-body">
+      <div class="meta-row">${[...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ")}</div>
+      <div class="poem">${poemHTML(p.verses)}</div>
+      ${p.notes ? `<div class="notes">${esc(p.notes)}</div>` : ""}
+      ${m.length ? `<div class="media">${m.map(mediaHTML).join("")}</div>` : ""}
+      <div class="sheet-actions">
+        <button class="btn" data-pdf="${esc(p.id)}">تنزيل PDF</button>
+        <button class="btn" data-docx="${esc(p.id)}">تنزيل Word</button>
+        <button class="link" data-edit="${esc(p.id)}">تعديل</button>
+        <button class="link" data-copy="${esc(p.id)}">نسخ النص</button>
+        <button class="link danger" data-del="${esc(p.id)}">حذف</button>
+      </div>
+    </div>`;
   showDialog($("#reader"));
 }
 
 /* ===== editor ===== */
 function mediaRow(m = { type: "video", url: "", label: "" }){
-  return `<div class="mrow">
-    <select name="mtype" aria-label="نوع التسجيل"><option value="video" ${m.type === "video" ? "selected" : ""}>مرئي</option><option value="audio" ${m.type === "audio" ? "selected" : ""}>صوتي</option></select>
-    <input name="murl" type="url" dir="ltr" placeholder="https://…" value="${esc(m.url)}" aria-label="الرابط">
-    <input name="mlabel" placeholder="وصف (اختياري)" value="${esc(m.label)}" aria-label="الوصف">
+  return `<div class="media-row">
+    <select name="mtype"><option value="video" ${m.type === "video" ? "selected" : ""}>مرئي</option><option value="audio" ${m.type === "audio" ? "selected" : ""}>صوتي</option></select>
+    <input name="murl" type="url" dir="ltr" placeholder="https://…" value="${esc(m.url)}">
+    <input name="mlabel" placeholder="وصف (اختياري)" value="${esc(m.label)}">
     <button type="button" data-rmrow aria-label="حذف الرابط">×</button>
   </div>`;
 }
@@ -379,31 +438,35 @@ function openEditor(id){
     id: "", title: "", section: SECTIONS.some(s => s.id === state.view) ? state.view : "madh",
     dialect: "fusha", persona: [], form: "amudi", occasion: "", year: "", verses: "", media: [], notes: ""
   };
-  const o = (list, v) => list.map(x => `<option value="${x.id}" ${x.id === v ? "selected" : ""}>${x.label}</option>`).join("");
-  $("#editorSheet").innerHTML = `<div class="wrap">${closeBtn}
-    <form class="form" id="poemForm" data-id="${esc(p.id)}">
-      <h2>${p.id ? "تعديل قصيدة" : "قصيدة جديدة"}</h2>
+  const opts = (list, v) => list.map(x => `<option value="${x.id}" ${x.id === v ? "selected" : ""}>${x.label}</option>`).join("");
+  $("#editorSheet").innerHTML = `
+    <div class="sheet-head"><div class="t"><h3>${p.id ? "تعديل قصيدة" : "إضافة قصيدة"}</h3></div><button class="x" data-close aria-label="إغلاق">×</button></div>
+    <form class="sheet-body form" id="poemForm" data-id="${esc(p.id)}">
       <div class="field full"><label for="f-title">العنوان</label><input id="f-title" name="title" required value="${esc(p.title)}"></div>
-      <div class="field"><label for="f-section">القسم</label><select id="f-section" name="section">${o(SECTIONS, p.section)}</select></div>
+      <div class="field"><label for="f-section">القسم</label><select id="f-section" name="section">${opts(SECTIONS, p.section)}</select></div>
+      <div class="field"><label for="f-dialect">اللهجة</label><select id="f-dialect" name="dialect">${opts(DIALECTS, p.dialect)}</select></div>
+      <div class="field"><label for="f-form">النوع</label><select id="f-form" name="form">${opts(FORMS, p.form)}</select></div>
       <div class="field"><label for="f-occ">المناسبة</label><input id="f-occ" name="occasion" value="${esc(p.occasion)}"></div>
-      <div class="field"><label for="f-dialect">اللهجة</label><select id="f-dialect" name="dialect">${o(DIALECTS, p.dialect)}</select></div>
-      <div class="field"><label for="f-form">النوع</label><select id="f-form" name="form">${o(FORMS, p.form)}</select></div>
       <div class="field full"><span class="lab">الشخصية</span>
-        <div class="picks">${allPersonas().map(x => `<label><input type="checkbox" name="persona" value="${esc(x)}" ${(p.persona || []).includes(x) ? "checked" : ""}>${esc(x)}</label>`).join("")}</div>
-        <input name="personaExtra" placeholder="شخصية أخرى؟ اكتبها هنا (افصل بفاصلة)" aria-label="شخصية أخرى">
+        <div class="persona-pick">${allPersonas().map(x => `<label><input type="checkbox" name="persona" value="${esc(x)}" ${(p.persona || []).includes(x) ? "checked" : ""}>${esc(x)}</label>`).join("")}</div>
+        <input name="personaExtra" placeholder="شخصية أخرى غير موجودة؟ اكتبها هنا (افصل بفاصلة)">
       </div>
       <div class="field full"><label for="f-verses">الأبيات</label>
         <textarea id="f-verses" name="verses" required>${esc(p.verses)}</textarea>
-        <span class="hint">كل بيت في سطر، والشطران يفصل بينهما |  —  ولعناوين أجزاء المجلس: — المقدمة —</span>
+        <span class="hint">كل بيت في سطر. افصل بين الشطرين بالرمز | — ولعناوين أجزاء المجلس اكتب السطر هكذا: — المقدمة —</span>
       </div>
-      <div class="field full"><span class="lab">روابط الإلقاء</span>
-        <div class="mrows" id="mediaRows">${(p.media && p.media.length ? p.media : [undefined]).map(mediaRow).join("")}</div>
-        <div><button type="button" class="link" id="addRow" style="font-size:14px;margin-top:6px">رابط آخر</button></div>
+      <div class="field full"><span class="lab">روابط الإلقاء (إن وُجدت)</span>
+        <div class="media-rows" id="mediaRows">${(p.media && p.media.length ? p.media : [undefined]).map(mediaRow).join("")}</div>
+        <div><button type="button" class="link" id="addRow" style="font-size:14px">رابط آخر</button></div>
+        <span class="hint">روابط يوتيوب تُعرض داخل الصفحة، وروابط ملفات الصوت (mp3) تُشغَّل مباشرة، وغيرها يظهر كزر.</span>
       </div>
       <div class="field"><label for="f-year">السنة</label><input id="f-year" name="year" value="${esc(p.year)}"></div>
       <div class="field"><label for="f-notes">ملاحظات</label><input id="f-notes" name="notes" value="${esc(p.notes)}"></div>
-      <div class="form-actions"><button class="btn" type="submit">حفظ</button><button class="link" type="button" data-close>إلغاء</button></div>
-    </form></div>`;
+      <div class="full sheet-actions" style="margin-top:4px">
+        <button class="btn" type="submit">حفظ</button>
+        <button class="link" type="button" data-close>إلغاء</button>
+      </div>
+    </form>`;
   showDialog($("#editor"));
 }
 function submitForm(form){
@@ -424,7 +487,9 @@ function submitForm(form){
 
 /* ===== dialogs ===== */
 function showDialog(d){ d.showModal(); d.querySelector(".sheet").scrollTop = 0; }
-document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => { if (e.target.closest("[data-close]")) d.close(); }));
+document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => {
+  if (e.target === d || e.target.closest("[data-close]")) d.close();
+}));
 
 /* ===== import / export ===== */
 let downloadsApi = null;
@@ -436,7 +501,9 @@ async function exportData(){
     try {
       await downloadsApi.save({ filename: "diwan-almajed.json", data: JSON.stringify(poems, null, 2) });
       toast("تم حفظ الملف — افتحه لاحقاً من «استيراد ملف»");
-    } catch (e) { if (e && e.code !== "declined") toast("تعذّر حفظ الملف هنا"); }
+    } catch (e) {
+      if (e && e.code !== "declined") toast("تعذّر حفظ الملف هنا");
+    }
     return;
   }
   const body = "/* بيانات ديوان السيد محمد الماجد — صُدّرت في " + new Date().toLocaleDateString("ar") + " */\nwindow.POEMS_SEED = " + JSON.stringify(poems, null, 2) + ";\n";
@@ -447,9 +514,10 @@ async function exportData(){
 }
 function importData(text){
   try {
-    const arr = JSON.parse(text.slice(text.indexOf("["), text.lastIndexOf("]") + 1));
+    const start = text.indexOf("["), end = text.lastIndexOf("]");
+    const arr = JSON.parse(text.slice(start, end + 1));
     if (!Array.isArray(arr)) throw 0;
-    poems = arr; save(); render(); toast(`تم استيراد ${plural(arr.length)}`);
+    poems = arr; save(); render(); toast(`تم استيراد ${num(arr.length)} قصيدة`);
   } catch { toast("تعذّرت قراءة الملف — استخدم ملفاً صدّرته من الموقع"); }
 }
 
@@ -584,15 +652,15 @@ async function downloadPoem(id, kind){
 }
 
 /* ===== events ===== */
-const menu = $("#moreMenu"), moreBtn = $("#moreBtn");
-const setMenu = on => { menu.classList.toggle("on", on); moreBtn.setAttribute("aria-expanded", on); };
 document.addEventListener("click", e => {
   const t = e.target;
-  if (!t.closest(".more")) setMenu(false);
-  const it = t.closest(".item"); if (it) return openReader(it.dataset.id);
-  const o = t.closest(".opt[data-f]"); if (o) { state[o.dataset.f] = o.dataset.v; return render(); }
-  if (t.closest("#mediaOpt")) { state.hasMedia = !state.hasMedia; return render(); }
-  if (t.closest("#clearF")) { Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false, q: "" }); $("#q").value = ""; return render(); }
+  const cardEl = t.closest(".card"); if (cardEl) return openReader(cardEl.dataset.id);
+  const chip = t.closest(".chip[data-f]"); if (chip) { state[chip.dataset.f] = chip.dataset.v; return render(); }
+  if (t.closest("#mediaChip")) { state.hasMedia = !state.hasMedia; return render(); }
+  if (t.closest("#clearF")) { e.preventDefault(); Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false, q: "" }); $("#q").value = ""; return render(); }
+  const bar = t.closest("[data-jump]");
+  if (bar) { Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false }); state[bar.dataset.jump] = bar.dataset.v; location.hash = "#/all"; return render(); }
+  if (t.closest("a[data-media]")) { Object.assign(state, { dialect: "", form: "", persona: "" }); state.hasMedia = true; }
   if (t.closest("[data-add]")) return openEditor();
   const pdfB = t.closest("[data-pdf]"); if (pdfB) return downloadPoem(pdfB.dataset.pdf, "pdf");
   const docB = t.closest("[data-docx]"); if (docB) return downloadPoem(docB.dataset.docx, "docx");
@@ -604,23 +672,23 @@ document.addEventListener("click", e => {
   const del = t.closest("[data-del]");
   if (del && confirm("حذف هذه القصيدة نهائياً؟")) { poems = poems.filter(p => p.id !== del.dataset.del); save(); $("#reader").close(); render(); toast("تم الحذف"); return; }
   if (t.closest("#addRow")) { $("#mediaRows").insertAdjacentHTML("beforeend", mediaRow()); return; }
-  const rm = t.closest("[data-rmrow]"); if (rm) { const rows = $("#mediaRows"); rm.parentElement.remove(); if (!rows.children.length) rows.insertAdjacentHTML("beforeend", mediaRow()); }
+  const rm = t.closest("[data-rmrow]"); if (rm) { const rows = $("#mediaRows"); rm.parentElement.remove(); if (!rows.children.length) rows.insertAdjacentHTML("beforeend", mediaRow()); return; }
+  if (t.closest(".nav a")) closeMenu();
 });
 document.addEventListener("keydown", e => {
-  if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("item")) { e.preventDefault(); openReader(e.target.dataset.id); }
-  if (e.key === "Escape") setMenu(false);
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("card")) { e.preventDefault(); openReader(e.target.dataset.id); }
 });
-document.addEventListener("change", e => { if (e.target.id === "personaSel") { state.persona = e.target.value; render(); } });
+document.addEventListener("change", e => {
+  if (e.target.id === "personaSel") { state.persona = e.target.value; render(); }
+});
 document.addEventListener("submit", e => { if (e.target.id === "poemForm") { e.preventDefault(); submitForm(e.target); } });
 
 let qT; $("#q").addEventListener("input", e => { clearTimeout(qT); qT = setTimeout(() => { state.q = e.target.value; render(); }, 150); });
-$("#searchBtn").onclick = () => { const b = $("#searchBox"); b.classList.toggle("on"); if (b.classList.contains("on")) $("#q").focus(); };
 $("#addBtn").onclick = () => openEditor();
-moreBtn.onclick = () => setMenu(!menu.classList.contains("on"));
-$("#exportBtn").onclick = () => { setMenu(false); exportData(); };
-$("#importBtn").onclick = () => { setMenu(false); $("#importFile").click(); };
+$("#exportBtn").onclick = exportData;
+$("#importBtn").onclick = () => $("#importFile").click();
 $("#importFile").onchange = e => { const f = e.target.files[0]; if (f) f.text().then(importData); e.target.value = ""; };
-$("#resetBtn").onclick = () => { setMenu(false); if (confirm("استعادة البيانات الأصلية؟ ستُفقد التعديلات غير المصدّرة.")) { store.del(KEY); poems = seed(); render(); toast("تمت الاستعادة"); } };
+$("#resetBtn").onclick = () => { if (confirm("استعادة البيانات من ملف data.js؟ ستُفقد التعديلات غير المصدّرة.")) { store.del(KEY); poems = seed(); render(); toast("تمت الاستعادة"); } };
 
 const root = document.documentElement;
 const savedTheme = store.get("majed-theme"); if (savedTheme) root.dataset.theme = savedTheme;
@@ -628,6 +696,11 @@ $("#themeBtn").onclick = () => {
   const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   root.dataset.theme = dark ? "light" : "dark"; store.set("majed-theme", root.dataset.theme);
 };
+
+const side = $("#side"), scrim = $("#scrim");
+function closeMenu(){ side.classList.remove("open"); scrim.classList.remove("on"); }
+$("#menuBtn").onclick = () => { side.classList.add("open"); scrim.classList.add("on"); };
+scrim.onclick = closeMenu;
 
 function route(){
   const v = location.hash.replace(/^#\/?/, "") || "home";
