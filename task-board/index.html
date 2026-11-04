@@ -582,6 +582,7 @@ body.resizing{cursor:ns-resize;user-select:none}
   <div class="d-body">
     <input class="d-title" id="f-title" placeholder="عنوان المهمة">
     <div><button class="btn btn-accent" id="f-complete"></button></div>
+    <div class="field"><span class="sec-l">القسم</span><div class="seg" id="f-ws"></div></div>
     <div class="field"><span class="sec-l">نوع العمل (تقدر تختار أكثر من واحد)</span><div class="types" id="f-type"></div></div>
     <div class="grid2">
       <div class="field" style="grid-column:1/-1"><label for="f-client">العميل</label>
@@ -791,7 +792,7 @@ function createTask(status){
 function openTask(id,focusTitle){
   const t=state.tasks.find(x=>x.id===id);if(!t)return;
   state.openId=id;draftDirty=false;
-  $('d-ws').textContent=WS[t.workspace||'freelance'];
+  $('d-ws').textContent=WS[t.workspace||'freelance'];renderWsPick();
   $('f-title').value=t.title||'';
   $('f-size').value=sizeOf(t);
   $('f-link').value=t.link||'';$('f-notes').value=t.notes||'';
@@ -1181,8 +1182,8 @@ function claimSet(sid){const st=SETS.find(x=>x.id===sid);const g=state.garden;if
   if(typeof st.reward==='number')addDates(st.reward,`اكتملت مجموعة ${st.name}`);else{g.inv=Object.assign({},g.inv||{},{[st.reward]:1});addDates(0,`اكتملت مجموعة ${st.name}: ${ITEM[st.reward].name}`)}
   saveGarden();confetti();toast(`اكتملت مجموعة «${st.name}» 🎁`);lastPeriod=null;renderSky();renderGarden(false)}
 function toggleHide(id){const g=state.garden;g.hidden=Object.assign({},g.hidden||{});g.hidden[id]=!g.hidden[id];saveGarden();lastPeriod=null;renderSky();renderGarden(false)}
-// only Freelance and Islamic tasks touch the garden (growth and weather); More Media does not
-const GARDEN_WS=['freelance','islamic'];
+// every section touches the garden (growth and weather)
+const GARDEN_WS=['freelance','moremedia','islamic'];
 const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
@@ -1728,6 +1729,12 @@ function renderSky(){
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
+// move the task to another section
+function renderWsPick(){
+  const t=cur();if(!t)return;const wrap=$('f-ws');wrap.replaceChildren();
+  for(const w in WS){const b=document.createElement('button');b.type='button';b.textContent=WS[w];b.setAttribute('aria-pressed',String((t.workspace||'freelance')===w));
+    b.onclick=()=>{if((t.workspace||'freelance')===w)return;t.workspace=w;t.client=t.client||'';persist(t);$('d-ws').textContent=WS[w];renderWsPick();renderClients();render();toast(`انتقلت المهمة إلى ${WS[w]}`)};wrap.append(b)}
+}
 function renderType(){
   const t=cur(),wrap=$('f-type');wrap.replaceChildren();
   const sel=typesOf(t);
