@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ديوان السيد محمد الماجد</title>
-<meta name="description" content="لوحة تصفّح وإدارة قصائد شاعر أهل البيت السيد محمد الماجد: مدح، رثاء، مناجاة، ومجالس كاملة.">
+<meta name="description" content="ديوان خادم أهل البيت السيد محمد الماجد: مدح، رثاء، مناجاة، ومجالس كاملة.">
 <style>
 @font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyah-serif-text-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"Thmanyah Serif Text";src:url("fonts/thmanyah-serif-text-Medium.woff2") format("woff2");font-weight:500;font-display:swap}
@@ -14,218 +14,173 @@
 @font-face{font-family:"Thmanyah Serif Display";src:url("fonts/thmanyah-serif-display-Black.woff2") format("woff2");font-weight:900;font-display:swap}
 
 :root{
-  --bg:#F4EFE4; --surface:#FBF8F1; --surface-2:#EFE8D9; --line:#DDD3BF;
-  --ink:#1F1B15; --ink-2:#5B5244; --ink-3:#8A7F6C;
-  --accent:#1E4A3B; --accent-ink:#F4EFE4; --gold:#9C7428; --gold-soft:#E9DDC2;
-  --danger:#9B2C2C;
-  --shadow:0 1px 2px rgba(40,30,10,.06),0 6px 24px rgba(40,30,10,.06);
+  --bg:#FAF8F4; --ink:#1A1814; --ink-2:#6B655A; --ink-3:#A39C8E; --line:#E6E1D7; --accent:#8C6A2F;
   --serif:"Thmanyah Serif Text","Amiri","Noto Naskh Arabic",serif;
   --display:"Thmanyah Serif Display","Thmanyah Serif Text","Amiri",serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#13110E; --surface:#1B1915; --surface-2:#24211B; --line:#353026;
-    --ink:#EEE7D7; --ink-2:#BDB29C; --ink-3:#877D69;
-    --accent:#7FB89C; --accent-ink:#13110E; --gold:#D3AE62; --gold-soft:#3A3121;
-    --danger:#E08585; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.25);
-    color-scheme:dark;
-  }
+  :root:not([data-theme="light"]){--bg:#121110;--ink:#ECE7DD;--ink-2:#A39C8E;--ink-3:#6B655A;--line:#2A2724;--accent:#C9A766;color-scheme:dark}
 }
-:root[data-theme="dark"]{
-  --bg:#13110E; --surface:#1B1915; --surface-2:#24211B; --line:#353026;
-  --ink:#EEE7D7; --ink-2:#BDB29C; --ink-3:#877D69;
-  --accent:#7FB89C; --accent-ink:#13110E; --gold:#D3AE62; --gold-soft:#3A3121;
-  --danger:#E08585; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.25);
-  color-scheme:dark;
-}
+:root[data-theme="dark"]{--bg:#121110;--ink:#ECE7DD;--ink-2:#A39C8E;--ink-3:#6B655A;--line:#2A2724;--accent:#C9A766;color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.8;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
-a{color:var(--accent)}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--bg)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
 
-/* ---------- layout ---------- */
-.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
-.side{position:sticky;top:0;height:100vh;background:var(--surface);border-inline-start:0;border-inline-end:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;gap:22px;overflow:auto}
-.brand{padding:0 8px}
-.brand small{display:block;color:var(--gold);font-size:13px;letter-spacing:.02em}
-.brand h1{font-family:var(--display);font-weight:900;font-size:26px;line-height:1.3;margin:4px 0 0}
-.nav{display:flex;flex-direction:column;gap:2px}
-.nav a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;color:var(--ink-2);text-decoration:none;font-weight:500}
-.nav a:hover{background:var(--surface-2);color:var(--ink)}
-.nav a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
-.nav a .n{font-size:13px;opacity:.75;font-variant-numeric:tabular-nums}
-.nav .sep{height:1px;background:var(--line);margin:10px 8px}
-.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:6px;font-size:14px}
-.side-foot button{background:none;border:0;text-align:start;padding:6px 12px;border-radius:8px;color:var(--ink-2);cursor:pointer}
-.side-foot button:hover{background:var(--surface-2);color:var(--ink)}
+/* header */
+header{padding:28px 0 0}
+.bar{display:flex;align-items:center;gap:18px}
+.name{font-family:var(--display);font-weight:700;font-size:19px;flex:1}
+.icon{background:none;border:0;padding:4px;cursor:pointer;color:var(--ink-2);display:inline-flex;line-height:0}
+.icon:hover{color:var(--ink)}
+.more{position:relative}
+.more-menu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);background:var(--bg);border:1px solid var(--line);padding:6px 0;min-width:200px;z-index:20;display:none}
+.more-menu.on{display:block}
+.more-menu button{display:block;width:100%;text-align:start;background:none;border:0;padding:7px 16px;cursor:pointer;font-size:15px;color:var(--ink-2)}
+.more-menu button:hover{color:var(--ink)}
+nav{display:flex;gap:26px;margin-top:22px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{padding:0 0 12px;color:var(--ink-3);white-space:nowrap;font-size:16px;border-bottom:1px solid transparent;margin-bottom:-1px}
+nav a:hover{color:var(--ink)}
+nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
+.search{display:none;margin-top:18px}
+.search.on{display:block}
+.search input{width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:8px 0;outline:none;font-size:20px}
+.search input:focus{border-color:var(--ink)}
 
-main{padding:28px clamp(16px,3vw,44px) 60px;min-width:0}
-.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:26px}
-.top h2{font-family:var(--display);font-weight:700;font-size:30px;margin:0;flex:1 1 auto}
-.search{position:relative;flex:0 1 320px}
-.search input{width:100%;padding:10px 40px 10px 14px;border:1px solid var(--line);background:var(--surface);border-radius:12px;outline:none}
-.search input:focus{border-color:var(--accent)}
-.search svg{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:500;white-space:nowrap}
-.btn:hover{border-color:var(--ink-3)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{filter:brightness(1.08)}
-.btn.ghost{background:transparent}
-.btn.danger{color:var(--danger)}
-.menu-btn{display:none}
-.scrim{display:none}
+main{padding:0 0 100px}
 
-/* ---------- overview ---------- */
-.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:28px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;text-decoration:none;color:inherit;display:block;transition:transform .15s,border-color .15s}
-.stat:hover{transform:translateY(-2px);border-color:var(--gold)}
-.stat .k{color:var(--ink-2);font-size:15px}
-.stat .v{font-family:var(--display);font-weight:900;font-size:40px;line-height:1.2;font-variant-numeric:tabular-nums}
-.stat.total{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.stat.total .k{color:inherit;opacity:.8}
-.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
-.panel h3{font-family:var(--display);font-size:19px;margin:0 0 14px;font-weight:700}
-.bar{display:grid;grid-template-columns:minmax(90px,auto) 1fr 32px;align-items:center;gap:10px;padding:5px 0;font-size:15px;cursor:pointer;border-radius:6px}
-.bar:hover .lbl{color:var(--accent)}
-.bar .track{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
-.bar .fill{display:block;height:100%;background:var(--gold);border-radius:99px}
-.bar .num{text-align:end;color:var(--ink-2);font-variant-numeric:tabular-nums}
-.section-title{font-family:var(--display);font-size:22px;font-weight:700;margin:0 0 14px}
+/* home */
+.hero{padding:clamp(70px,14vw,140px) 0 clamp(50px,9vw,90px);text-align:center}
+.hero .pre{color:var(--accent);font-size:15px;letter-spacing:.02em}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(46px,10vw,92px);line-height:1.15;margin:10px 0 18px}
+.hero .count{color:var(--ink-3);font-size:16px}
+.index{list-style:none;margin:0 0 80px;padding:0;border-top:1px solid var(--line)}
+.index a{display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
+.index .t{font-family:var(--display);font-weight:500;font-size:clamp(22px,4vw,28px);flex:1;transition:color .15s}
+.index .n{color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:15px}
+.index a:hover .t{color:var(--accent)}
+.label{font-size:14px;color:var(--ink-3);margin:0 0 6px}
 
-/* ---------- filters ---------- */
-.filters{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:22px}
-.fgroup{display:flex;flex-direction:column;gap:8px;min-width:0}
-.fgroup > span{font-size:13px;color:var(--ink-3)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:transparent;border-radius:99px;padding:4px 13px;cursor:pointer;font-size:15px;color:var(--ink-2)}
-.chip:hover{border-color:var(--ink-3);color:var(--ink)}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.fgroup select{padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);max-width:240px}
-.result-meta{color:var(--ink-3);font-size:15px;margin:-8px 0 14px}
+/* list */
+.head{padding:56px 0 8px}
+.head h2{font-family:var(--display);font-weight:900;font-size:clamp(36px,7vw,56px);line-height:1.2;margin:0}
+.filters{display:flex;flex-direction:column;gap:6px;padding:20px 0 26px;font-size:15px}
+.frow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
+.frow > span{color:var(--ink-3);min-width:64px}
+.opt{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-3)}
+.opt:hover{color:var(--ink)}
+.opt[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.frow select{border:0;background:none;padding:0;color:var(--ink);cursor:pointer;max-width:100%}
+.meta{color:var(--ink-3);font-size:14px;margin-bottom:6px}
+.meta a,.meta button{background:none;border:0;padding:0;color:var(--ink-2);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
 
-/* ---------- cards ---------- */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 22px 18px;display:flex;flex-direction:column;gap:12px;cursor:pointer;text-align:start;transition:transform .15s,box-shadow .15s,border-color .15s}
-.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--gold)}
-.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.card .sec{font-size:13px;color:var(--gold);font-weight:700}
-.card h4{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.4;margin:0}
-.card .excerpt{color:var(--ink-2);font-size:16px;line-height:1.9;border-inline-start:2px solid var(--gold-soft);padding-inline-start:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card .foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:auto}
-.tag{font-size:13px;padding:2px 10px;border-radius:99px;background:var(--surface-2);color:var(--ink-2)}
-.tag.p{background:var(--gold-soft);color:var(--ink)}
-.media-ic{margin-inline-start:auto;display:flex;gap:6px;color:var(--accent)}
-.empty{padding:60px 20px;text-align:center;color:var(--ink-3);border:1px dashed var(--line);border-radius:18px}
+.items{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.item{padding:26px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.item:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+.item h3{font-family:var(--display);font-weight:700;font-size:clamp(22px,3.6vw,26px);line-height:1.4;margin:0 0 4px;transition:color .15s}
+.item:hover h3{color:var(--accent)}
+.item .ex{color:var(--ink-2);margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tags{color:var(--ink-3);font-size:14px}
+.item .tags .m{color:var(--accent)}
+.empty{padding:70px 0;text-align:center;color:var(--ink-3)}
+.empty button{margin-top:12px}
 
-/* ---------- reader / dialogs ---------- */
-dialog{border:0;padding:0;background:transparent;max-width:min(860px,calc(100vw - 24px));width:100%;max-height:calc(100vh - 24px)}
-dialog::backdrop{background:rgba(15,12,8,.55);backdrop-filter:blur(2px)}
-.sheet{background:var(--surface);color:var(--ink);border-radius:22px;border:1px solid var(--line);box-shadow:var(--shadow);overflow:auto;max-height:calc(100vh - 24px)}
-.sheet-head{position:sticky;top:0;background:var(--surface);display:flex;align-items:flex-start;gap:12px;padding:22px 26px 14px;border-bottom:1px solid var(--line);z-index:1}
-.sheet-head .t{flex:1}
-.sheet-head h3{font-family:var(--display);font-weight:900;font-size:clamp(24px,4vw,32px);margin:0;line-height:1.35}
-.sheet-head .sub{color:var(--ink-3);font-size:15px}
-.x{border:0;background:var(--surface-2);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:20px;line-height:1;flex:none}
-.sheet-body{padding:22px 26px 30px}
-.meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+/* dialogs */
+dialog{border:0;padding:0;margin:0;max-width:none;max-height:none;width:100%;height:100%;background:var(--bg);color:var(--ink)}
+dialog::backdrop{background:var(--bg)}
+.sheet{height:100%;overflow:auto}
+.sheet .wrap{max-width:720px;padding-top:28px;padding-bottom:90px}
+.close{display:flex;justify-content:flex-start}
+.reader-head{text-align:center;padding:50px 0 34px}
+.reader-head .meta{margin-bottom:12px}
+.reader-head h2{font-family:var(--display);font-weight:900;font-size:clamp(34px,6.5vw,54px);line-height:1.25;margin:0}
+.reader-head .tags{color:var(--ink-3);font-size:15px;margin-top:14px}
+.orn{text-align:center;color:var(--ink-3);letter-spacing:.6em;margin:0 0 34px}
 
-.poem{margin:8px 0 22px;font-size:clamp(17px,2.3vw,20px);line-height:2.1}
-.poem .bayt{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(18px,5vw,56px);padding:4px 0}
-.poem .bayt .sadr{text-align:justify;text-align-last:justify}
-.poem .bayt .ajuz{text-align:justify;text-align-last:justify}
-.poem .line{text-align:center;padding:2px 0}
-.poem .part{font-family:var(--display);font-weight:700;color:var(--gold);text-align:center;margin:20px 0 6px;font-size:.9em}
+.poem{font-size:clamp(19px,2.6vw,22px);line-height:2.2}
+.poem .bayt{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(24px,6vw,64px);padding:3px 0}
+.poem .bayt span{text-align:center}
+.poem .line{text-align:center}
+.poem .part{text-align:center;color:var(--accent);font-size:.8em;margin:34px 0 8px}
 .poem .part:first-child{margin-top:0}
-.notes{background:var(--surface-2);border-radius:12px;padding:12px 16px;color:var(--ink-2);font-size:15px;margin-bottom:20px}
-.media{display:flex;flex-direction:column;gap:14px}
-.media h5{font-family:var(--display);font-size:18px;margin:0}
-.embed{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}
+.notes{color:var(--ink-2);font-size:15px;text-align:center;margin:44px 0 0}
+.media{margin-top:54px;display:flex;flex-direction:column;gap:26px}
+.media .label{text-align:center}
+.embed{position:relative;aspect-ratio:16/9;background:#000}
 .embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.media audio{width:100%}
-.sheet-actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px;margin-top:22px}
+.media audio,.media video{width:100%}
+.media .ext{text-align:center}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-top:70px;padding-top:22px;border-top:1px solid var(--line);font-size:15px}
 
-/* ---------- form ---------- */
-.form{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
-.form .full{grid-column:1/-1}
-.field{display:flex;flex-direction:column;gap:6px}
-.field > label,.field > .lab{font-size:14px;color:var(--ink-2);font-weight:500}
-.field input,.field select,.field textarea{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);outline:none;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field textarea{min-height:200px;line-height:2;resize:vertical}
+.link{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-2);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
+.link:hover{color:var(--ink)}
+.link.danger{color:#A33A3A}
+.btn{background:var(--ink);color:var(--bg);border:0;padding:10px 26px;cursor:pointer;font-size:16px}
+.btn:hover{opacity:.85}
+
+/* form */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:26px 28px;padding-top:30px}
+.form h2{grid-column:1/-1;font-family:var(--display);font-weight:900;font-size:clamp(30px,5vw,42px);margin:20px 0 6px}
+.full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:4px}
+.field > label,.field > .lab{font-size:14px;color:var(--ink-3)}
+.field input,.field select,.field textarea{border:0;border-bottom:1px solid var(--line);background:none;padding:6px 0;outline:none;width:100%;border-radius:0}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink)}
+.field textarea{min-height:240px;line-height:2.1;resize:vertical;border:1px solid var(--line);padding:12px 14px}
 .hint{font-size:13px;color:var(--ink-3)}
-.persona-pick{display:flex;flex-wrap:wrap;gap:6px}
-.persona-pick label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:3px 12px 3px 10px;font-size:14px;cursor:pointer}
-.persona-pick input{accent-color:var(--accent);margin:0}
-.persona-pick label:has(input:checked){background:var(--gold-soft);border-color:var(--gold)}
-.media-rows{display:flex;flex-direction:column;gap:8px}
-.media-row{display:grid;grid-template-columns:110px 1fr 1fr 38px;gap:8px}
-.media-row select,.media-row input{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-width:0}
-.media-row button{border:1px solid var(--line);background:none;border-radius:10px;cursor:pointer}
+.picks{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;padding:4px 0 6px}
+.picks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink-2)}
+.picks label:has(input:checked){color:var(--ink)}
+.picks input{accent-color:var(--ink);margin:0}
+.mrows{display:flex;flex-direction:column;gap:10px}
+.mrow{display:grid;grid-template-columns:90px 1fr 1fr 24px;gap:14px;align-items:end}
+.mrow select,.mrow input{border:0;border-bottom:1px solid var(--line);background:none;padding:6px 0;outline:none;min-width:0}
+.mrow button{background:none;border:0;cursor:pointer;color:var(--ink-3);font-size:20px;padding:0}
+.form-actions{grid-column:1/-1;display:flex;align-items:center;gap:26px;margin-top:14px}
 
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 18px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+.toast.on{opacity:1}
 
-/* ---------- responsive ---------- */
-@media (max-width:860px){
-  .app{grid-template-columns:1fr}
-  .side{position:fixed;inset-block:0;inset-inline-start:0;width:280px;z-index:40;transform:translateX(100%);transition:transform .25s;box-shadow:var(--shadow)}
-  .side.open{transform:none}
-  .menu-btn{display:inline-flex}
-  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:39;display:none}
-  .scrim.on{display:block}
-  .top h2{font-size:24px;order:0}
-  .search{flex:1 1 100%;order:3}
+@media (max-width:600px){
+  .wrap{padding:0 18px}
+  nav{gap:20px}
   .form{grid-template-columns:1fr}
-  .media-row{grid-template-columns:1fr 38px}
-  .media-row select,.media-row input{grid-column:1}
-  .media-row button{grid-column:2;grid-row:1}
-}
-@media (max-width:520px){
-  .poem .bayt{grid-template-columns:1fr;text-align:center}
-  .poem .bayt .sadr,.poem .bayt .ajuz{text-align:center;text-align-last:center}
-  .poem .bayt .ajuz{padding-bottom:8px}
-  .sheet-head,.sheet-body{padding-inline:18px}
-  .grid{grid-template-columns:1fr}
+  .mrow{grid-template-columns:1fr 24px}
+  .mrow select,.mrow input{grid-column:1}
+  .mrow button{grid-column:2;grid-row:1}
+  .poem .bayt{grid-template-columns:1fr;text-align:center;padding:6px 0}
 }
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="side" id="side">
-    <div class="brand">
-      <small>شاعر أهل البيت عليهم السلام</small>
-      <h1>السيد محمد الماجد</h1>
-    </div>
-    <nav class="nav" id="nav" aria-label="الأقسام"></nav>
-    <div class="side-foot">
-      <button type="button" id="exportBtn">⤓ تصدير البيانات</button>
-      <button type="button" id="importBtn">⤒ استيراد ملف</button>
-      <button type="button" id="resetBtn">↺ استعادة البيانات الأصلية</button>
-      <button type="button" id="themeBtn">◐ تبديل المظهر</button>
+<header class="wrap">
+  <div class="bar">
+    <a href="#/" class="name">السيد محمد الماجد</a>
+    <button class="icon" id="searchBtn" aria-label="بحث"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    <button class="icon" id="addBtn" aria-label="إضافة قصيدة"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="icon" id="themeBtn" aria-label="تبديل المظهر"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
+    <div class="more">
+      <button class="icon" id="moreBtn" aria-label="المزيد" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button>
+      <div class="more-menu" id="moreMenu">
+        <button type="button" id="exportBtn">تصدير البيانات</button>
+        <button type="button" id="importBtn">استيراد ملف</button>
+        <button type="button" id="resetBtn">استعادة البيانات الأصلية</button>
+      </div>
       <input type="file" id="importFile" accept=".json,.js,application/json,text/javascript" hidden>
     </div>
-  </aside>
-  <div class="scrim" id="scrim"></div>
+  </div>
+  <div class="search" id="searchBox"><label><span class="sr">بحث</span><input type="search" id="q" placeholder="ابحث في العناوين والأبيات…"></label></div>
+  <nav id="nav" aria-label="الأقسام"></nav>
+</header>
 
-  <main>
-    <div class="top">
-      <button class="btn ghost menu-btn" id="menuBtn" aria-label="القائمة">☰</button>
-      <h2 id="viewTitle">نظرة عامة</h2>
-      <label class="search">
-        <span class="sr">بحث</span>
-        <input type="search" id="q" placeholder="ابحث في العناوين والأبيات…">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </label>
-      <button class="btn primary" id="addBtn">＋ إضافة قصيدة</button>
-    </div>
-    <div id="view"></div>
-  </main>
-</div>
+<main class="wrap" id="view"></main>
 
 <dialog id="reader"><div class="sheet" id="readerSheet"></div></dialog>
 <dialog id="editor"><div class="sheet" id="editorSheet"></div></dialog>
@@ -238,22 +193,16 @@ dialog::backdrop{background:rgba(15,12,8,.55);backdrop-filter:blur(2px)}
 
 /* ===== taxonomy ===== */
 const SECTIONS = [
-  { id: "madh",    label: "أبيات مدح" },
-  { id: "ritha",   label: "أبيات رثاء" },
-  { id: "munajat", label: "أبيات مناجاة" },
-  { id: "other",   label: "أخرى" },
-  { id: "majlis",  label: "مجالس كاملة" }
+  { id: "madh",    label: "أبيات مدح",    short: "مدح" },
+  { id: "ritha",   label: "أبيات رثاء",   short: "رثاء" },
+  { id: "munajat", label: "أبيات مناجاة", short: "مناجاة" },
+  { id: "other",   label: "أخرى",         short: "أخرى" },
+  { id: "majlis",  label: "مجالس كاملة",  short: "مجالس" }
 ];
-const DIALECTS = [
-  { id: "fusha",  label: "فصيح" },
-  { id: "shaabi", label: "شعبي (دارج)" }
-];
+const DIALECTS = [{ id: "fusha", label: "فصيح" }, { id: "shaabi", label: "شعبي" }];
 const FORMS = [
-  { id: "amudi",   label: "عمودي" },
-  { id: "majarid", label: "مجاريد" },
-  { id: "faizi",   label: "فايزي" },
-  { id: "hur",     label: "حر" },
-  { id: "other",   label: "أخرى" }
+  { id: "amudi", label: "عمودي" }, { id: "majarid", label: "مجاريد" }, { id: "faizi", label: "فايزي" },
+  { id: "hur", label: "حر" }, { id: "other", label: "أخرى" }
 ];
 const PERSONAS = [
   "الرسول الأعظم (ص)", "الإمام علي (ع)", "السيدة فاطمة الزهراء (ع)", "الإمام الحسن (ع)",
@@ -263,7 +212,7 @@ const PERSONAS = [
   "علي الأكبر (ع)", "القاسم بن الحسن (ع)", "السيدة رقية (ع)", "أم البنين (ع)",
   "مسلم بن عقيل (ع)", "عامة"
 ];
-const label = (list, id) => (list.find(x => x.id === id) || {}).label || id || "—";
+const label = (list, id) => (list.find(x => x.id === id) || {}).label || id || "";
 
 /* ===== storage ===== */
 const KEY = "majed-diwan-v1";
@@ -285,19 +234,13 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const norm = s => String(s || "").replace(/[ً-ْـ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").toLowerCase();
 const mediaOf = p => (p.media || []).filter(m => m && m.url && m.url.trim());
-const allPersonas = () => {
-  const s = new Set(PERSONAS);
-  poems.forEach(p => (p.persona || []).forEach(x => s.add(x)));
-  return [...s];
-};
+const allPersonas = () => { const s = new Set(PERSONAS); poems.forEach(p => (p.persona || []).forEach(x => s.add(x))); return [...s]; };
+const num = n => Number(n).toLocaleString("ar-EG");
+const plural = n => n === 1 ? "قصيدة واحدة" : n === 2 ? "قصيدتان" : n >= 3 && n <= 10 ? num(n) + " قصائد" : num(n) + " قصيدة";
 function toast(msg){
   const t = $("#toast"); t.textContent = msg; t.classList.add("on");
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("on"), 2400);
 }
-const ICON = {
-  audio: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="صوتي"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-  video: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="مرئي"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3z"/></svg>'
-};
 
 /* ===== filtering ===== */
 function filtered(){
@@ -315,99 +258,65 @@ function filtered(){
 
 /* ===== nav ===== */
 function renderNav(){
-  const count = id => poems.filter(p => p.section === id).length;
-  const item = (id, text, n) =>
-    `<a href="#/${id}" ${state.view === id ? 'aria-current="page"' : ""}><span>${text}</span>${n != null ? `<span class="n">${n}</span>` : ""}</a>`;
-  $("#nav").innerHTML =
-    item("home", "نظرة عامة") +
-    item("all", "كل القصائد", poems.length) +
-    '<div class="sep"></div>' +
-    SECTIONS.map(s => item(s.id, s.label, count(s.id))).join("");
+  const item = (id, text) => `<a href="#/${id}" ${state.view === id ? 'aria-current="page"' : ""}>${text}</a>`;
+  $("#nav").innerHTML = item("all", "الكل") + SECTIONS.map(s => item(s.id, s.short)).join("");
 }
 
 /* ===== views ===== */
-function excerpt(p){
-  const lines = String(p.verses || "").split("\n").map(l => l.trim()).filter(l => l && !/^—.*—$/.test(l));
-  return lines.slice(0, 2).map(l => esc(l.replace(/\s*\|\s*/, " ⁂ "))).join("<br>");
+function firstLine(p){
+  const l = String(p.verses || "").split("\n").map(x => x.trim()).find(x => x && !/^—.*—$/.test(x)) || "";
+  return esc(l.replace(/\s*\|\s*/, "  ·  "));
 }
-function card(p){
-  const m = mediaOf(p);
-  const kinds = [...new Set(m.map(x => x.type))];
-  return `<article class="card" tabindex="0" data-id="${esc(p.id)}">
-    <div class="sec">${esc(label(SECTIONS, p.section))}${p.occasion ? " · " + esc(p.occasion) : ""}</div>
-    <h4>${esc(p.title)}</h4>
-    <div class="excerpt">${excerpt(p)}</div>
-    <div class="foot">
-      ${(p.persona || []).map(x => `<span class="tag p">${esc(x)}</span>`).join("")}
-      <span class="tag">${esc(label(DIALECTS, p.dialect))}</span>
-      <span class="tag">${esc(label(FORMS, p.form))}</span>
-      ${kinds.length ? `<span class="media-ic">${kinds.map(k => ICON[k] || "").join("")}</span>` : ""}
-    </div>
-  </article>`;
+function tagLine(p){
+  const bits = [...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc);
+  if (mediaOf(p).length) bits.push('<span class="m">إلقاء ▸</span>');
+  return bits.join("  ·  ");
 }
-function chips(name, list){
-  return `<div class="chips">` +
-    `<button class="chip" data-f="${name}" data-v="" aria-pressed="${!state[name]}">الكل</button>` +
-    list.map(x => `<button class="chip" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${state[name] === x.id}">${esc(x.label)}</button>`).join("") +
-    `</div>`;
+function item(p){
+  return `<li class="item" tabindex="0" data-id="${esc(p.id)}">
+    <h3>${esc(p.title)}</h3>
+    <p class="ex">${firstLine(p)}</p>
+    <div class="tags">${tagLine(p)}</div>
+  </li>`;
 }
-function filtersBar(){
-  const used = new Set(poems.flatMap(p => p.persona || []));
-  const personas = allPersonas().filter(x => used.has(x));
-  return `<div class="filters">
-    <div class="fgroup"><span>اللهجة</span>${chips("dialect", DIALECTS)}</div>
-    <div class="fgroup"><span>النوع</span>${chips("form", FORMS)}</div>
-    <div class="fgroup"><span>الشخصية</span>
-      <select id="personaSel"><option value="">الكل</option>${personas.map(x => `<option ${state.persona === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select>
-    </div>
-    <div class="fgroup"><span>الإلقاء</span>
-      <div class="chips"><button class="chip" id="mediaChip" aria-pressed="${state.hasMedia}">فيه تسجيل صوتي/مرئي</button></div>
-    </div>
-  </div>`;
+function opts(name, list){
+  return `<button class="opt" data-f="${name}" data-v="" aria-pressed="${!state[name]}">الكل</button>` +
+    list.map(x => `<button class="opt" data-f="${name}" data-v="${esc(x.id)}" aria-pressed="${state[name] === x.id}">${esc(x.label)}</button>`).join("");
 }
 function listView(){
   const items = filtered();
+  const used = new Set(poems.flatMap(p => p.persona || []));
+  const personas = allPersonas().filter(x => used.has(x));
   const active = state.dialect || state.form || state.persona || state.hasMedia || state.q;
-  return filtersBar() +
-    `<div class="result-meta">${items.length} ${items.length === 1 ? "قصيدة" : "قصائد"}${active ? ' · <a href="#" id="clearF">مسح التصفية</a>' : ""}</div>` +
-    (items.length
-      ? `<div class="grid">${items.map(card).join("")}</div>`
-      : `<div class="empty">لا توجد قصائد مطابقة.<br><button class="btn primary" style="margin-top:14px" data-add>＋ أضف قصيدة</button></div>`);
-}
-function bars(title, rows, filterKey){
-  const max = Math.max(1, ...rows.map(r => r.n));
-  return `<div class="panel"><h3>${title}</h3>${rows.map(r =>
-    `<div class="bar" data-jump="${filterKey}" data-v="${esc(r.id)}"><span class="lbl">${esc(r.label)}</span><span class="track"><span class="fill" style="width:${(r.n / max) * 100}%"></span></span><span class="num">${r.n}</span></div>`
-  ).join("") || '<div class="hint">لا بيانات بعد</div>'}</div>`;
+  const title = state.view === "home" ? "نتائج البحث" : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
+  return `<div class="head"><h2>${esc(title)}</h2></div>
+    <div class="filters">
+      <div class="frow"><span>اللهجة</span>${opts("dialect", DIALECTS)}</div>
+      <div class="frow"><span>النوع</span>${opts("form", FORMS)}</div>
+      <div class="frow"><span>الشخصية</span><select id="personaSel" aria-label="الشخصية"><option value="">الكل</option>${personas.map(x => `<option ${state.persona === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
+      <div class="frow"><span>الإلقاء</span><button class="opt" id="mediaOpt" aria-pressed="${state.hasMedia}">فيه تسجيل فقط</button></div>
+    </div>
+    <div class="meta">${plural(items.length)}${active ? ' — <button id="clearF">مسح التصفية</button>' : ""}</div>
+    ${items.length ? `<ul class="items">${items.map(item).join("")}</ul>`
+      : `<div class="empty">لا شيء هنا بعد.<br><button class="link" data-add>أضف قصيدة</button></div>`}`;
 }
 function homeView(){
   if (state.q) return listView();
-  const by = (key, list) => list.map(x => ({ id: x.id, label: x.label, n: poems.filter(p => p[key] === x.id).length }));
-  const personaRows = allPersonas()
-    .map(x => ({ id: x, label: x, n: poems.filter(p => (p.persona || []).includes(x)).length }))
-    .filter(r => r.n).sort((a, b) => b.n - a.n).slice(0, 10);
-  const withMedia = poems.filter(p => mediaOf(p).length).length;
-  const recent = poems.slice(-6).reverse();
-  return `<div class="stats">
-      <a class="stat total" href="#/all"><div class="k">مجموع القصائد</div><div class="v">${poems.length}</div></a>
-      ${SECTIONS.map(s => `<a class="stat" href="#/${s.id}"><div class="k">${s.label}</div><div class="v">${poems.filter(p => p.section === s.id).length}</div></a>`).join("")}
-      <a class="stat" href="#/all" data-media><div class="k">مع إلقاء مسجّل</div><div class="v">${withMedia}</div></a>
-    </div>
-    <div class="panels">
-      ${bars("حسب اللهجة", by("dialect", DIALECTS), "dialect")}
-      ${bars("حسب النوع", by("form", FORMS), "form")}
-      ${bars("حسب الشخصية", personaRows, "persona")}
-    </div>
-    <h3 class="section-title">أُضيف مؤخراً</h3>
-    ${recent.length ? `<div class="grid">${recent.map(card).join("")}</div>` : `<div class="empty">لا توجد قصائد بعد.</div>`}`;
+  const recent = poems.slice(-5).reverse();
+  return `<section class="hero">
+      <div class="pre">خادم أهل البيت عليهم السلام</div>
+      <h1>السيد محمد الماجد</h1>
+      <div class="count">${plural(poems.length)}</div>
+    </section>
+    <ul class="index">
+      ${SECTIONS.map(s => `<li><a href="#/${s.id}"><span class="t">${s.label}</span><span class="n">${num(poems.filter(p => p.section === s.id).length)}</span></a></li>`).join("")}
+    </ul>
+    ${recent.length ? `<p class="label">أُضيف مؤخراً</p><ul class="items">${recent.map(item).join("")}</ul>` : ""}`;
 }
-
 function render(){
   renderNav();
-  const title = state.view === "home" ? (state.q ? "نتائج البحث" : "نظرة عامة")
-              : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
-  $("#viewTitle").textContent = title;
-  document.title = (state.view === "home" ? "" : title + " · ") + "ديوان السيد محمد الماجد";
+  const t = state.view === "home" ? "" : state.view === "all" ? "كل القصائد" : label(SECTIONS, state.view);
+  document.title = (t ? t + " · " : "") + "ديوان السيد محمد الماجد";
   $("#view").innerHTML = state.view === "home" ? homeView() : listView();
 }
 
@@ -417,10 +326,7 @@ function poemHTML(text){
     const l = raw.trim();
     if (!l) return "";
     if (/^—.*—$/.test(l)) return `<div class="part">${esc(l.replace(/^—\s*|\s*—$/g, ""))}</div>`;
-    if (l.includes("|")) {
-      const [a, ...b] = l.split("|");
-      return `<div class="bayt"><span class="sadr">${esc(a.trim())}</span><span class="ajuz">${esc(b.join("|").trim())}</span></div>`;
-    }
+    if (l.includes("|")) { const [a, ...b] = l.split("|"); return `<div class="bayt"><span>${esc(a.trim())}</span><span>${esc(b.join("|").trim())}</span></div>`; }
     return `<div class="line">${esc(l)}</div>`;
   }).join("");
 }
@@ -431,44 +337,40 @@ function ytId(url){
 function mediaHTML(m){
   const url = m.url.trim(), lab = esc(m.label || (m.type === "audio" ? "تسجيل صوتي" : "تسجيل مرئي"));
   const id = ytId(url);
-  if (id) return `<div><h5>${lab}</h5><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${lab}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
-  if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(url)) return `<div><h5>${lab}</h5><audio controls preload="none" src="${esc(url)}"></audio></div>`;
-  if (/\.(mp4|webm)(\?|$)/i.test(url)) return `<div><h5>${lab}</h5><video controls preload="none" style="width:100%;border-radius:14px" src="${esc(url)}"></video></div>`;
-  if (/^https?:\/\//i.test(url)) return `<div><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">${ICON[m.type] || ""} ${lab} ↗</a></div>`;
+  if (id) return `<div><p class="label">${lab}</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${lab}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+  if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(url)) return `<div><p class="label">${lab}</p><audio controls preload="none" src="${esc(url)}"></audio></div>`;
+  if (/\.(mp4|webm)(\?|$)/i.test(url)) return `<div><p class="label">${lab}</p><video controls preload="none" src="${esc(url)}"></video></div>`;
+  if (/^https?:\/\//i.test(url)) return `<div class="ext"><a class="link" href="${esc(url)}" target="_blank" rel="noopener">${lab} ↗</a></div>`;
   return "";
 }
+const closeBtn = '<div class="close"><button class="icon" data-close aria-label="إغلاق"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
 function openReader(id){
   const p = poems.find(x => x.id === id); if (!p) return;
   const m = mediaOf(p);
-  $("#readerSheet").innerHTML = `
-    <div class="sheet-head">
-      <div class="t"><div class="sub">${esc(label(SECTIONS, p.section))}${p.occasion ? " · " + esc(p.occasion) : ""}${p.year ? " · " + esc(p.year) : ""}</div><h3>${esc(p.title)}</h3></div>
-      <button class="x" data-close aria-label="إغلاق">×</button>
-    </div>
-    <div class="sheet-body">
-      <div class="meta-row">
-        ${(p.persona || []).map(x => `<span class="tag p">${esc(x)}</span>`).join("")}
-        <span class="tag">${esc(label(DIALECTS, p.dialect))}</span>
-        <span class="tag">${esc(label(FORMS, p.form))}</span>
-      </div>
-      <div class="poem">${poemHTML(p.verses)}</div>
-      ${p.notes ? `<div class="notes">${esc(p.notes)}</div>` : ""}
-      ${m.length ? `<div class="media">${m.map(mediaHTML).join("")}</div>` : ""}
-      <div class="sheet-actions">
-        <button class="btn" data-edit="${esc(p.id)}">تعديل</button>
-        <button class="btn" data-copy="${esc(p.id)}">نسخ النص</button>
-        <button class="btn ghost danger" data-del="${esc(p.id)}">حذف</button>
-      </div>
-    </div>`;
+  const meta = [label(SECTIONS, p.section), p.occasion, p.year].filter(Boolean).map(esc).join("  ·  ");
+  $("#readerSheet").innerHTML = `<div class="wrap">${closeBtn}
+    <div class="reader-head"><div class="meta">${meta}</div><h2>${esc(p.title)}</h2>
+      <div class="tags">${[...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).map(esc).join("  ·  ")}</div></div>
+    <div class="orn">✦ ✦ ✦</div>
+    <div class="poem">${poemHTML(p.verses)}</div>
+    ${p.notes ? `<p class="notes">${esc(p.notes)}</p>` : ""}
+    ${m.length ? `<div class="media">${m.map(mediaHTML).join("")}</div>` : ""}
+    <div class="actions">
+      <button class="link" data-pdf="${esc(p.id)}">تنزيل PDF</button>
+      <button class="link" data-docx="${esc(p.id)}">تنزيل Word</button>
+      <button class="link" data-edit="${esc(p.id)}">تعديل</button>
+      <button class="link" data-copy="${esc(p.id)}">نسخ النص</button>
+      <button class="link danger" data-del="${esc(p.id)}">حذف</button>
+    </div></div>`;
   showDialog($("#reader"));
 }
 
 /* ===== editor ===== */
 function mediaRow(m = { type: "video", url: "", label: "" }){
-  return `<div class="media-row">
-    <select name="mtype"><option value="video" ${m.type === "video" ? "selected" : ""}>مرئي</option><option value="audio" ${m.type === "audio" ? "selected" : ""}>صوتي</option></select>
-    <input name="murl" type="url" dir="ltr" placeholder="https://…" value="${esc(m.url)}">
-    <input name="mlabel" placeholder="وصف (اختياري)" value="${esc(m.label)}">
+  return `<div class="mrow">
+    <select name="mtype" aria-label="نوع التسجيل"><option value="video" ${m.type === "video" ? "selected" : ""}>مرئي</option><option value="audio" ${m.type === "audio" ? "selected" : ""}>صوتي</option></select>
+    <input name="murl" type="url" dir="ltr" placeholder="https://…" value="${esc(m.url)}" aria-label="الرابط">
+    <input name="mlabel" placeholder="وصف (اختياري)" value="${esc(m.label)}" aria-label="الوصف">
     <button type="button" data-rmrow aria-label="حذف الرابط">×</button>
   </div>`;
 }
@@ -477,35 +379,31 @@ function openEditor(id){
     id: "", title: "", section: SECTIONS.some(s => s.id === state.view) ? state.view : "madh",
     dialect: "fusha", persona: [], form: "amudi", occasion: "", year: "", verses: "", media: [], notes: ""
   };
-  const opts = (list, v) => list.map(x => `<option value="${x.id}" ${x.id === v ? "selected" : ""}>${x.label}</option>`).join("");
-  $("#editorSheet").innerHTML = `
-    <div class="sheet-head"><div class="t"><h3>${p.id ? "تعديل قصيدة" : "إضافة قصيدة"}</h3></div><button class="x" data-close aria-label="إغلاق">×</button></div>
-    <form class="sheet-body form" id="poemForm" data-id="${esc(p.id)}">
+  const o = (list, v) => list.map(x => `<option value="${x.id}" ${x.id === v ? "selected" : ""}>${x.label}</option>`).join("");
+  $("#editorSheet").innerHTML = `<div class="wrap">${closeBtn}
+    <form class="form" id="poemForm" data-id="${esc(p.id)}">
+      <h2>${p.id ? "تعديل قصيدة" : "قصيدة جديدة"}</h2>
       <div class="field full"><label for="f-title">العنوان</label><input id="f-title" name="title" required value="${esc(p.title)}"></div>
-      <div class="field"><label for="f-section">القسم</label><select id="f-section" name="section">${opts(SECTIONS, p.section)}</select></div>
-      <div class="field"><label for="f-dialect">اللهجة</label><select id="f-dialect" name="dialect">${opts(DIALECTS, p.dialect)}</select></div>
-      <div class="field"><label for="f-form">النوع</label><select id="f-form" name="form">${opts(FORMS, p.form)}</select></div>
+      <div class="field"><label for="f-section">القسم</label><select id="f-section" name="section">${o(SECTIONS, p.section)}</select></div>
       <div class="field"><label for="f-occ">المناسبة</label><input id="f-occ" name="occasion" value="${esc(p.occasion)}"></div>
+      <div class="field"><label for="f-dialect">اللهجة</label><select id="f-dialect" name="dialect">${o(DIALECTS, p.dialect)}</select></div>
+      <div class="field"><label for="f-form">النوع</label><select id="f-form" name="form">${o(FORMS, p.form)}</select></div>
       <div class="field full"><span class="lab">الشخصية</span>
-        <div class="persona-pick">${allPersonas().map(x => `<label><input type="checkbox" name="persona" value="${esc(x)}" ${(p.persona || []).includes(x) ? "checked" : ""}>${esc(x)}</label>`).join("")}</div>
-        <input name="personaExtra" placeholder="شخصية أخرى غير موجودة؟ اكتبها هنا (افصل بفاصلة)">
+        <div class="picks">${allPersonas().map(x => `<label><input type="checkbox" name="persona" value="${esc(x)}" ${(p.persona || []).includes(x) ? "checked" : ""}>${esc(x)}</label>`).join("")}</div>
+        <input name="personaExtra" placeholder="شخصية أخرى؟ اكتبها هنا (افصل بفاصلة)" aria-label="شخصية أخرى">
       </div>
       <div class="field full"><label for="f-verses">الأبيات</label>
         <textarea id="f-verses" name="verses" required>${esc(p.verses)}</textarea>
-        <span class="hint">كل بيت في سطر. افصل بين الشطرين بالرمز | — ولعناوين أجزاء المجلس اكتب السطر هكذا: — المقدمة —</span>
+        <span class="hint">كل بيت في سطر، والشطران يفصل بينهما |  —  ولعناوين أجزاء المجلس: — المقدمة —</span>
       </div>
-      <div class="field full"><span class="lab">روابط الإلقاء (إن وُجدت)</span>
-        <div class="media-rows" id="mediaRows">${(p.media && p.media.length ? p.media : [undefined]).map(mediaRow).join("")}</div>
-        <div><button type="button" class="btn ghost" id="addRow" style="padding:6px 12px">＋ رابط آخر</button></div>
-        <span class="hint">روابط يوتيوب تُعرض داخل الصفحة، وروابط ملفات الصوت (mp3) تُشغَّل مباشرة، وغيرها يظهر كزر.</span>
+      <div class="field full"><span class="lab">روابط الإلقاء</span>
+        <div class="mrows" id="mediaRows">${(p.media && p.media.length ? p.media : [undefined]).map(mediaRow).join("")}</div>
+        <div><button type="button" class="link" id="addRow" style="font-size:14px;margin-top:6px">رابط آخر</button></div>
       </div>
       <div class="field"><label for="f-year">السنة</label><input id="f-year" name="year" value="${esc(p.year)}"></div>
       <div class="field"><label for="f-notes">ملاحظات</label><input id="f-notes" name="notes" value="${esc(p.notes)}"></div>
-      <div class="full sheet-actions" style="margin-top:4px">
-        <button class="btn primary" type="submit">حفظ</button>
-        <button class="btn ghost" type="button" data-close>إلغاء</button>
-      </div>
-    </form>`;
+      <div class="form-actions"><button class="btn" type="submit">حفظ</button><button class="link" type="button" data-close>إلغاء</button></div>
+    </form></div>`;
   showDialog($("#editor"));
 }
 function submitForm(form){
@@ -526,9 +424,7 @@ function submitForm(form){
 
 /* ===== dialogs ===== */
 function showDialog(d){ d.showModal(); d.querySelector(".sheet").scrollTop = 0; }
-document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => {
-  if (e.target === d || e.target.closest("[data-close]")) d.close();
-}));
+document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => { if (e.target.closest("[data-close]")) d.close(); }));
 
 /* ===== import / export ===== */
 let downloadsApi = null;
@@ -540,9 +436,7 @@ async function exportData(){
     try {
       await downloadsApi.save({ filename: "diwan-almajed.json", data: JSON.stringify(poems, null, 2) });
       toast("تم حفظ الملف — افتحه لاحقاً من «استيراد ملف»");
-    } catch (e) {
-      if (e && e.code !== "declined") toast("تعذّر حفظ الملف هنا");
-    }
+    } catch (e) { if (e && e.code !== "declined") toast("تعذّر حفظ الملف هنا"); }
     return;
   }
   const body = "/* بيانات ديوان السيد محمد الماجد — صُدّرت في " + new Date().toLocaleDateString("ar") + " */\nwindow.POEMS_SEED = " + JSON.stringify(poems, null, 2) + ";\n";
@@ -553,24 +447,155 @@ async function exportData(){
 }
 function importData(text){
   try {
-    const start = text.indexOf("["), end = text.lastIndexOf("]");
-    const arr = JSON.parse(text.slice(start, end + 1));
+    const arr = JSON.parse(text.slice(text.indexOf("["), text.lastIndexOf("]") + 1));
     if (!Array.isArray(arr)) throw 0;
-    poems = arr; save(); render(); toast(`تم استيراد ${arr.length} قصيدة`);
+    poems = arr; save(); render(); toast(`تم استيراد ${plural(arr.length)}`);
   } catch { toast("تعذّرت قراءة الملف — استخدم ملفاً صدّرته من الموقع"); }
 }
 
+/* ===== PDF / Word ===== */
+const LIBS = {
+  jspdf: "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+  h2i:   "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js",
+  docx:  "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"
+};
+const loaded = {};
+const loadScript = src => loaded[src] || (loaded[src] = new Promise((res, rej) => {
+  const el = document.createElement("script"); el.src = src; el.onload = res;
+  el.onerror = () => { delete loaded[src]; rej(new Error("load")); };
+  document.head.appendChild(el);
+}));
+const POET = "السيد محمد الماجد";
+const fileName = (p, ext) => (String(p.title || "قصيدة").replace(/[\\/:*?"<>|]+/g, "").trim().slice(0, 80) || "قصيدة") + "." + ext;
+const metaText = p => [label(SECTIONS, p.section), p.occasion, ...(p.persona || []), label(DIALECTS, p.dialect), label(FORMS, p.form)].filter(Boolean).join("  ·  ");
+const parseLines = text => String(text || "").split("\n").map(l => l.trim()).filter(Boolean).map(l =>
+  /^—.*—$/.test(l) ? { k: "part", t: l.replace(/^—\s*|\s*—$/g, "") }
+  : l.includes("|") ? { k: "bayt", a: l.split("|")[0].trim(), b: l.split("|").slice(1).join("|").trim() }
+  : { k: "line", t: l });
+
+async function saveBlob(blob, name){
+  if (downloadsApi) {
+    try { await downloadsApi.save({ filename: name, data: blob }); toast("تم التنزيل"); }
+    catch (e) { if (e && e.code !== "declined") toast("تعذّر التنزيل هنا"); }
+    return;
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.style.display = "none";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+async function buildPdf(p){
+  await Promise.all([loadScript(LIBS.jspdf), loadScript(LIBS.h2i)]);
+  await document.fonts.ready;
+  const W = 794, H = 1123, PX = 80, PT = 84, PB = 96;
+  const host = document.createElement("div");
+  host.style.cssText = "position:fixed;top:0;left:-20000px;pointer-events:none";
+  document.body.appendChild(host);
+  const pageCss = `width:${W}px;height:${H}px;background:#fff;color:#1A1814;direction:rtl;font-family:${getComputedStyle(document.body).fontFamily};position:relative;overflow:hidden;padding:${PT}px ${PX}px ${PB}px;box-sizing:border-box`;
+  const pages = [];
+  const newPage = () => {
+    const pg = document.createElement("div"); pg.style.cssText = pageCss;
+    const body = document.createElement("div"); pg.appendChild(body);
+    const foot = document.createElement("div");
+    foot.style.cssText = "position:absolute;bottom:44px;left:0;right:0;text-align:center;font-size:12px;color:#A39C8E";
+    pg.appendChild(foot); host.appendChild(pg); pages.push({ pg, body, foot }); return body;
+  };
+  const room = H - PT - PB;
+  let body = newPage();
+  const add = html => {
+    const el = document.createElement("div"); el.innerHTML = html; const node = el.firstElementChild;
+    body.appendChild(node);
+    if (body.scrollHeight > room && body.children.length > 1) { node.remove(); body = newPage(); body.appendChild(node); }
+  };
+  add(`<div style="text-align:center;padding-bottom:30px">
+    <div style="font-size:14px;color:#8C6A2F">خادم أهل البيت عليهم السلام · ${esc(POET)}</div>
+    <div style="font-family:var(--display);font-weight:900;font-size:40px;line-height:1.3;margin:12px 0 10px">${esc(p.title)}</div>
+    <div style="font-size:13px;color:#8A8376">${esc(metaText(p))}</div>
+    <div style="color:#B5AE9F;letter-spacing:.6em;margin-top:22px">✦ ✦ ✦</div></div>`);
+  parseLines(p.verses).forEach(l => {
+    if (l.k === "part") add(`<div style="text-align:center;color:#8C6A2F;font-size:16px;padding:22px 0 6px">${esc(l.t)}</div>`);
+    else if (l.k === "bayt") add(`<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px;font-size:19px;line-height:2.2"><span style="text-align:center">${esc(l.a)}</span><span style="text-align:center">${esc(l.b)}</span></div>`);
+    else add(`<div style="text-align:center;font-size:19px;line-height:2.2">${esc(l.t)}</div>`);
+  });
+  if (p.notes) add(`<div style="text-align:center;font-size:13px;color:#6B655A;padding-top:28px">${esc(p.notes)}</div>`);
+  const links = mediaOf(p);
+  if (links.length) add(`<div style="text-align:center;font-size:12px;color:#6B655A;padding-top:22px;direction:ltr">${links.map(m => esc(m.url)).join("<br>")}</div>`);
+  pages.forEach((x, i) => { x.foot.textContent = pages.length > 1 ? `${POET}  ·  ${num(i + 1)} / ${num(pages.length)}` : POET; });
+  try {
+    const pdf = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
+    for (let i = 0; i < pages.length; i++) {
+      const png = await window.htmlToImage.toPng(pages[i].pg, { pixelRatio: 2, backgroundColor: "#ffffff", width: W, height: H });
+      if (i) pdf.addPage();
+      pdf.addImage(png, "PNG", 0, 0, 210, 297, undefined, "FAST");
+    }
+    pdf.setProperties({ title: p.title, author: POET });
+    return pdf.output("blob");
+  } finally { host.remove(); }
+}
+
+async function buildDocx(p){
+  await loadScript(LIBS.docx);
+  const D = window.docx;
+  const F = "Thmanyah Serif Text";
+  const font = { ascii: F, cs: F, hAnsi: F, eastAsia: F };
+  const run = (text, o = {}) => new D.TextRun({ text, font, rightToLeft: true, size: o.size || 28, sizeComplexScript: o.size || 28,
+    bold: !!o.bold, boldComplexScript: !!o.bold, color: o.color });
+  const para = (runs, o = {}) => new D.Paragraph({ children: [].concat(runs), bidirectional: true,
+    alignment: o.align || D.AlignmentType.CENTER, spacing: { before: o.before || 0, after: o.after ?? 120, line: o.line || 360 } });
+  const none = { style: D.BorderStyle.NONE, size: 0, color: "FFFFFF" };
+  const borders = { top: none, bottom: none, left: none, right: none, insideHorizontal: none, insideVertical: none };
+  const kids = [
+    para(run("خادم أهل البيت عليهم السلام · " + POET, { size: 20, color: "8C6A2F" })),
+    para(run(p.title, { size: 48, bold: true }), { after: 80 }),
+    para(run(metaText(p), { size: 18, color: "8A8376" }), { after: 200 }),
+    para(run("✦ ✦ ✦", { size: 20, color: "B5AE9F" }), { after: 360 })
+  ];
+  parseLines(p.verses).forEach(l => {
+    if (l.k === "part") kids.push(para(run(l.t, { size: 24, color: "8C6A2F", bold: true }), { before: 240, after: 120 }));
+    else if (l.k === "bayt") kids.push(new D.Table({
+      visuallyRightToLeft: true, borders, width: { size: 100, type: D.WidthType.PERCENTAGE },
+      rows: [new D.TableRow({ cantSplit: true, children: [l.a, l.b].map(t => new D.TableCell({
+        borders, width: { size: 50, type: D.WidthType.PERCENTAGE },
+        children: [para(run(t), { after: 60 })] })) })]
+    }));
+    else kids.push(para(run(l.t)));
+  });
+  if (p.notes) kids.push(para(run(p.notes, { size: 20, color: "6B655A" }), { before: 400 }));
+  mediaOf(p).forEach(m => kids.push(new D.Paragraph({ alignment: D.AlignmentType.CENTER,
+    children: [new D.ExternalHyperlink({ link: m.url, children: [new D.TextRun({ text: (m.label || "رابط الإلقاء") + ": " + m.url, style: "Hyperlink", size: 18, font })] })] })));
+  const doc = new D.Document({
+    creator: POET, title: p.title,
+    sections: [{ properties: { page: { margin: { top: 1300, bottom: 1300, left: 1300, right: 1300 } } }, children: kids }]
+  });
+  return D.Packer.toBlob(doc);
+}
+
+let busy = false;
+async function downloadPoem(id, kind){
+  const p = poems.find(x => x.id === id); if (!p || busy) return;
+  busy = true; toast(kind === "pdf" ? "جارٍ تجهيز ملف PDF…" : "جارٍ تجهيز ملف Word…");
+  try {
+    const blob = kind === "pdf" ? await buildPdf(p) : await buildDocx(p);
+    await saveBlob(blob, fileName(p, kind));
+  } catch (e) {
+    console.error(e); toast("تعذّر تجهيز الملف — تأكد من الاتصال بالإنترنت");
+  } finally { busy = false; }
+}
+
 /* ===== events ===== */
+const menu = $("#moreMenu"), moreBtn = $("#moreBtn");
+const setMenu = on => { menu.classList.toggle("on", on); moreBtn.setAttribute("aria-expanded", on); };
 document.addEventListener("click", e => {
   const t = e.target;
-  const cardEl = t.closest(".card"); if (cardEl) return openReader(cardEl.dataset.id);
-  const chip = t.closest(".chip[data-f]"); if (chip) { state[chip.dataset.f] = chip.dataset.v; return render(); }
-  if (t.closest("#mediaChip")) { state.hasMedia = !state.hasMedia; return render(); }
-  if (t.closest("#clearF")) { e.preventDefault(); Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false, q: "" }); $("#q").value = ""; return render(); }
-  const bar = t.closest("[data-jump]");
-  if (bar) { Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false }); state[bar.dataset.jump] = bar.dataset.v; location.hash = "#/all"; return render(); }
-  if (t.closest("a[data-media]")) { Object.assign(state, { dialect: "", form: "", persona: "" }); state.hasMedia = true; }
+  if (!t.closest(".more")) setMenu(false);
+  const it = t.closest(".item"); if (it) return openReader(it.dataset.id);
+  const o = t.closest(".opt[data-f]"); if (o) { state[o.dataset.f] = o.dataset.v; return render(); }
+  if (t.closest("#mediaOpt")) { state.hasMedia = !state.hasMedia; return render(); }
+  if (t.closest("#clearF")) { Object.assign(state, { dialect: "", form: "", persona: "", hasMedia: false, q: "" }); $("#q").value = ""; return render(); }
   if (t.closest("[data-add]")) return openEditor();
+  const pdfB = t.closest("[data-pdf]"); if (pdfB) return downloadPoem(pdfB.dataset.pdf, "pdf");
+  const docB = t.closest("[data-docx]"); if (docB) return downloadPoem(docB.dataset.docx, "docx");
   const ed = t.closest("[data-edit]"); if (ed) { $("#reader").close(); return openEditor(ed.dataset.edit); }
   const cp = t.closest("[data-copy]");
   if (cp) { const p = poems.find(x => x.id === cp.dataset.copy);
@@ -579,23 +604,23 @@ document.addEventListener("click", e => {
   const del = t.closest("[data-del]");
   if (del && confirm("حذف هذه القصيدة نهائياً؟")) { poems = poems.filter(p => p.id !== del.dataset.del); save(); $("#reader").close(); render(); toast("تم الحذف"); return; }
   if (t.closest("#addRow")) { $("#mediaRows").insertAdjacentHTML("beforeend", mediaRow()); return; }
-  const rm = t.closest("[data-rmrow]"); if (rm) { const rows = $("#mediaRows"); rm.parentElement.remove(); if (!rows.children.length) rows.insertAdjacentHTML("beforeend", mediaRow()); return; }
-  if (t.closest(".nav a")) closeMenu();
+  const rm = t.closest("[data-rmrow]"); if (rm) { const rows = $("#mediaRows"); rm.parentElement.remove(); if (!rows.children.length) rows.insertAdjacentHTML("beforeend", mediaRow()); }
 });
 document.addEventListener("keydown", e => {
-  if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("card")) { e.preventDefault(); openReader(e.target.dataset.id); }
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("item")) { e.preventDefault(); openReader(e.target.dataset.id); }
+  if (e.key === "Escape") setMenu(false);
 });
-document.addEventListener("change", e => {
-  if (e.target.id === "personaSel") { state.persona = e.target.value; render(); }
-});
+document.addEventListener("change", e => { if (e.target.id === "personaSel") { state.persona = e.target.value; render(); } });
 document.addEventListener("submit", e => { if (e.target.id === "poemForm") { e.preventDefault(); submitForm(e.target); } });
 
 let qT; $("#q").addEventListener("input", e => { clearTimeout(qT); qT = setTimeout(() => { state.q = e.target.value; render(); }, 150); });
+$("#searchBtn").onclick = () => { const b = $("#searchBox"); b.classList.toggle("on"); if (b.classList.contains("on")) $("#q").focus(); };
 $("#addBtn").onclick = () => openEditor();
-$("#exportBtn").onclick = exportData;
-$("#importBtn").onclick = () => $("#importFile").click();
+moreBtn.onclick = () => setMenu(!menu.classList.contains("on"));
+$("#exportBtn").onclick = () => { setMenu(false); exportData(); };
+$("#importBtn").onclick = () => { setMenu(false); $("#importFile").click(); };
 $("#importFile").onchange = e => { const f = e.target.files[0]; if (f) f.text().then(importData); e.target.value = ""; };
-$("#resetBtn").onclick = () => { if (confirm("استعادة البيانات من ملف data.js؟ ستُفقد التعديلات غير المصدّرة.")) { store.del(KEY); poems = seed(); render(); toast("تمت الاستعادة"); } };
+$("#resetBtn").onclick = () => { setMenu(false); if (confirm("استعادة البيانات الأصلية؟ ستُفقد التعديلات غير المصدّرة.")) { store.del(KEY); poems = seed(); render(); toast("تمت الاستعادة"); } };
 
 const root = document.documentElement;
 const savedTheme = store.get("majed-theme"); if (savedTheme) root.dataset.theme = savedTheme;
@@ -603,11 +628,6 @@ $("#themeBtn").onclick = () => {
   const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   root.dataset.theme = dark ? "light" : "dark"; store.set("majed-theme", root.dataset.theme);
 };
-
-const side = $("#side"), scrim = $("#scrim");
-function closeMenu(){ side.classList.remove("open"); scrim.classList.remove("on"); }
-$("#menuBtn").onclick = () => { side.classList.add("open"); scrim.classList.add("on"); };
-scrim.onclick = closeMenu;
 
 function route(){
   const v = location.hash.replace(/^#\/?/, "") || "home";
