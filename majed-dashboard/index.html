@@ -315,6 +315,7 @@ const FORMS = [
   { id: "majarid", label: "مجاريد" },
   { id: "faizi",   label: "فايزي" },
   { id: "hur",     label: "حر" },
+  { id: "abudhiya", label: "أبوذية" },
   { id: "other",   label: "أخرى" }
 ];
 const PERSONAS = [
@@ -338,6 +339,9 @@ const store = {
 const seed = () => JSON.parse(JSON.stringify(window.POEMS_SEED || []));
 let poems;
 try { poems = JSON.parse(store.get(KEY)) || seed(); } catch { poems = seed(); }
+// poems added to data.js later still appear for viewers who have a saved copy (unless they deleted them)
+let deletedIds = []; try { deletedIds = JSON.parse(store.get(KEY + "-deleted")) || []; } catch {}
+seed().forEach(sp => { if (!poems.some(p => p.id === sp.id) && !deletedIds.includes(sp.id)) poems.push(sp); });
 const save = () => { if (!store.set(KEY, JSON.stringify(poems))) toast("تعذّر الحفظ في المتصفح — صدّر البيانات لحفظها"); };
 
 /* ===== state ===== */
@@ -770,7 +774,7 @@ document.addEventListener("click", e => {
     const txt = p.title + "\n\n" + p.verses.replace(/\s*\|\s*/g, "    ") + "\n\n— السيد محمد الماجد";
     navigator.clipboard?.writeText(txt).then(() => toast("تم نسخ النص"), () => toast("تعذّر النسخ")); return; }
   const del = t.closest("[data-del]");
-  if (del && confirm("حذف هذه القصيدة نهائياً؟")) { poems = poems.filter(p => p.id !== del.dataset.del); save(); $("#reader").close(); render(); toast("تم الحذف"); return; }
+  if (del && confirm("حذف هذه القصيدة نهائياً؟")) { poems = poems.filter(p => p.id !== del.dataset.del); deletedIds.push(del.dataset.del); store.set(KEY + "-deleted", JSON.stringify(deletedIds)); save(); $("#reader").close(); render(); toast("تم الحذف"); return; }
   if (t.closest("#addRow")) { $("#mediaRows").insertAdjacentHTML("beforeend", mediaRow()); return; }
   const rm = t.closest("[data-rmrow]"); if (rm) { const rows = $("#mediaRows"); rm.parentElement.remove(); if (!rows.children.length) rows.insertAdjacentHTML("beforeend", mediaRow()); return; }
 });
