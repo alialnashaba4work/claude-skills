@@ -193,6 +193,17 @@
       </section>`;
   }
 
+  // غلاف أسطوانة: الأسطوانة داخل المحفظة، وتطلع شوي عند تمرير الماوس
+  function sleeve(href, title, meta) {
+    return `<a class="sleeve-card" href="${href}">
+      <span class="disc" aria-hidden="true"><span class="disc-label"></span></span>
+      <span class="sleeve-face">
+        <span class="sf-title">${esc(title)}</span>
+        ${meta ? `<span class="sf-meta">${esc(meta)}</span>` : ""}
+      </span>
+    </a>`;
+  }
+
   function renderNode(parts, chain) {
     const node = chain[chain.length - 1];
     const kids = children(node);
@@ -201,22 +212,21 @@
     if (!kids.length) {
       body = `<p class="empty">لا توجد مقاطع في هذا القسم بعد.</p>`;
     } else if (itemsHere) {
-      body = `<ol class="tracks">${kids.map((it, i) => {
+      body = `<ol class="crate">${kids.map((it, i) => {
         const h = hrefOf([...parts, it.id]);
-        return `<li class="track" data-row="${h}">
+        const c = colorOf([...chain, it]);
+        return `<li class="crate-item" data-row="${h}" style="--c:${esc(c)}">
+          ${sleeve(h, it.title, "")}
           <button class="row-play" type="button" data-i="${i}" aria-label="تشغيل ${esc(it.title)}">${IC.play}</button>
-          <a class="track-link" href="${h}"><span class="track-title">${esc(it.title)}</span>
-          <span class="track-sub">الصوت والنص والتحميل</span></a>
         </li>`;
       }).join("")}</ol>`;
     } else {
-      body = `<ul class="groups">${kids.map((g) => {
+      body = `<ul class="crate">${kids.map((g) => {
         const n = countItems(g);
-        return `<li><a href="${hrefOf([...parts, g.id])}">
-          <span class="g-title">${esc(g.title)}</span>
-          <span class="g-count">${n ? arNum(n) + " مقطع" : "قريباً"}</span>
-          <span class="g-arrow" aria-hidden="true">${IC.back}</span>
-        </a></li>`;
+        const c = colorOf([...chain, g]);
+        return `<li class="crate-item" style="--c:${esc(c)}">
+          ${sleeve(hrefOf([...parts, g.id]), g.title, n ? arNum(n) + " مقطع" : "قريباً")}
+        </li>`;
       }).join("")}</ul>`;
     }
     view.innerHTML = `
