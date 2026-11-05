@@ -8,9 +8,16 @@
 }
 .yt-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 4px 10px; }
 .yt-head h2 { margin: 0; font-size: 1rem; font-weight: 800; }
-.yt-shuffle { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: .85rem; font-weight: 600; }
-.yt-shuffle:hover { border-color: var(--mist); }
-.yt-shuffle svg { font-size: 16px; }
+.yt-frame { position: relative; }
+.yt-arrow {
+  position: absolute; z-index: 2; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 22px;
+  color: #fff; background: rgba(7, 12, 36, .55); border: 1px solid rgba(255, 255, 255, .35);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .2s;
+}
+.yt-arrow:hover { background: rgba(7, 12, 36, .85); }
+.yt-prev { right: 12px; }
+.yt-next { left: 12px; }
 .yt-stage { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #12205e, #070c24); }
 .yt-slide { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
 .yt-slide.on { opacity: 1; }
@@ -28,6 +35,8 @@
   .yt { margin-top: 56px; padding: 16px; }
   .yt-head h2 { font-size: 1.25rem; }
   .yt-title { font-size: 1.4rem; inset: auto 24px 20px 24px; }
+  .yt-arrow { width: 56px; height: 56px; font-size: 26px; }
+  .yt-prev { right: 20px; } .yt-next { left: 20px; }
   .yt-play { width: 72px; height: 50px; font-size: 26px; }
 }
 @media (prefers-reduced-motion: reduce) { .yt-slide { transition: none; } }

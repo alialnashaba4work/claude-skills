@@ -3,7 +3,8 @@
   const Y = window.YT || { videos: [] };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const SH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3c4 0 6 10 10 10h3M4 17h3c1.6 0 2.8-1.6 3.8-3.4M14 9.4C15 8 16 7 17 7h3M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>';
+  const AR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+  const AL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
   const PL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5v11l9-5.5z" fill="currentColor" stroke="none"/></svg>';
   let order = [], i = 0, timer = null;
 
@@ -11,8 +12,13 @@
     const box = document.createElement("aside");
     box.className = "yt";
     box.setAttribute("aria-label", "مقاطع من قناة يوتيوب");
-    box.innerHTML = `<div class="yt-head"><h2>من قناة يوتيوب</h2>${Y.videos.length > 1 ? `<button class="yt-shuffle" type="button">${SH}<span>مقطع آخر</span></button>` : ""}</div>
-      <a class="yt-stage" href="${esc(Y.channel)}" target="_blank" rel="noopener"></a>
+    const many = Y.videos.length > 1;
+    box.innerHTML = `<div class="yt-head"><h2>من قناة يوتيوب</h2></div>
+      <div class="yt-frame">
+        <a class="yt-stage" href="${esc(Y.channel)}" target="_blank" rel="noopener"></a>
+        ${many ? `<button class="yt-arrow yt-prev" type="button" aria-label="المقطع السابق">${AR}</button>
+        <button class="yt-arrow yt-next" type="button" aria-label="المقطع التالي">${AL}</button>` : ""}
+      </div>
       <div class="yt-dots" aria-hidden="true"></div>`;
     const stage = box.querySelector(".yt-stage");
     if (!Y.videos.length) {
@@ -30,8 +36,11 @@
       stage.setAttribute("aria-label", "شاهد على يوتيوب: " + order[i].title);
     };
     go(0);
-    const btn = box.querySelector(".yt-shuffle");
-    if (btn) btn.addEventListener("click", () => { go(i + 1 + Math.floor(Math.random() * Math.max(1, order.length - 1))); restart(); });
+    // في الاتجاه العربي: السهم اليمين للسابق واليسار للتالي
+    if (many) {
+      box.querySelector(".yt-prev").addEventListener("click", () => { go(i - 1); restart(); });
+      box.querySelector(".yt-next").addEventListener("click", () => { go(i + 1); restart(); });
+    }
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const restart = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => go(i + 1), 6000); };
     box.addEventListener("mouseenter", () => clearInterval(timer));
