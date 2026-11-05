@@ -244,6 +244,21 @@ main:focus { outline: none; }
 .pc-ctl button:active { transform: scale(.94); }
 .pc-ctl button:disabled { opacity: .35; cursor: default; }
 
+/* خانة يوتيوب تحت المشغل */
+.ytbox, .ytframe { margin-top: 14px; border-radius: 20px; }
+.ytbox {
+  display: flex; align-items: center; gap: 14px; padding: 10px; color: var(--moon);
+  background: var(--night-2); border: 1px solid var(--line); transition: border-color .2s;
+}
+.ytbox:hover { border-color: var(--mist); }
+.ytb-thumb { position: relative; flex: none; width: 42%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+.ytb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ytb-play { position: absolute; inset: 0; margin: auto; width: 44px; height: 31px; border-radius: 9px; background: #e3262e; color: #fff; display: grid; place-items: center; font-size: 15px; }
+.ytb-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ytb-txt b { font-weight: 900; font-size: 1.05rem; }
+.ytb-txt small { color: var(--mist); font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ytframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
+
 /* ---------- النص ---------- */
 .text-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 18px; }
 .size { display: flex; gap: 6px; }

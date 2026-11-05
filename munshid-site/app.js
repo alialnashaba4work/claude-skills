@@ -315,6 +315,7 @@
               </div>
             </div>
           </div>
+          ${ytBox(it)}
         </div>
 
         <div class="pane" id="pane-text" role="tabpanel" aria-labelledby="tab-text" hidden>
@@ -347,6 +348,20 @@
         </div>
         </div>
       </section>`;
+
+    // يوتيوب: على الاستضافة الحقيقية يشتغل المقطع داخل الخانة، وفي صفحة المعاينة يفتح في يوتيوب
+    const ytb = view.querySelector(".ytbox");
+    if (ytb && canEmbed()) ytb.addEventListener("click", (e) => {
+      e.preventDefault();
+      audio.pause();
+      const f = document.createElement("iframe");
+      f.className = "ytframe";
+      f.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(ytb.dataset.yt) + "?autoplay=1&rel=0";
+      f.title = "مقطع يوتيوب: " + it.title;
+      f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      f.allowFullscreen = true;
+      ytb.replaceWith(f);
+    });
 
     // المشاركة والمفضلة
     $("#pShare").addEventListener("click", async () => {
@@ -434,6 +449,24 @@
       <path d="${star(8, 3, 22)}" fill="${G}" opacity=".85"/>
       ${P(16, 78).map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="${G}"/>`).join("")}
     </g></svg>`;
+  }
+
+  /* خانة يوتيوب للمقطع */
+  function ytId(url) {
+    const m = String(url || "").match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/);
+    return m ? m[1] : "";
+  }
+  // صفحة المعاينة في Claude تمنع تشغيل يوتيوب داخلها
+  const canEmbed = () => !/claudeusercontent\.com$|claude\.ai$/.test(location.hostname);
+  function ytBox(it) {
+    const id = ytId(it.youtube);
+    if (!id) return "";
+    const known = ((window.YT && window.YT.videos) || []).find((v) => v.id === id);
+    const thumb = (known && known.thumb) || it.cover || "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+    return `<a class="ytbox" href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener" data-yt="${esc(id)}">
+      <span class="ytb-thumb"><img src="${esc(thumb)}" alt="" loading="lazy"><span class="ytb-play" aria-hidden="true">${IC.play}</span></span>
+      <span class="ytb-txt"><b>شاهد على يوتيوب</b><small>${esc(it.title)}</small></span>
+    </a>`;
   }
 
   /* المفضلة: تنحفظ في جهاز الزائر بس */
