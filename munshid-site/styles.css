@@ -86,6 +86,7 @@ main:focus { outline: none; }
   font-size: clamp(3rem, 13vw, 7rem);
   text-shadow: 0 6px 40px rgba(42, 70, 196, .45);
 }
+.hero-copy { text-align: left; }
 .hero p { margin: .4rem 0 0; color: var(--mist); font-size: clamp(1rem, 3.6vw, 1.25rem); }
 @keyframes settle { from { transform: scale(1.08); opacity: 0; } to { transform: none; opacity: 1; } }
 
