@@ -321,7 +321,10 @@
 
         <div class="pane" id="pane-text" role="tabpanel" aria-labelledby="tab-text" hidden>
           <div class="text-tools">
-            <button class="chip" id="copyBtn" type="button">${IC.copy}<span>نسخ النص</span></button>
+            <div class="tt-actions">
+              <button class="chip" id="copyBtn" type="button">${IC.copy}<span>نسخ النص</span></button>
+              ${it.text ? `<button class="chip pdf-btn" type="button">${IC.down}<span>PDF</span></button>` : ""}
+            </div>
             <div class="size">
               <button class="chip" id="fsDown" type="button" aria-label="تصغير الخط">أ-</button>
               <button class="chip" id="fsUp" type="button" aria-label="تكبير الخط">أ+</button>
@@ -340,6 +343,7 @@
               ? `<a class="dl-btn" href="${esc(it.audio)}" download="${esc(it.title)}.${esc(file.split(".").pop() || "mp3")}">${IC.down}<span>تحميل الصوت</span></a>
                  <p class="dl-hint">يُحفظ الملف في مجلد التنزيلات على جهازك.</p>`
               : `<p class="empty">لم يُرفع الصوت لهذا المقطع بعد.</p>`}
+            ${it.text ? `<button class="dl-btn dl-alt pdf-btn" type="button">${IC.down}<span>تحميل النص PDF</span></button>` : ""}
           </div>
         </div>
         </div>
@@ -371,6 +375,14 @@
     show(tabs[0]);
 
     // التحكم
+    view.querySelectorAll(".pdf-btn").forEach((b) => b.addEventListener("click", async () => {
+      if (b.disabled) return;
+      b.disabled = true; toast("جاري تجهيز ملف PDF…");
+      try { await poemPdf(it, colorOf(chain)); toast("تم تحميل ملف PDF"); }
+      catch (e) { toast("تعذّر تجهيز ملف PDF، حاول مرة ثانية"); }
+      b.disabled = false;
+    }));
+
     const mine = () => current() === it;
     $("#pPlay").addEventListener("click", () => (mine() ? toggle() : load(siblings, idx, parentPath)));
     $("#pPrev").addEventListener("click", () => { location.hash = hrefOf([...parentPath, siblings[idx - 1].id]); if (current()) load(siblings, idx - 1, parentPath); });
@@ -439,6 +451,95 @@
     strip(top, 900, 18, 62, "top", 1);
     strip(bottom, 600, 13, 80, "bottom", 0.72);
     try { return cv.toDataURL("image/png"); } catch (e) { return ""; }
+  }
+
+  /*
+    تحميل النص كملف PDF بمقاس A4.
+    نرسم كل صفحة على canvas بخط عبر (عشان الحروف العربية تتصل صح) ونحطها في ملف PDF.
+    اسم المنشد يطلع مرة وحدة بس تحت العنوان في الصفحة الأولى.
+  */
+  let jsPdfLoading = null;
+  function loadJsPdf() {
+    if (window.jspdf) return Promise.resolve(window.jspdf);
+    if (!jsPdfLoading) jsPdfLoading = new Promise((res, rej) => {
+      const sc = document.createElement("script");
+      sc.src = "vendor/jspdf.umd.min.js";
+      sc.onload = () => res(window.jspdf); sc.onerror = () => { jsPdfLoading = null; rej(new Error("jspdf")); };
+      document.head.appendChild(sc);
+    });
+    return jsPdfLoading;
+  }
+
+  async function poemPdf(it, accent) {
+    const [{ jsPDF }] = await Promise.all([
+      loadJsPdf(),
+      document.fonts.load('900 40px "Abar"'), document.fonts.load('600 40px "Abar"'), document.fonts.load('400 40px "Abar"')
+    ]);
+    const W = 1654, H = 2339, M = 160, INK = "#14182b", SOFT = "#6b7290";
+    const BODY = 46, GAP = 90, bottom = H - M - 40;
+    const pages = [];
+    let ctx, y;
+    const newPage = () => {
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      ctx = cv.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
+      ctx.direction = "rtl"; ctx.textBaseline = "alphabetic";
+      pages.push(cv); y = M;
+    };
+    const font = (w, px) => { ctx.font = `${w} ${px}px "Abar", sans-serif`; };
+    // يصغّر الخط إذا الكلام أطول من المساحة
+    const fit = (text, w, px, max) => { font(w, px); while (ctx.measureText(text).width > max && px > 24) { px -= 2; font(w, px); } return px; };
+
+    newPage();
+    // رأس الصفحة الأولى: خط بلون القسم، العنوان، واسم المنشد مرة وحدة
+    ctx.fillStyle = accent; ctx.fillRect(W / 2 - 70, y, 140, 8); y += 120;
+    ctx.fillStyle = INK; ctx.textAlign = "center";
+    fit(it.title, 900, 92, W - 2 * M); ctx.fillText(it.title, W / 2, y); y += 70;
+    ctx.fillStyle = SOFT; font(400, 36); ctx.fillText(S.name, W / 2, y); y += 110;
+
+    const lineH = BODY * 2;
+    const ensure = (h) => { if (y + h > bottom) newPage(); };
+    const stanzas = String(it.text || "").split(/\n\s*\n/);
+    stanzas.forEach((st, si) => {
+      const lines = st.split("\n").map((l) => l.trim()).filter(Boolean);
+      lines.forEach((l) => {
+        ensure(lineH);
+        const h = l.split("|");
+        ctx.fillStyle = INK;
+        if (h.length === 2) {
+          const half = (W - 2 * M - GAP) / 2;
+          const a = h[0].trim(), b = h[1].trim();
+          const px = Math.min(fit(a, 400, BODY, half), fit(b, 400, BODY, half));
+          font(400, px);
+          ctx.textAlign = "right"; ctx.fillText(a, W - M, y + BODY);
+          ctx.textAlign = "left"; ctx.fillText(b, M, y + BODY);
+        } else {
+          fit(l, 400, BODY, W - 2 * M);
+          ctx.textAlign = "center"; ctx.fillText(l, W / 2, y + BODY);
+        }
+        y += lineH;
+      });
+      if (si < stanzas.length - 1) y += BODY * 0.9;
+    });
+
+    // رقم الصفحة فقط في التذييل
+    pages.forEach((cv, i) => {
+      const c = cv.getContext("2d");
+      c.direction = "rtl"; c.textAlign = "center"; c.fillStyle = SOFT;
+      c.font = `400 28px "Abar", sans-serif`;
+      if (pages.length > 1) c.fillText(arNum(i + 1) + " / " + arNum(pages.length), W / 2, H - M / 2);
+    });
+
+    const doc = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait", compress: true });
+    pages.forEach((cv, i) => {
+      if (i) doc.addPage("a4", "portrait");
+      doc.addImage(cv.toDataURL("image/jpeg", 0.9), "JPEG", 0, 0, 595.28, 841.89);
+    });
+    doc.setProperties({ title: it.title });
+    const url = URL.createObjectURL(doc.output("blob"));
+    const link = document.createElement("a");
+    link.href = url; link.download = it.title + ".pdf";
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 
   function localGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }

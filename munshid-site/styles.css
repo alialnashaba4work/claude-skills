@@ -94,15 +94,13 @@ main:focus { outline: none; }
 
 /* ---------- فهرس الأقسام ---------- */
 .index { max-width: var(--maxw); margin: 0 auto; padding: 8px var(--gutter) 56px; }
-.index-list { list-style: none; margin: 0; padding: 0; }
+.index-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
 .index-list li { border-bottom: 1px solid var(--line); }
-.index-list a {
-  display: grid; grid-template-columns: 1fr auto; align-items: baseline;
-  gap: 2px 16px; padding: 20px 0;
-}
-.ix-title { font-weight: 900; font-size: clamp(1.7rem, 7vw, 2.6rem); line-height: 1.2; transition: color .2s; }
-.ix-count { grid-row: 1; grid-column: 2; color: var(--mist); font-size: .9rem; white-space: nowrap; }
-.ix-note { grid-column: 1 / -1; color: var(--mist); font-size: .95rem; }
+/* التلفون: عمودين، والعدد تحت الوصف */
+.index-list a { display: grid; grid-template-columns: 1fr; gap: 2px; padding: 18px 0; }
+.ix-title { font-weight: 900; font-size: clamp(1.2rem, 5.6vw, 2.6rem); line-height: 1.25; transition: color .2s; text-wrap: balance; }
+.ix-count { color: var(--mist); font-size: .8rem; white-space: nowrap; }
+.ix-note { color: var(--mist); font-size: .85rem; line-height: 1.5; }
 .ix-note:empty { display: none; }
 .index-list a:hover .ix-title, .index-list a:focus-visible .ix-title { color: var(--green-soft); }
 
@@ -284,6 +282,11 @@ body:not(.is-playing) .crate-item.is-current .disc { animation-play-state: pause
 /* ---------- النص ---------- */
 .text-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 18px; }
 .size { display: flex; gap: 6px; }
+.tt-actions { display: flex; gap: 6px; }
+.chip:disabled { opacity: .5; cursor: progress; }
+.dl-alt { margin-top: 12px; background: transparent; border: 1px solid var(--line); color: var(--moon); }
+.dl-alt:hover { background: var(--night-2); border-color: var(--mist); }
+.dl .dl-btn { cursor: pointer; }
 .chip {
   display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px;
   border: 1px solid var(--line); background: var(--night-2); font-weight: 600; font-size: .95rem;
@@ -394,8 +397,10 @@ body.searching { overflow: hidden; }
   .hero-copy { left: 18%; right: auto; top: 30%; bottom: auto; max-width: none; margin: 0; text-align: left; }
   .hero h1 { font-size: clamp(4.5rem, 7vw, 7.5rem); }
   .index { padding-top: 32px; }
-  .index-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; }
-  .index-list a { padding: 26px 0; }
+  .index-list { column-gap: 72px; }
+  .index-list a { grid-template-columns: 1fr auto; align-items: baseline; gap: 2px 16px; padding: 26px 0; }
+  .ix-count { grid-row: 1; grid-column: 2; font-size: .9rem; }
+  .ix-note { grid-column: 1 / -1; font-size: .95rem; }
 
   /* القوائم في عمودين */
   .page { padding-top: 96px; }
