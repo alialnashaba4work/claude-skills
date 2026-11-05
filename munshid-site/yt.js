@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const Y = window.YT || { videos: [] };
+  const T = window.t || ((x) => x);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const AR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
@@ -11,18 +12,18 @@
   function build() {
     const box = document.createElement("aside");
     box.className = "yt";
-    box.setAttribute("aria-label", "مقاطع من قناة يوتيوب");
+    box.setAttribute("aria-label", T("مقاطع من قناة يوتيوب"));
     const many = Y.videos.length > 1;
-    box.innerHTML = `<div class="yt-head"><h2>من قناة يوتيوب</h2></div>
+    box.innerHTML = `<div class="yt-head"><h2>${T("من قناة يوتيوب")}</h2></div>
       <div class="yt-frame">
         <a class="yt-stage" href="${esc(Y.channel)}" target="_blank" rel="noopener"></a>
-        ${many ? `<button class="yt-arrow yt-prev" type="button" aria-label="المقطع السابق">${AR}</button>
-        <button class="yt-arrow yt-next" type="button" aria-label="المقطع التالي">${AL}</button>` : ""}
+        ${many ? `<button class="yt-arrow yt-prev" type="button" aria-label="${T("المقطع السابق")}">${AR}</button>
+        <button class="yt-arrow yt-next" type="button" aria-label="${T("المقطع التالي")}">${AL}</button>` : ""}
       </div>
       <div class="yt-dots" aria-hidden="true"></div>`;
     const stage = box.querySelector(".yt-stage");
     if (!Y.videos.length) {
-      stage.outerHTML = `<div class="yt-stage"><div class="yt-empty"><p>تظهر هنا مقاطع القناة بشكل عشوائي.<br><a href="${esc(Y.channel)}" target="_blank" rel="noopener">افتح القناة على يوتيوب</a></p></div></div>`;
+      stage.outerHTML = `<div class="yt-stage"><div class="yt-empty"><p>${T("تظهر هنا مقاطع القناة بشكل عشوائي.")}<br><a href="${esc(Y.channel)}" target="_blank" rel="noopener">${T("افتح القناة على يوتيوب")}</a></p></div></div>`;
       return box;
     }
     order = shuffle(Y.videos); i = 0;
@@ -35,7 +36,7 @@
       [i, (i + 1) % order.length].forEach((k) => { const im = stage.querySelectorAll(".yt-slide img")[k]; if (im && !im.src) im.src = im.dataset.src; });
       box.querySelectorAll(".yt-dots span").forEach((d, k) => d.classList.toggle("on", k === i % 8));
       stage.href = "https://www.youtube.com/watch?v=" + encodeURIComponent(order[i].id);
-      stage.setAttribute("aria-label", "شاهد على يوتيوب: " + order[i].title);
+      stage.setAttribute("aria-label", T("شاهد على يوتيوب: ") + order[i].title);
     };
     go(0);
     // في الاتجاه العربي: السهم اليمين للسابق واليسار للتالي

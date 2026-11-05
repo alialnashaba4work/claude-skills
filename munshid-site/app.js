@@ -5,11 +5,29 @@
   const view = $("#view");
   const audio = $("#audio");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const arNum = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+  const arNum = (n) => {
+    const digits = (typeof LANG !== "undefined" && LANG === "fa") ? "۰۱۲۳۴۵۶۷۸۹" : "٠١٢٣٤٥٦٧٨٩";
+    return String(n).replace(/[0-9٠-٩]/g, (d) => digits[/[0-9]/.test(d) ? +d : d.charCodeAt(0) - 0x660]);
+  };
+  /* ---------- اللغة: العربية والفارسية ---------- */
+  const LANG = (() => { try { return localStorage.getItem("lang") === "fa" ? "fa" : "ar"; } catch (e) { return "ar"; } })();
+  const FA = { "الرئيسية": "خانه", "لم يُرفع الصوت لهذا المقطع بعد": "صوت این قطعه هنوز بارگذاری نشده", "إيقاف مؤقت": "توقف", "تشغيل": "پخش", "تعذّر تحميل ملف الصوت": "بارگذاری فایل صوتی ممکن نشد", "إغلاق المشغل": "بستن پخش‌کننده", "تقديم ١٠ ثواني": "۱۰ ثانیه جلو", "تأخير ١٠ ثواني": "۱۰ ثانیه عقب", "مسار التصفح": "مسیر", "رجوع": "بازگشت", "أثناء الإنشاد": "هنگام مداحی", "الأقسام": "بخش‌ها", " مقطع": " قطعه", "قريباً": "به‌زودی", "لا توجد مقاطع في هذا القسم بعد.": "هنوز قطعه‌ای در این بخش نیست.", "تشغيل ": "پخش ", "المقطع": "قطعه", "الصوت": "صوت", "النص": "متن", "تحميل الصوت": "دانلود صوت", "مشاركة": "اشتراک‌گذاری", "المفضلة": "علاقه‌مندی‌ها", "موضع التشغيل": "موقعیت پخش", "السابق": "قبلی", "التالي": "بعدی", "إغلاق الصوت": "بستن صوت", "نسخ": "کپی", "وضع القراءة": "حالت مطالعه", "قراءة": "مطالعه", "تصغير الخط": "کوچک کردن متن", "تكبير الخط": "بزرگ کردن متن", "أ-": "آ-", "أ+": "آ+", "لم يُضف النص لهذا المقطع بعد.": "متن این قطعه هنوز اضافه نشده.", "يُحفظ الملف في مجلد التنزيلات على جهازك.": "فایل در پوشه دانلودهای دستگاه شما ذخیره می‌شود.", "لم يُرفع الصوت لهذا المقطع بعد.": "صوت این قطعه هنوز بارگذاری نشده.", "تحميل النص PDF": "دانلود متن PDF", "مقطع يوتيوب: ": "ویدیوی یوتیوب: ", "تم نسخ رابط القصيدة": "پیوند قطعه کپی شد", "انسخ الرابط من شريط العنوان": "پیوند را از نوار آدرس کپی کنید", "أُضيفت إلى المفضلة": "به علاقه‌مندی‌ها افزوده شد", "أُزيلت من المفضلة": "از علاقه‌مندی‌ها حذف شد", "تم نسخ النص": "متن کپی شد", "النص محدد، انسخه من القائمة": "متن انتخاب شد، از منو کپی کنید", "شاهد على يوتيوب": "تماشا در یوتیوب", "نسألكم الدعاء": "التماس دعا", "تجهيز PDF": "آماده‌سازی PDF", "إغلاق": "بستن", "صفحة وحدة": "یک صفحه", "صفحة المعاينة هذي ما تسمح بتحميل الملفات. على الموقع المنشور ينزل ملف الـ PDF مباشرة. هنا تقدر تحفظ الصفحة كصورة بالضغط المطوّل عليها.": "این صفحه پیش‌نمایش اجازه دانلود نمی‌دهد. در نسخه منتشرشده سایت، فایل PDF مستقیم دانلود می‌شود. اینجا می‌توانید با نگه داشتن انگشت روی صفحه، آن را به‌صورت تصویر ذخیره کنید.", "تحميل PDF": "دانلود PDF", "حجم الخط ": "اندازه متن ", "صفحة ": "صفحه ", "النص طويل، ما يدخل في صفحة وحدة حتى بأصغر خط": "متن طولانی است و حتی با کوچک‌ترین اندازه در یک صفحه جا نمی‌شود", "جاري تجهيز ملف PDF…": "در حال آماده‌سازی PDF…", "تم تحميل ملف PDF": "PDF دانلود شد", "تعذّر تجهيز ملف PDF، حاول مرة ثانية": "آماده‌سازی PDF ممکن نشد، دوباره تلاش کنید", "تغيير لون الصفحة": "تغییر رنگ صفحه", "التحميل يشتغل على الموقع المنشور، صفحة المعاينة تمنعه": "دانلود در نسخه منتشرشده سایت کار می‌کند؛ صفحه پیش‌نمایش آن را مسدود می‌کند", "الصفحة غير موجودة": "صفحه پیدا نشد", "ربما نُقل المقطع أو تغيّر رابطه.": "شاید قطعه جابه‌جا شده یا پیوندش تغییر کرده.", "العودة إلى الرئيسية": "بازگشت به خانه", "الخروج من ملء الشاشة": "خروج از تمام‌صفحه", "ملء الشاشة": "تمام‌صفحه", "بحث": "جستجو", "الوضع الداكن": "حالت تیره", "الوضع الفاتح": "حالت روشن", "اكتب عنوان القصيدة أو كلمة منها": "عنوان قطعه یا کلمه‌ای از آن را بنویسید", "كلمة البحث": "عبارت جستجو", "اكتب حرفين أو أكثر": "دو حرف یا بیشتر بنویسید", "عدد النتائج: ": "تعداد نتایج: ", "ما في نتائج. جرّب كلمة ثانية من القصيدة.": "نتیجه‌ای پیدا نشد. کلمه دیگری را امتحان کنید.", "من قناة يوتيوب": "از کانال یوتیوب", "مقاطع من قناة يوتيوب": "ویدیوهای کانال یوتیوب", "المقطع السابق": "ویدیوی قبلی", "المقطع التالي": "ویدیوی بعدی", "شاهد على يوتيوب: ": "تماشا در یوتیوب: ", "تظهر هنا مقاطع القناة بشكل عشوائي.": "ویدیوهای کانال اینجا به‌صورت تصادفی نمایش داده می‌شوند.", "افتح القناة على يوتيوب": "باز کردن کانال در یوتیوب", "القرآن الكريم": "قرآن کریم", "تلاوات": "تلاوت‌ها", "أدعية ومناجاة": "ادعیه و مناجات", "أدعية وزيارات": "ادعیه و زیارات", "دروس سيرة": "درس‌های سیره", "سيرة النبي وأهل بيته": "سیره پیامبر و اهل بیت", "لطميات": "نوحه‌ها", "حسب الموسم": "بر اساس موسم", "رثاء ومجالس حسينية": "رثا و مجالس حسینی", "المواسم حسب السنة": "موسم‌ها بر اساس سال", "مدائح": "مدایح", "مواليد وأفراح أهل البيت": "موالید و شادی‌های اهل بیت", "إنتاجات مسجلة": "آثار استودیویی", "إصدارات الاستوديو": "انتشارات استودیو", "أخرى": "سایر", "تلاوات مختارة": "تلاوت‌های منتخب", "أدعية": "ادعیه", "زيارات": "زیارات", "مناجاة": "مناجات", "دروس عامة": "درس‌های عمومی", "الإصدارات": "انتشارات", "متفرقات": "متفرقه", "السيد أحمد الموسوي": "سید احمد موسوی", "العربية": "العربية", "فارسی": "فارسی" };
+  // يترجم نص الواجهة للفارسية إذا اختارها الزائر
+  const L = (str) => (LANG === "fa" && FA[str] != null ? FA[str] : str);
+  // أسماء الأقسام والمواسم (عناوين القصائد تبقى مثل ما هي)
+  const tn = (str) => {
+    if (LANG !== "fa" || !str) return str;
+    if (FA[str] != null) return FA[str];
+    const m = /^موسم (\S+)هـ$/.exec(str);
+    return m ? "موسم " + arNum(m[1]) + " ق" : str;
+  };
+  window.t = L; window.LANG = LANG;
+  document.documentElement.lang = LANG;
 
-  document.title = S.name;
+
+  document.title = L(S.name);
   $("#brand").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5"/></svg>';
-  $("#brand").setAttribute("aria-label", "الرئيسية");
+  $("#brand").setAttribute("aria-label", L("الرئيسية"));
 
   /* لون وسط الأسطوانة: من المقطع نفسه أو أقرب قسم فوقه */
   const colorOf = (chain) => { for (let i = chain.length - 1; i >= 0; i--) if (chain[i].color) return chain[i].color; return "#c6d65b"; };
@@ -62,7 +80,7 @@
   function load(queue, index, parentPath, autoplay = true) {
     P.queue = queue; P.index = index; P.path = parentPath;
     const t = current();
-    if (!t.audio) { toast("لم يُرفع الصوت لهذا المقطع بعد"); return; }
+    if (!t.audio) { toast(L("لم يُرفع الصوت لهذا المقطع بعد")); return; }
     if (audio.getAttribute("src") !== t.audio) audio.src = t.audio;
     if (autoplay) audio.play().catch(() => {});
     setMediaSession();
@@ -86,7 +104,7 @@
     navigator.mediaSession.metadata = new MediaMetadata({
       title: current().title,
       artist: S.name,
-      album: chain.map((c) => c.title).join(" — "),
+      album: chain.map((c) => tn(c.title)).join(" — "),
       // صورة القصيدة نفسها في شاشة القفل (المربعة أفضل)، وإلا صورة الموقع
       artwork: [{ src: new URL(current().cover || wideOf(current()) || S.cover, location.href).href, sizes: "512x512", type: "image/jpeg" }]
     });
@@ -106,7 +124,7 @@
   }
 
   const fmt = (s) => {
-    if (!isFinite(s)) return "٠:٠٠";
+    if (!isFinite(s)) return arNum("0:00");
     s = Math.floor(s);
     return arNum(Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"));
   };
@@ -126,10 +144,10 @@
       const mt = $("#miniThumb");
       if (mt.dataset.for !== t.title) { mt.dataset.for = t.title; mt.innerHTML = th ? `<img src="${esc(th)}" alt="">` : waveSvg(t.title); }
       $("#mini").style.setProperty("--c", colorOf(resolve([...P.path, t.id]) || []));
-      $("#miniSub").textContent = ((resolve(P.path) || []).slice(-1)[0] || {}).title || "";
+      $("#miniSub").textContent = tn(((resolve(P.path) || []).slice(-1)[0] || {}).title || "");
       $("#miniInfo").href = hrefOf([...P.path, t.id]);
       $("#miniPlay").innerHTML = playing ? IC.pause : IC.play;
-      $("#miniPlay").setAttribute("aria-label", playing ? "إيقاف مؤقت" : "تشغيل");
+      $("#miniPlay").setAttribute("aria-label", playing ? L("إيقاف مؤقت") : L("تشغيل"));
     }
     // أزرار التشغيل في القوائم
     document.querySelectorAll("[data-row]").forEach((r) => {
@@ -147,7 +165,7 @@
       const pb = $("#pPlay");
       if (pb) {
         pb.innerHTML = mine && playing ? IC.pause : IC.play;
-        pb.setAttribute("aria-label", mine && playing ? "إيقاف مؤقت" : "تشغيل");
+        pb.setAttribute("aria-label", mine && playing ? L("إيقاف مؤقت") : L("تشغيل"));
       }
     }
     syncTime();
@@ -168,7 +186,7 @@
   ["play", "pause", "ended", "loadedmetadata"].forEach((e) => audio.addEventListener(e, () => { syncUI(); setPosition(); }));
   audio.addEventListener("timeupdate", syncTime);
   audio.addEventListener("ended", () => { if (P.index < P.queue.length - 1) step(1); });
-  audio.addEventListener("error", () => { if (audio.getAttribute("src")) toast("تعذّر تحميل ملف الصوت"); });
+  audio.addEventListener("error", () => { if (audio.getAttribute("src")) toast(L("تعذّر تحميل ملف الصوت")); });
   $("#miniPlay").addEventListener("click", toggle);
   // إغلاق الصوت: يوقفه ويرجّع كل شي للبداية ويخفي المشغل الصغير
   function stopAudio() {
@@ -176,7 +194,7 @@
     P.queue = []; P.index = -1; P.path = [];
     if ("mediaSession" in navigator) { try { navigator.mediaSession.metadata = null; } catch (e) {} }
     syncUI(); syncTime();
-    const w = $("#pWave"); if (w) { w.style.setProperty("--p", "0%"); $("#pSeek").value = 0; $("#pCur").textContent = "٠:٠٠"; $("#pDur").textContent = "٠:٠٠"; }
+    const w = $("#pWave"); if (w) { w.style.setProperty("--p", "0%"); $("#pSeek").value = 0; $("#pCur").textContent = arNum("0:00"); $("#pDur").textContent = arNum("0:00"); }
   }
 
   // الصور: زجاج يلمع لين تتحمل الصورة
@@ -191,7 +209,7 @@
     $("#miniInfo").after(eq);
     // زر الإغلاق: يوقف الصوت ويخفي المشغل
     const x = document.createElement("button");
-    x.className = "mini-close"; x.type = "button"; x.setAttribute("aria-label", "إغلاق المشغل");
+    x.className = "mini-close"; x.type = "button"; x.setAttribute("aria-label", L("إغلاق المشغل"));
     x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
     eq.after(x);
     x.addEventListener("click", stopAudio);
@@ -208,8 +226,8 @@
     if (document.querySelector(".search:not([hidden]), .reader, .pages-view")) return;
     if (e.code === "Space") { e.preventDefault(); if (!current() || (view.querySelector(".pcard") && $("#pPlay") && !view.querySelector(".pcard").classList.contains("spin") && audio.paused && view.querySelector(".pcard").dataset.track !== hrefOf([...P.path, current().id]))) $("#pPlay").click(); else toggle(); }
     // في الاتجاه العربي: السهم اليسار تقديم، واليمين تأخير
-    else if (e.key === "ArrowLeft") { e.preventDefault(); audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); toast("تقديم ١٠ ثواني"); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); audio.currentTime = Math.max(0, audio.currentTime - 10); toast("تأخير ١٠ ثواني"); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); toast(L("تقديم ١٠ ثواني")); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); audio.currentTime = Math.max(0, audio.currentTime - 10); toast(L("تأخير ١٠ ثواني")); }
   });
 
   /* ---------- البطاقات تميل مع الماوس (الكمبيوتر) ---------- */
@@ -230,32 +248,32 @@
 
   /* ---------- الصفحات ---------- */
   function crumbs(parts, chain) {
-    const links = [`<a href="#/">الرئيسية</a>`];
+    const links = [`<a href="#/">${L("الرئيسية")}</a>`];
     chain.forEach((c, i) => {
-      if (i < chain.length - 1) links.push(`<a href="${hrefOf(parts.slice(0, i + 1))}">${esc(c.title)}</a>`);
+      if (i < chain.length - 1) links.push(`<a href="${hrefOf(parts.slice(0, i + 1))}">${esc(tn(c.title))}</a>`);
     });
     // زر الرجوع: يرجّعك مستوى واحد لفوق
     const back = parts.length > 1 ? hrefOf(parts.slice(0, -1)) : "#/";
-    return `<nav class="crumbs" aria-label="مسار التصفح"><a class="back-btn" id="backBtn" href="${back}" aria-label="رجوع">${IC.back}</a>${links.join('<span aria-hidden="true">/</span>')}</nav>`;
+    return `<nav class="crumbs" aria-label="${L("مسار التصفح")}"><a class="back-btn" id="backBtn" href="${back}" aria-label="${L("رجوع")}">${IC.back}</a>${links.join('<span aria-hidden="true">/</span>')}</nav>`;
   }
 
   function renderHome() {
     view.innerHTML = `
       <section class="hero">
-        <img class="hero-img" src="img/banner.jpg" alt="${esc(S.name)} أثناء الإنشاد">
+        <img class="hero-img" src="img/banner.jpg" alt="${esc(L(S.name))} ${L("أثناء الإنشاد")}">
         <div class="hero-copy">
-          <h1>${(S.heroLines || [S.name]).map(esc).join("<br>")}</h1>
+          <h1>${((LANG === "fa" ? S.heroLines_fa : S.heroLines) || [L(S.name)]).map(esc).join("<br>")}</h1>
           ${S.tagline ? `<p>${esc(S.tagline)}</p>` : ""}
         </div>
       </section>
-      <section class="index" aria-label="الأقسام">
+      <section class="index" aria-label="${L("الأقسام")}">
         <ul class="index-list">
           ${S.sections.map((s) => {
             const n = countItems(s);
             return `<li><a href="${hrefOf([s.id])}">
-              <span class="ix-title">${esc(s.title)}</span>
-              <span class="ix-note">${esc(s.note || "")}</span>
-              <span class="ix-count">${n ? arNum(n) + " مقطع" : "قريباً"}</span>
+              <span class="ix-title">${esc(tn(s.title))}</span>
+              <span class="ix-note">${esc(tn(s.note || ""))}</span>
+              <span class="ix-count">${n ? arNum(n) + L(" مقطع") : L("قريباً")}</span>
             </a></li>`;
           }).join("")}
         </ul>
@@ -318,14 +336,14 @@
     const itemsHere = kids.length && isItem(kids[0]);
     let body;
     if (!kids.length) {
-      body = `<p class="empty">لا توجد مقاطع في هذا القسم بعد.</p>`;
+      body = `<p class="empty">${L("لا توجد مقاطع في هذا القسم بعد.")}</p>`;
     } else if (itemsHere) {
       body = `<ol class="stacks">${kids.map((it, i) => {
         const h = hrefOf([...parts, it.id]);
         const c = colorOf([...chain, it]);
         return `<li class="stack-item" data-row="${h}" style="--c:${esc(c)}">
           ${stackCard(h, it.title, it.duration ? arNum(it.duration) : "", coversOf(it), true)}
-          ${it.audio ? `<button class="row-play glass" type="button" data-i="${i}" aria-label="تشغيل ${esc(it.title)}">${IC.play}</button>` : ""}
+          ${it.audio ? `<button class="row-play glass" type="button" data-i="${i}" aria-label="${L("تشغيل ")}${esc(it.title)}">${IC.play}</button>` : ""}
         </li>`;
       }).join("")}</ol>`;
     } else {
@@ -333,15 +351,15 @@
         const n = countItems(g);
         const c = colorOf([...chain, g]);
         return `<li class="stack-item" style="--c:${esc(c)}">
-          ${stackCard(hrefOf([...parts, g.id]), g.title, n ? arNum(n) + " مقطع" : "قريباً", coversOf(g), false)}
+          ${stackCard(hrefOf([...parts, g.id]), tn(g.title), n ? arNum(n) + L(" مقطع") : L("قريباً"), coversOf(g), false)}
         </li>`;
       }).join("")}</ul>`;
     }
     view.innerHTML = `
       <section class="page">
         ${crumbs(parts, chain)}
-        <h1 class="page-title">${esc(node.title)}</h1>
-        ${node.note ? `<p class="page-note">${esc(node.note)}</p>` : ""}
+        <h1 class="page-title">${esc(tn(node.title))}</h1>
+        ${node.note ? `<p class="page-note">${esc(tn(node.note))}</p>` : ""}
         ${body}
       </section>`;
     if (itemsHere) {
@@ -379,10 +397,10 @@
     view.innerHTML = `
       <section class="page track-page">
         ${crumbs(parts, chain)}
-        <div class="tabs" role="tablist" aria-label="المقطع">
-          <button role="tab" id="tab-audio" aria-controls="pane-audio" aria-selected="true">الصوت</button>
-          <button role="tab" id="tab-text" aria-controls="pane-text" aria-selected="false">النص</button>
-          <button role="tab" id="tab-dl" aria-controls="pane-dl" aria-selected="false">تحميل الصوت</button>
+        <div class="tabs" role="tablist" aria-label="${L("المقطع")}">
+          <button role="tab" id="tab-audio" aria-controls="pane-audio" aria-selected="true">${L("الصوت")}</button>
+          <button role="tab" id="tab-text" aria-controls="pane-text" aria-selected="false">${L("النص")}</button>
+          <button role="tab" id="tab-dl" aria-controls="pane-dl" aria-selected="false">${L("تحميل الصوت")}</button>
         </div>
 
         <div class="track-grid">
@@ -396,24 +414,24 @@
                 </div>
                 <div class="pc-top">
                   <div class="pc-pill">
-                    <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => c.title).join(" · "))}${it.duration && !it.audio ? " · " + esc(arNum(it.duration)) : ""}</small></span>
+                    <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => tn(c.title)).join(" · "))}${it.duration && !it.audio ? " · " + esc(arNum(it.duration)) : ""}</small></span>
                   </div>
-                  <button class="pc-ic glass" id="pShare" type="button" aria-label="مشاركة">${IC.share}</button>
-                  <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
+                  <button class="pc-ic glass" id="pShare" type="button" aria-label="${L("مشاركة")}">${IC.share}</button>
+                  <button class="pc-ic glass" id="pFav" type="button" aria-label="${L("المفضلة")}" aria-pressed="${isFav(h)}">${IC.heart}</button>
                 </div>
                 ${it.audio ? `
                 <div class="pc-bottom">
-                  <div class="pc-times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
+                  <div class="pc-times"><span id="pCur">${arNum("0:00")}</span><span id="pDur">${arNum("0:00")}</span></div>
                   <div class="pc-wave" id="pWave">
                     <span class="pw-base">${waveSvg(it.title, "#ffffff", true, true)}</span>
                     <span class="pw-fill">${waveSvg(it.title, "#d9b45f", true, true)}</span>
-                    <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
+                    <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="${L("موضع التشغيل")}">
                   </div>
                   <div class="pc-ctl">
-                    <button class="glass" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
-                    <button class="glass pc-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
-                    <button class="glass" id="pNext" type="button" aria-label="التالي" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
-                    <button class="glass pc-stop" id="pStop" type="button" aria-label="إغلاق الصوت"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+                    <button class="glass" id="pPrev" type="button" aria-label="${L("السابق")}" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
+                    <button class="glass pc-main" id="pPlay" type="button" aria-label="${L("تشغيل")}">${IC.play}</button>
+                    <button class="glass" id="pNext" type="button" aria-label="${L("التالي")}" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
+                    <button class="glass pc-stop" id="pStop" type="button" aria-label="${L("إغلاق الصوت")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
                   </div>
                 </div>` : ""}
               </div>
@@ -425,18 +443,18 @@
         <div class="pane" id="pane-text" role="tabpanel" aria-labelledby="tab-text" hidden>
           <div class="text-tools">
             <div class="tt-actions">
-              <button class="chip" id="copyBtn" type="button">${IC.copy}<span>نسخ</span></button>
+              <button class="chip" id="copyBtn" type="button">${IC.copy}<span>${L("نسخ")}</span></button>
               ${it.text ? `<button class="chip pdf-btn" type="button">${IC.down}<span>PDF</span></button>
-              <button class="chip" id="readBtn" type="button" aria-label="وضع القراءة">${IC.book}<span>قراءة</span></button>` : ""}
+              <button class="chip" id="readBtn" type="button" aria-label="${L("وضع القراءة")}">${IC.book}<span>${L("قراءة")}</span></button>` : ""}
             </div>
             <div class="size">
-              <button class="chip" id="fsDown" type="button" aria-label="تصغير الخط">أ-</button>
-              <button class="chip" id="fsUp" type="button" aria-label="تكبير الخط">أ+</button>
+              <button class="chip" id="fsDown" type="button" aria-label="${L("تصغير الخط")}">${L("أ-")}</button>
+              <button class="chip" id="fsUp" type="button" aria-label="${L("تكبير الخط")}">${L("أ+")}</button>
             </div>
           </div>
           <article class="poem" id="poem">
             <h2>${esc(it.title)}</h2>
-            ${it.text ? renderText(it.text) : `<p class="empty">لم يُضف النص لهذا المقطع بعد.</p>`}
+            ${it.text ? renderText(it.text) : `<p class="empty">${L("لم يُضف النص لهذا المقطع بعد.")}</p>`}
           </article>
         </div>
 
@@ -444,10 +462,10 @@
           <div class="dl">
             <p class="dl-name">${esc(it.title)}</p>
             ${it.audio
-              ? `<a class="dl-btn" href="${esc(it.audio)}" download="${esc(it.title)}.${esc(file.split(".").pop() || "mp3")}">${IC.down}<span>تحميل الصوت</span></a>
-                 <p class="dl-hint">يُحفظ الملف في مجلد التنزيلات على جهازك.</p>`
-              : `<p class="empty">لم يُرفع الصوت لهذا المقطع بعد.</p>`}
-            ${it.text ? `<button class="dl-btn dl-alt pdf-btn" type="button">${IC.down}<span>تحميل النص PDF</span></button>` : ""}
+              ? `<a class="dl-btn" href="${esc(it.audio)}" download="${esc(it.title)}.${esc(file.split(".").pop() || "mp3")}">${IC.down}<span>${L("تحميل الصوت")}</span></a>
+                 <p class="dl-hint">${L("يُحفظ الملف في مجلد التنزيلات على جهازك.")}</p>`
+              : `<p class="empty">${L("لم يُرفع الصوت لهذا المقطع بعد.")}</p>`}
+            ${it.text ? `<button class="dl-btn dl-alt pdf-btn" type="button">${IC.down}<span>${L("تحميل النص PDF")}</span></button>` : ""}
           </div>
         </div>
         </div>
@@ -461,7 +479,7 @@
       const f = document.createElement("iframe");
       f.className = "ytframe";
       f.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(ytb.dataset.yt) + "?autoplay=1&rel=0";
-      f.title = "مقطع يوتيوب: " + it.title;
+      f.title = L("مقطع يوتيوب: ") + it.title;
       f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
       f.allowFullscreen = true;
       ytb.replaceWith(f);
@@ -472,12 +490,12 @@
     $("#pShare").addEventListener("click", async () => {
       const data = { title: it.title, url: location.href };
       if (navigator.share) { try { await navigator.share(data); return; } catch (e) { if (e.name === "AbortError") return; } }
-      try { await navigator.clipboard.writeText(location.href); toast("تم نسخ رابط القصيدة"); } catch (e) { toast("انسخ الرابط من شريط العنوان"); }
+      try { await navigator.clipboard.writeText(location.href); toast(L("تم نسخ رابط القصيدة")); } catch (e) { toast(L("انسخ الرابط من شريط العنوان")); }
     });
     $("#pFav").addEventListener("click", (e) => {
       const on = toggleFav(h);
       e.currentTarget.setAttribute("aria-pressed", on);
-      toast(on ? "أُضيفت إلى المفضلة" : "أُزيلت من المفضلة");
+      toast(on ? L("أُضيفت إلى المفضلة") : L("أُزيلت من المفضلة"));
     });
 
     // التبويبات
@@ -522,11 +540,11 @@
     // النص
     $("#copyBtn").addEventListener("click", async () => {
       const txt = it.title + "\n\n" + String(it.text || "").replace(/\s*\|\s*/g, "    ");
-      try { await navigator.clipboard.writeText(txt); toast("تم نسخ النص"); }
+      try { await navigator.clipboard.writeText(txt); toast(L("تم نسخ النص")); }
       catch (e) {
         const r = document.createRange(); r.selectNodeContents($("#poem"));
         const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-        toast("النص محدد، انسخه من القائمة");
+        toast(L("النص محدد، انسخه من القائمة"));
       }
     });
     let size = parseFloat(localGet("poemSize") || "1.25");
@@ -549,7 +567,7 @@
     const id = ytId(it.youtube);
     if (!id) return "";
     return `<a class="yt-btn" href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener" data-yt="${esc(id)}">
-      <span class="yt-btn-ic" aria-hidden="true">${IC.play}</span><span>شاهد على يوتيوب</span>
+      <span class="yt-btn-ic" aria-hidden="true">${IC.play}</span><span>${L("شاهد على يوتيوب")}</span>
     </a>`;
   }
 
@@ -654,7 +672,7 @@
       });
 
       // التذييل: "نسألكم الدعاء" في كل صفحة، ورقم الصفحة إذا أكثر من صفحة
-      c.fillStyle = GOLD; setF(c, 700, 32); c.textAlign = "center"; c.fillText("نسألكم الدعاء", W / 2, H - 150);
+      c.fillStyle = GOLD; setF(c, 700, 32); c.textAlign = "center"; c.fillText(L("نسألكم الدعاء"), W / 2, H - 150);
       if (pagesB.length > 1) { c.fillStyle = SOFT; setF(c, 400, 26); c.textAlign = "left"; c.fillText(arNum(pi + 1) + " / " + arNum(pagesB.length), 150, H - 150); }
       return cv;
     });
@@ -679,7 +697,7 @@
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 
-  const pagesWord = (n) => n === 1 ? "صفحة وحدة" : n === 2 ? "صفحتين" : arNum(n) + " صفحات";
+  const pagesWord = (n) => LANG === "fa" ? (n === 1 ? "یک صفحه" : arNum(n) + " صفحه") : (n === 1 ? "صفحة وحدة" : n === 2 ? "صفحتين" : arNum(n) + " صفحات");
 
   // نافذة تجهيز الـ PDF: معاينة الصفحات، وتغيير حجم الخط قبل التحميل
   async function openPdfDialog(it, accent) {
@@ -687,20 +705,20 @@
     const preview = !canEmbed();
     let scale = parseFloat(localGet("pdfScale") || "1");
     const o = document.createElement("div");
-    o.className = "pages-view"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "تجهيز PDF");
-    o.innerHTML = `<div class="pv-bar"><button class="reader-btn" type="button" data-act="close">إغلاق</button><b>${esc(it.title)}</b></div>
+    o.className = "pages-view"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", L("تجهيز PDF"));
+    o.innerHTML = `<div class="pv-bar"><button class="reader-btn" type="button" data-act="close">${L("إغلاق")}</button><b>${esc(it.title)}</b></div>
       <div class="pd-tools">
         <div class="pd-size">
-          <button class="reader-btn" type="button" data-act="down" aria-label="تصغير الخط">أ-</button>
+          <button class="reader-btn" type="button" data-act="down" aria-label="${L("تصغير الخط")}">${L("أ-")}</button>
           <span class="pd-val" aria-live="polite"></span>
-          <button class="reader-btn" type="button" data-act="up" aria-label="تكبير الخط">أ+</button>
+          <button class="reader-btn" type="button" data-act="up" aria-label="${L("تكبير الخط")}">${L("أ+")}</button>
         </div>
-        <button class="reader-btn" type="button" data-act="fit">صفحة وحدة</button>
+        <button class="reader-btn" type="button" data-act="fit">${L("صفحة وحدة")}</button>
         <span class="pd-count"></span>
       </div>
       ${preview
-        ? `<p class="pv-note">صفحة المعاينة هذي ما تسمح بتحميل الملفات. على الموقع المنشور ينزل ملف الـ PDF مباشرة. هنا تقدر تحفظ الصفحة كصورة بالضغط المطوّل عليها.</p>`
-        : `<button class="dl-btn pd-dl" type="button" data-act="save">${IC.down}<span>تحميل PDF</span></button>`}
+        ? `<p class="pv-note">${L("صفحة المعاينة هذي ما تسمح بتحميل الملفات. على الموقع المنشور ينزل ملف الـ PDF مباشرة. هنا تقدر تحفظ الصفحة كصورة بالضغط المطوّل عليها.")}</p>`
+        : `<button class="dl-btn pd-dl" type="button" data-act="save">${IC.down}<span>${L("تحميل PDF")}</span></button>`}
       <div class="pd-pages"></div>`;
     document.body.appendChild(o); document.body.classList.add("reading");
     let pages = [];
@@ -708,9 +726,9 @@
       scale = Math.round(scale * 100) / 100;
       localSet("pdfScale", scale);
       pages = buildPdfPages(it, accent, scale);
-      o.querySelector(".pd-val").textContent = "حجم الخط " + arNum(Math.round(scale * 100)) + "٪";
+      o.querySelector(".pd-val").textContent = L("حجم الخط ") + arNum(Math.round(scale * 100)) + "٪";
       o.querySelector(".pd-count").textContent = pagesWord(pages.length);
-      o.querySelector(".pd-pages").innerHTML = pages.map((cv, i) => `<img src="${cv.toDataURL("image/jpeg", 0.85)}" alt="صفحة ${arNum(i + 1)}">`).join("");
+      o.querySelector(".pd-pages").innerHTML = pages.map((cv, i) => `<img src="${cv.toDataURL("image/jpeg", 0.85)}" alt="${L("صفحة ")}${arNum(i + 1)}">`).join("");
     };
     render();
     const close = () => { o.remove(); document.body.classList.remove("reading"); document.removeEventListener("keydown", k); };
@@ -726,11 +744,11 @@
         // أكبر خط يخلي النص في صفحة وحدة
         let s2 = Math.min(scale, 1);
         while (s2 > 0.5 && buildPdfPages(it, accent, s2, true) > 1) s2 -= 0.05;
-        if (buildPdfPages(it, accent, s2, true) > 1) toast("النص طويل، ما يدخل في صفحة وحدة حتى بأصغر خط");
+        if (buildPdfPages(it, accent, s2, true) > 1) toast(L("النص طويل، ما يدخل في صفحة وحدة حتى بأصغر خط"));
         scale = s2; render();
       } else if (a === "save") {
-        b.disabled = true; toast("جاري تجهيز ملف PDF…");
-        try { await savePdf(it, pages); toast("تم تحميل ملف PDF"); } catch (err) { toast("تعذّر تجهيز ملف PDF، حاول مرة ثانية"); }
+        b.disabled = true; toast(L("جاري تجهيز ملف PDF…"));
+        try { await savePdf(it, pages); toast(L("تم تحميل ملف PDF")); } catch (err) { toast(L("تعذّر تجهيز ملف PDF، حاول مرة ثانية")); }
         b.disabled = false;
       }
     });
@@ -744,15 +762,15 @@
     if (old) old.remove();
     const r = document.createElement("div");
     r.className = "reader";
-    r.setAttribute("role", "dialog"); r.setAttribute("aria-modal", "true"); r.setAttribute("aria-label", "وضع القراءة");
+    r.setAttribute("role", "dialog"); r.setAttribute("aria-modal", "true"); r.setAttribute("aria-label", L("وضع القراءة"));
     r.dataset.theme = localGet("readerTheme") || "dark";
     r.innerHTML = `
       <div class="reader-bar">
-        <button class="reader-btn" data-act="close" type="button">إغلاق</button>
+        <button class="reader-btn" data-act="close" type="button">${L("إغلاق")}</button>
         <div class="reader-tools">
-          <button class="reader-btn" data-act="theme" type="button" aria-label="تغيير لون الصفحة"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg></button>
-          <button class="reader-btn" data-act="down" type="button" aria-label="تصغير الخط">أ-</button>
-          <button class="reader-btn" data-act="up" type="button" aria-label="تكبير الخط">أ+</button>
+          <button class="reader-btn" data-act="theme" type="button" aria-label="${L("تغيير لون الصفحة")}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg></button>
+          <button class="reader-btn" data-act="down" type="button" aria-label="${L("تصغير الخط")}">${L("أ-")}</button>
+          <button class="reader-btn" data-act="up" type="button" aria-label="${L("تكبير الخط")}">${L("أ+")}</button>
         </div>
       </div>
       <article class="reader-text">
@@ -792,15 +810,15 @@
   // زر تحميل الصوت في صفحة المعاينة: نوضح إن التحميل يشتغل على الموقع المنشور
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[download]");
-    if (a && !canEmbed()) { e.preventDefault(); toast("التحميل يشتغل على الموقع المنشور، صفحة المعاينة تمنعه"); }
+    if (a && !canEmbed()) { e.preventDefault(); toast(L("التحميل يشتغل على الموقع المنشور، صفحة المعاينة تمنعه")); }
   });
 
   function localGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function localSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
   function render404() {
-    view.innerHTML = `<section class="page"><h1 class="page-title">الصفحة غير موجودة</h1>
-      <p class="page-note">ربما نُقل المقطع أو تغيّر رابطه.</p><p><a class="chip" href="#/">العودة إلى الرئيسية</a></p></section>`;
+    view.innerHTML = `<section class="page"><h1 class="page-title">${L("الصفحة غير موجودة")}</h1>
+      <p class="page-note">${L("ربما نُقل المقطع أو تغيّر رابطه.")}</p><p><a class="chip" href="#/">${L("العودة إلى الرئيسية")}</a></p></section>`;
   }
 
   // نحفظ مكان التمرير لكل صفحة، ونرجع له لما يرجع الزائر لنفس الصفحة من صفحة أعمق
@@ -845,7 +863,7 @@
       if (inFS) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
       else (de.requestFullscreen || de.webkitRequestFullscreen).call(de);
     });
-    const upd = () => fsBtn.setAttribute("aria-label", (document.fullscreenElement || document.webkitFullscreenElement) ? "الخروج من ملء الشاشة" : "ملء الشاشة");
+    const upd = () => fsBtn.setAttribute("aria-label", (document.fullscreenElement || document.webkitFullscreenElement) ? L("الخروج من ملء الشاشة") : L("ملء الشاشة"));
     document.addEventListener("fullscreenchange", upd);
     document.addEventListener("webkitfullscreenchange", upd);
   }
@@ -860,7 +878,7 @@
 
   /* ---------- البحث ---------- */
   // توحيد الحروف: يتجاهل التشكيل والتطويل ويوحّد أشكال الألف والتاء المربوطة والياء
-  const NORM = { "أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ة": "ه", "ى": "ي", "ئ": "ي", "ؤ": "و" };
+  const NORM = { "أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ة": "ه", "ى": "ي", "ئ": "ي", "ؤ": "و", "ی": "ي", "ک": "ك", "ۀ": "ه", "\u200c": " " };
   const SKIP = /[ـً-ٰٟۖ-ۭ]/;
   // يرجّع النص الموحّد مع خريطة لمكان كل حرف في النص الأصلي
   function normMap(str) {
@@ -880,7 +898,7 @@
       const p = [...parts, c.id];
       if (isItem(c)) {
         INDEX.push({ item: c, parts: p, where: titles.join(" / "), title: c.title, text: String(c.text || "").replace(/\s*\|\s*/g, "  ") });
-      } else walk(c, p, [...titles, c.title]);
+      } else walk(c, p, [...titles, tn(c.title)]);
     }
   })(S, [], []);
 
@@ -904,7 +922,7 @@
   const SI = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>';
   const sBtn = document.createElement("button");
   sBtn.className = "icon-btn"; sBtn.id = "searchBtn"; sBtn.type = "button";
-  sBtn.setAttribute("aria-label", "بحث"); sBtn.innerHTML = SI;
+  sBtn.setAttribute("aria-label", L("بحث")); sBtn.innerHTML = SI;
   $("#fsBtn").before(sBtn);
 
   /* ---------- الوضع الفاتح والداكن ---------- */
@@ -912,28 +930,36 @@
   const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
   const tBtn = document.createElement("button");
   tBtn.className = "icon-btn"; tBtn.id = "themeBtn"; tBtn.type = "button";
-  const applyTheme = (t) => {
-    if (t === "light") document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme;
-    tBtn.innerHTML = t === "light" ? MOON : SUN;
-    tBtn.setAttribute("aria-label", t === "light" ? "الوضع الداكن" : "الوضع الفاتح");
-    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === "light" ? "#eef0f6" : "#070c24";
+  const applyTheme = (th) => {
+    if (th === "light") document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme;
+    tBtn.innerHTML = th === "light" ? MOON : SUN;
+    tBtn.setAttribute("aria-label", th === "light" ? L("الوضع الداكن") : L("الوضع الفاتح"));
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = th === "light" ? "#eef0f6" : "#070c24";
   };
   // الوضع الداكن هو الأساس في كل زيارة جديدة، والفاتح يبقى بس لين تسكر الصفحة
   const ss = { get: () => { try { return sessionStorage.getItem("theme"); } catch (e) { return null; } }, set: (v) => { try { sessionStorage.setItem("theme", v); } catch (e) {} } };
   try { localStorage.removeItem("theme"); } catch (e) {}
   applyTheme(ss.get() === "light" ? "light" : "dark");
-  tBtn.addEventListener("click", () => { const t = document.documentElement.dataset.theme === "light" ? "dark" : "light"; ss.set(t); applyTheme(t); });
+  tBtn.addEventListener("click", () => { const th = document.documentElement.dataset.theme === "light" ? "dark" : "light"; ss.set(th); applyTheme(th); });
   sBtn.after(tBtn);
+
+  /* زر اللغة: العربية ⇄ الفارسية */
+  const lBtn = document.createElement("button");
+  lBtn.className = "icon-btn lang-btn"; lBtn.id = "langBtn"; lBtn.type = "button";
+  lBtn.textContent = LANG === "fa" ? "ع" : "فا";
+  lBtn.setAttribute("aria-label", LANG === "fa" ? "العربية" : "فارسی");
+  lBtn.addEventListener("click", () => { try { localStorage.setItem("lang", LANG === "fa" ? "ar" : "fa"); } catch (e) {} location.reload(); });
+  tBtn.after(lBtn);
 
   const panel = document.createElement("div");
   panel.className = "search"; panel.hidden = true;
-  panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); panel.setAttribute("aria-label", "بحث");
+  panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); panel.setAttribute("aria-label", L("بحث"));
   panel.innerHTML = `
     <div class="search-inner">
       <div class="search-bar">
         <span class="search-ic">${SI}</span>
-        <input id="searchInput" type="search" placeholder="اكتب عنوان القصيدة أو كلمة منها" autocomplete="off" enterkeyhint="search" aria-label="كلمة البحث">
-        <button class="search-close" id="searchClose" type="button">إغلاق</button>
+        <input id="searchInput" type="search" placeholder="${L("اكتب عنوان القصيدة أو كلمة منها")}" autocomplete="off" enterkeyhint="search" aria-label="${L("كلمة البحث")}">
+        <button class="search-close" id="searchClose" type="button">${L("إغلاق")}</button>
       </div>
       <p class="search-count" id="searchCount" aria-live="polite"></p>
       <ul class="search-results" id="searchResults"></ul>
@@ -943,7 +969,7 @@
 
   function runSearch() {
     const q = norm(sIn.value);
-    if (q.length < 2) { sRes.innerHTML = ""; sCount.textContent = q ? "اكتب حرفين أو أكثر" : ""; return; }
+    if (q.length < 2) { sRes.innerHTML = ""; sCount.textContent = q ? L("اكتب حرفين أو أكثر") : ""; return; }
     const hits = [];
     for (const e of INDEX) {
       const inTitle = mark(e.title, q), inText = mark(e.text, q), inWhere = mark(e.where, q);
@@ -951,7 +977,7 @@
       hits.push({ e, rank: inTitle ? 0 : inText ? 1 : 2, inTitle });
     }
     hits.sort((x, y) => x.rank - y.rank);
-    sCount.textContent = hits.length ? "عدد النتائج: " + arNum(hits.length) : "ما في نتائج. جرّب كلمة ثانية من القصيدة.";
+    sCount.textContent = hits.length ? L("عدد النتائج: ") + arNum(hits.length) : L("ما في نتائج. جرّب كلمة ثانية من القصيدة.");
     sRes.innerHTML = hits.map(({ e, inTitle }) => {
       const t = inTitle ? esc(e.title.slice(0, inTitle.a)) + "<mark>" + esc(e.title.slice(inTitle.a, inTitle.b)) + "</mark>" + esc(e.title.slice(inTitle.b)) : esc(e.title);
       const sn = snippet(e.text, q);
