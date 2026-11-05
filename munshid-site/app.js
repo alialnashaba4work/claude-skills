@@ -306,13 +306,13 @@
               <div class="pcard${cover ? "" : " no-cover"}" data-track="${h}">
                 <div class="pc-media">
                   ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true">${rosette()}</div>`}
-                  <div class="pc-top">
-                    <div class="pc-pill glass">
-                      <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => c.title).join(" · "))}${it.duration && !it.audio ? " · " + esc(arNum(it.duration)) : ""}</small></span>
-                    </div>
-                    <button class="pc-ic glass" id="pShare" type="button" aria-label="مشاركة">${IC.share}</button>
-                    <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
+                </div>
+                <div class="pc-top">
+                  <div class="pc-pill">
+                    <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => c.title).join(" · "))}${it.duration && !it.audio ? " · " + esc(arNum(it.duration)) : ""}</small></span>
                   </div>
+                  <button class="pc-ic glass" id="pShare" type="button" aria-label="مشاركة">${IC.share}</button>
+                  <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
                 </div>
                 ${it.audio ? `
                 <div class="pc-bottom">
