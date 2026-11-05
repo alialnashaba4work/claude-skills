@@ -918,8 +918,11 @@
     tBtn.setAttribute("aria-label", t === "light" ? "الوضع الداكن" : "الوضع الفاتح");
     const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === "light" ? "#eef0f6" : "#070c24";
   };
-  applyTheme(localGet("theme") === "light" ? "light" : "dark");
-  tBtn.addEventListener("click", () => { const t = document.documentElement.dataset.theme === "light" ? "dark" : "light"; localSet("theme", t); applyTheme(t); });
+  // الوضع الداكن هو الأساس في كل زيارة جديدة، والفاتح يبقى بس لين تسكر الصفحة
+  const ss = { get: () => { try { return sessionStorage.getItem("theme"); } catch (e) { return null; } }, set: (v) => { try { sessionStorage.setItem("theme", v); } catch (e) {} } };
+  try { localStorage.removeItem("theme"); } catch (e) {}
+  applyTheme(ss.get() === "light" ? "light" : "dark");
+  tBtn.addEventListener("click", () => { const t = document.documentElement.dataset.theme === "light" ? "dark" : "light"; ss.set(t); applyTheme(t); });
   sBtn.after(tBtn);
 
   const panel = document.createElement("div");
