@@ -26,11 +26,13 @@
       return box;
     }
     order = shuffle(Y.videos); i = 0;
-    stage.innerHTML = order.map((v, k) => `<div class="yt-slide${k === 0 ? " on" : ""}">${v.thumb ? `<img src="${esc(v.thumb)}" alt="" loading="lazy">` : ""}<p class="yt-title">${esc(v.title)}</p></div>`).join("") + `<span class="yt-play">${PL}</span>`;
+    stage.innerHTML = order.map((v, k) => `<div class="yt-slide${k === 0 ? " on" : ""}">${v.thumb ? `<img data-src="${esc(v.thumb)}" alt="">` : ""}<p class="yt-title">${esc(v.title)}</p></div>`).join("") + `<span class="yt-play">${PL}</span>`;
     if (order.length > 1) box.querySelector(".yt-dots").innerHTML = order.slice(0, 8).map((_, k) => `<span class="${k === 0 ? "on" : ""}"></span>`).join("");
     const go = (n) => {
       i = (n + order.length) % order.length;
       stage.querySelectorAll(".yt-slide").forEach((s, k) => s.classList.toggle("on", k === i));
+      // نحمّل صورة المقطع الحالي واللي بعده بس
+      [i, (i + 1) % order.length].forEach((k) => { const im = stage.querySelectorAll(".yt-slide img")[k]; if (im && !im.src) im.src = im.dataset.src; });
       box.querySelectorAll(".yt-dots span").forEach((d, k) => d.classList.toggle("on", k === i % 8));
       stage.href = "https://www.youtube.com/watch?v=" + encodeURIComponent(order[i].id);
       stage.setAttribute("aria-label", "شاهد على يوتيوب: " + order[i].title);

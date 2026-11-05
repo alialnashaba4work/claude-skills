@@ -21,7 +21,7 @@
 
   /* ---------- شجرة المحتوى ---------- */
   const children = (node) => node.sections || node.groups || node.items || [];
-  const isItem = (n) => "audio" in n || "text" in n;
+  const isItem = (n) => !("groups" in n || "items" in n || "sections" in n);
   function countItems(n) {
     if (isItem(n)) return 1;
     return children(n).reduce((a, c) => a + countItems(c), 0);
@@ -140,8 +140,10 @@
       deck.classList.toggle("spin", mine && playing);
       deck.classList.toggle("armed", mine && !audio.paused);
       const pb = $("#pPlay");
-      pb.innerHTML = mine && playing ? IC.pause : IC.play;
-      pb.setAttribute("aria-label", mine && playing ? "إيقاف مؤقت" : "تشغيل");
+      if (pb) {
+        pb.innerHTML = mine && playing ? IC.pause : IC.play;
+        pb.setAttribute("aria-label", mine && playing ? "إيقاف مؤقت" : "تشغيل");
+      }
     }
     syncTime();
   }
@@ -150,7 +152,7 @@
     const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
     $("#miniProg").style.width = pct + "%";
     const deck = $(".pcard");
-    if (deck && t && deck.dataset.track === hrefOf([...P.path, t.id])) {
+    if (deck && t && deck.dataset.track === hrefOf([...P.path, t.id]) && $("#pSeek")) {
       const r = $("#pSeek");
       if (!r.matches(":active")) r.value = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
       r.style.setProperty("--p", (r.value / 10) + "%");
@@ -227,8 +229,8 @@
         const h = hrefOf([...parts, it.id]);
         const c = colorOf([...chain, it]);
         return `<li class="stack-item" data-row="${h}" style="--c:${esc(c)}">
-          ${stackCard(h, it.title, "", coversOf(it), true)}
-          <button class="row-play glass" type="button" data-i="${i}" aria-label="تشغيل ${esc(it.title)}">${IC.play}</button>
+          ${stackCard(h, it.title, it.duration ? arNum(it.duration) : "", coversOf(it), true)}
+          ${it.audio ? `<button class="row-play glass" type="button" data-i="${i}" aria-label="تشغيل ${esc(it.title)}">${IC.play}</button>` : ""}
         </li>`;
       }).join("")}</ol>`;
     } else {
@@ -304,13 +306,16 @@
                   <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
                 </div>
                 <div class="pc-bottom">
+                  ${it.audio ? `
                   <div class="pc-times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
                   <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
                   <div class="pc-ctl">
                     <button class="glass" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
                     <button class="glass pc-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
                     <button class="glass" id="pNext" type="button" aria-label="التالي" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
-                  </div>
+                  </div>` : ytId(it.youtube) ? `
+                  <div class="pc-times"><span>${it.duration ? esc(arNum(it.duration)) : ""}</span><span></span></div>
+                  <a class="pc-watch glass" id="pWatch" href="https://www.youtube.com/watch?v=${esc(ytId(it.youtube))}" target="_blank" rel="noopener">${IC.play}<span>شاهد على يوتيوب</span></a>` : ""}
                 </div>
               </div>
             </div>
@@ -348,6 +353,10 @@
         </div>
         </div>
       </section>`;
+
+    // زر "شاهد على يوتيوب" داخل البطاقة يشغّل المقطع في خانة يوتيوب تحتها
+    const watch = $("#pWatch");
+    if (watch && canEmbed()) watch.addEventListener("click", (e) => { const b = view.querySelector(".ytbox"); if (b) { e.preventDefault(); b.click(); b.scrollIntoView({ block: "nearest", behavior: "smooth" }); } });
 
     // يوتيوب: على الاستضافة الحقيقية يشتغل المقطع داخل الخانة، وفي صفحة المعاينة يفتح في يوتيوب
     const ytb = view.querySelector(".ytbox");
@@ -404,6 +413,7 @@
     }));
 
     const mine = () => current() === it;
+    if (it.audio) {
     $("#pPlay").addEventListener("click", () => (mine() ? toggle() : load(siblings, idx, parentPath)));
     $("#pPrev").addEventListener("click", () => { location.hash = hrefOf([...parentPath, siblings[idx - 1].id]); if (current()) load(siblings, idx - 1, parentPath); });
     $("#pNext").addEventListener("click", () => { location.hash = hrefOf([...parentPath, siblings[idx + 1].id]); if (current()) load(siblings, idx + 1, parentPath); });
@@ -412,6 +422,7 @@
       seek.style.setProperty("--p", (seek.value / 10) + "%");
       if (mine() && audio.duration) audio.currentTime = (seek.value / 1000) * audio.duration;
     });
+    }
 
     // وضع القراءة: النص لحاله بملء الشاشة
     const readBtn = $("#readBtn");

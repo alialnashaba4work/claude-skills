@@ -237,6 +237,9 @@ main:focus { outline: none; }
 .pc-seek::-moz-range-progress { height: 4px; border-radius: 4px; background: #fff; }
 .pc-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 50%; background: #fff; }
 .pc-seek::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: #fff; }
+.pc-watch { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; padding: 14px 18px; border-radius: 999px; font-weight: 800; font-size: 1rem; }
+.pc-watch svg { width: 1.1em; height: 1.1em; }
+.pc-watch:hover { background: rgba(80, 80, 88, .55); }
 .pc-ctl { display: flex; justify-content: center; align-items: center; gap: 14px; }
 .pc-ctl button { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 19px; transition: transform .15s, background .2s; }
 .pc-ctl .pc-main { width: 60px; height: 60px; font-size: 22px; }
