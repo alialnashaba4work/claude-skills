@@ -411,7 +411,7 @@
     view.querySelectorAll(".pdf-btn").forEach((b) => b.addEventListener("click", async () => {
       if (b.disabled) return;
       b.disabled = true; toast("جاري تجهيز ملف PDF…");
-      try { await poemPdf(it, colorOf(chain)); toast("تم تحميل ملف PDF"); }
+      try { const r = await poemPdf(it, colorOf(chain)); if (r !== "preview") toast("تم تحميل ملف PDF"); }
       catch (e) { toast("تعذّر تجهيز ملف PDF، حاول مرة ثانية"); }
       b.disabled = false;
     }));
@@ -510,8 +510,10 @@
   }
 
   async function poemPdf(it, accent) {
+    // صفحة المعاينة في Claude تمنع التحميل: نعرض الصفحات كصور بدال الملف
+    const preview = !canEmbed();
     const [{ jsPDF }] = await Promise.all([
-      loadJsPdf(),
+      preview ? Promise.resolve({}) : loadJsPdf(),
       document.fonts.load('900 40px "Abar"'), document.fonts.load('600 40px "Abar"'), document.fonts.load('400 40px "Abar"')
     ]);
     const W = 1654, H = 2339, M = 160, INK = "#14182b", SOFT = "#6b7290";
@@ -568,6 +570,7 @@
       if (pages.length > 1) c.fillText(arNum(i + 1) + " / " + arNum(pages.length), W / 2, H - M / 2);
     });
 
+    if (preview) { showPages(it.title, pages.map((cv) => cv.toDataURL("image/jpeg", 0.9))); return "preview"; }
     const doc = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait", compress: true });
     pages.forEach((cv, i) => {
       if (i) doc.addPage("a4", "portrait");
@@ -632,6 +635,27 @@
     r.querySelector('[data-act="close"]').focus();
   }
   function readBtnFocus() { const b = $("#readBtn"); if (b) b.focus(); }
+
+  // عرض صفحات الـ PDF كصور (في صفحة المعاينة فقط)
+  function showPages(title, urls) {
+    const o = document.createElement("div");
+    o.className = "pages-view"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "صفحات PDF");
+    o.innerHTML = `<div class="pv-bar"><button class="reader-btn" type="button" data-close>إغلاق</button><b>${esc(title)}</b></div>
+      <p class="pv-note">صفحة المعاينة هذي ما تسمح بتحميل الملفات. على الموقع المنشور ينزل ملف الـ PDF مباشرة. هنا تقدر تحفظ الصفحة كصورة بالضغط المطوّل عليها.</p>
+      ${urls.map((u, i) => `<img src="${u}" alt="صفحة ${arNum(i + 1)}">`).join("")}`;
+    document.body.appendChild(o); document.body.classList.add("reading");
+    const close = () => { o.remove(); document.body.classList.remove("reading"); document.removeEventListener("keydown", k); };
+    const k = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", k);
+    o.querySelector("[data-close]").addEventListener("click", close);
+    o.querySelector("[data-close]").focus();
+  }
+
+  // زر تحميل الصوت في صفحة المعاينة: نوضح إن التحميل يشتغل على الموقع المنشور
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[download]");
+    if (a && !canEmbed()) { e.preventDefault(); toast("التحميل يشتغل على الموقع المنشور، صفحة المعاينة تمنعه"); }
+  });
 
   function localGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function localSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }

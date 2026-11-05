@@ -392,6 +392,13 @@ body.reading { overflow: hidden; }
   .reader-text .bayt span:last-child { text-align: left; }
 }
 
+/* عرض صفحات PDF في صفحة المعاينة */
+.pages-view { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: #05081c; padding: 0 var(--gutter) 40px; }
+.pv-bar { position: sticky; top: 0; display: flex; align-items: center; gap: 12px; padding: calc(10px + env(safe-area-inset-top)) 0 10px; background: #05081c; }
+.pv-bar b { font-weight: 900; font-size: 1.05rem; }
+.pv-note { color: var(--mist); font-size: .9rem; max-width: 40rem; margin: 4px auto 16px; text-align: center; }
+.pages-view img { display: block; width: min(100%, 720px); margin: 0 auto 16px; border-radius: 6px; box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+
 /* ---------- الكمبيوتر: تصميم خاص للشاشات العريضة ---------- */
 @media (min-width: 1024px) {
   :root { --gutter: 56px; --maxw: 1200px; }
