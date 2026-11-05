@@ -15,8 +15,8 @@
   --mist: #93a0c8;
   --line: rgba(147, 160, 200, .18);
   /* لوح المشغل بنفس روح الصورة المرفقة */
-  --deck: #c8cad0;
-  --deck-ink: #1c1f27;
+  --deck-ink: #e6ebf8;
+  --deck-track: rgba(255, 255, 255, .18);
   /* لون وسط الأسطوانة */
   --label: #c6d65b;
   --label-ink: #1a1d12;
@@ -196,10 +196,21 @@ body:not(.is-playing) .crate-item.is-current .disc { animation-play-state: pause
 .tabs button[aria-selected="true"] { background: var(--moon); color: var(--night); }
 
 /* ---------- المشغل (الأسطوانة) ---------- */
+/* لوح زجاجي: ضوء بلون القسم خلف طبقة شفافة مموّهة */
 .deck {
-  background: var(--deck); color: var(--deck-ink);
+  position: relative; isolation: isolate; color: var(--deck-ink);
   border-radius: 28px; padding: 22px 18px 26px; overflow: hidden;
-  box-shadow: 0 30px 80px -30px rgba(42, 70, 196, .55);
+  background: linear-gradient(155deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .03) 60%);
+  border: 1px solid rgba(255, 255, 255, .16);
+  backdrop-filter: blur(22px) saturate(150%); -webkit-backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 30px 80px -30px rgba(42, 70, 196, .6);
+}
+.deck::before {
+  content: ""; position: absolute; z-index: -1; inset: -25%;
+  background:
+    radial-gradient(circle at 28% 30%, color-mix(in srgb, var(--label, #c6d65b) 38%, transparent), transparent 45%),
+    radial-gradient(circle at 78% 82%, rgba(42, 70, 196, .45), transparent 50%);
+  filter: blur(40px);
 }
 .stage { position: relative; width: 100%; aspect-ratio: 1 / .96; direction: ltr; }
 .record {
@@ -237,30 +248,30 @@ body:not(.is-playing) .crate-item.is-current .disc { animation-play-state: pause
 
 .deck-meta { margin-top: 6px; }
 .deck-title { margin: 0; font-weight: 900; font-size: clamp(1.6rem, 7vw, 2.2rem); line-height: 1.25; }
-.deck-artist { margin: 2px 0 0; color: #5e6370; font-size: 1.05rem; }
+.deck-artist { margin: 2px 0 0; color: var(--mist); font-size: 1.05rem; }
 
 .seek { margin-top: 16px; }
 .seek input {
   --p: 0%;
   width: 100%; height: 22px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; direction: rtl;
 }
-.seek input::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to left, var(--deck-ink) var(--p), rgba(28, 31, 39, .18) var(--p)); }
-.seek input::-moz-range-track { height: 4px; border-radius: 4px; background: rgba(28, 31, 39, .18); }
+.seek input::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to left, var(--deck-ink) var(--p), var(--deck-track) var(--p)); }
+.seek input::-moz-range-track { height: 4px; border-radius: 4px; background: var(--deck-track); }
 .seek input::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--deck-ink); }
 .seek input::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: var(--deck-ink); }
 .seek input::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--deck-ink); }
-.times { display: flex; justify-content: space-between; color: #5e6370; font-size: .85rem; font-variant-numeric: tabular-nums; }
+.times { display: flex; justify-content: space-between; color: var(--mist); font-size: .85rem; font-variant-numeric: tabular-nums; }
 
 .controls { display: flex; justify-content: center; align-items: center; gap: clamp(28px, 10vw, 56px); margin-top: 14px; }
 .ctl {
   width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 22px;
-  color: #fff; background: rgba(255, 255, 255, .28);
-  box-shadow: inset 0 0 0 2px #fff, 0 6px 16px rgba(0, 0, 0, .08);
+  color: #fff; background: rgba(255, 255, 255, .1);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .85), 0 6px 16px rgba(0, 0, 0, .15);
   transition: transform .15s, background .2s;
 }
 .ctl-main { width: 78px; height: 78px; font-size: 28px; }
 .ctl:active { transform: scale(.94); }
-.ctl:hover { background: rgba(255, 255, 255, .45); }
+.ctl:hover { background: rgba(255, 255, 255, .2); }
 .ctl:disabled { opacity: .35; cursor: default; }
 .ctl:focus-visible { outline-color: var(--deck-ink); }
 
