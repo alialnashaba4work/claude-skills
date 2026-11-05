@@ -213,14 +213,26 @@
     return children(node).flatMap(coversOf);
   }
   // بطاقة وحدة: صورة القصيدة، أو زخرفة بلون القسم إذا ما لها صورة
-  const face = (src) => src ? `<img src="${esc(src)}" alt="" loading="lazy">` : `<span class="fb"></span>`;
+  // موجة صوت ذهبية للمقاطع اللي ما لها صورة (نمطها يختلف حسب العنوان)
+  function waveSvg(seed) {
+    let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const a = 0.35 + (h % 7) / 10, b = 1.2 + (h % 5) / 3, c = (h % 13) / 2;
+    let bars = "";
+    for (let i = 0; i < 48; i++) {
+      const v = 6 + Math.abs(Math.sin(i * a + c) * 22 + Math.sin(i * b) * 9);
+      bars += `<rect x="${(2 + i * 4.1).toFixed(1)}" y="${(30 - v / 2).toFixed(1)}" width="2.2" height="${v.toFixed(1)}" rx="1.1" fill="#d9b45f" opacity="${(0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
+    }
+    return `<svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>`;
+  }
+  const waveArt = (title, withTitle) => `${withTitle ? `<span class="fb-t">${esc(title)}</span>` : ""}${waveSvg(title)}`;
+  const face = (src, title, withTitle) => src ? `<img src="${esc(src)}" alt="" loading="lazy">` : `<span class="fb">${waveArt(title || "", withTitle)}</span>`;
   // رزمة بطاقات: ثلاث بطاقات فوق بعض تنفرد عند تمرير الماوس
   function stackCard(href, title, meta, covers, single) {
     const c = single ? [covers[0] || ""] : covers.concat(["", "", ""]).slice(0, 3);
     return `<a class="stack${single ? " single" : ""}" href="${href}">
       <span class="stack-img">
-        ${single ? "" : `<span class="card c3" aria-hidden="true">${face(c[2])}</span><span class="card c2" aria-hidden="true">${face(c[1])}</span>`}
-        <span class="card c1">${face(c[0])}</span>
+        ${single ? "" : `<span class="card c3" aria-hidden="true">${face(c[2], title + "3")}</span><span class="card c2" aria-hidden="true">${face(c[1], title + "2")}</span>`}
+        <span class="card c1">${face(c[0], title, true)}</span>
       </span>
       <span class="lbl"><b>${esc(title)}</b>${meta ? `<small>${esc(meta)}</small>` : ""}</span>
     </a>`;
@@ -306,7 +318,7 @@
             <div class="pc-frame">
               <div class="pcard${cover ? "" : " no-cover"}" data-track="${h}">
                 <div class="pc-media">
-                  ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true"></div>`}
+                  ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true">${waveArt(it.title, true)}</div>`}
                 </div>
                 <div class="pc-top">
                   <div class="pc-pill">

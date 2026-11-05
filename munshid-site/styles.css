@@ -472,7 +472,7 @@ body.reading { overflow: hidden; }
   .poem { max-width: 50rem; margin-inline: auto; }
   .bayt { gap: 1.6em; }
   .poem h2 { display: none; }
-  .text-tools { position: sticky; top: 0; z-index: 2; padding: 10px 0; background: var(--night); border-bottom: 1px solid var(--line); }
+  .text-tools { position: sticky; top: 0; z-index: 2; padding: 10px 0; }
 
   .mini { max-width: 720px; bottom: 20px; }
 }
@@ -481,3 +481,28 @@ body.reading { overflow: hidden; }
   .hero-img { animation: none; }
   .toast { transition: none; }
 }
+
+/* ---------- موجة الصوت للمقاطع بدون صورة ---------- */
+.fb, .pc-fallback { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 8%; padding: 6% 8%; }
+.fb svg, .pc-fallback svg { width: 88%; height: 34%; }
+.fb-t { font-weight: 900; color: #fff; text-align: center; line-height: 1.3; text-wrap: balance; font-size: clamp(1rem, 4.6vw, 1.4rem); text-shadow: 0 2px 14px rgba(0, 0, 0, .4); max-width: 100%; }
+.pc-fallback .fb-t { font-size: clamp(1.2rem, 5vw, 1.6rem); }
+
+/* ---------- كل الأزرار بشكل زجاجي ---------- */
+:root { --glass-bg: rgba(255, 255, 255, .07); --glass-bg-hover: rgba(255, 255, 255, .14); --glass-line: rgba(255, 255, 255, .16); --glass-hi: rgba(255, 255, 255, .18); }
+:root[data-theme="light"] { --glass-bg: rgba(255, 255, 255, .55); --glass-bg-hover: rgba(255, 255, 255, .8); --glass-line: rgba(21, 26, 51, .12); --glass-hi: rgba(255, 255, 255, .7); }
+:root[data-theme="light"] :is(.mini, .yt) { --glass-bg: rgba(255, 255, 255, .07); --glass-bg-hover: rgba(255, 255, 255, .14); --glass-line: rgba(255, 255, 255, .16); --glass-hi: rgba(255, 255, 255, .18); }
+.chip, .icon-btn, .brand, .back-btn, .yt-btn, .dl-btn, .tabs, .search-bar, .reader-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-line);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 8px 20px -12px rgba(0, 0, 0, .5);
+  backdrop-filter: blur(16px) saturate(150%); -webkit-backdrop-filter: blur(16px) saturate(150%);
+  color: var(--moon);
+}
+.chip:hover, .icon-btn:hover, .brand:hover, .back-btn:hover, .yt-btn:hover, .dl-btn:hover, .reader-btn:hover { background: var(--glass-bg-hover); border-color: var(--glass-line); }
+.reader-btn { color: var(--r-ink, var(--moon)); }
+.tabs button[aria-selected="true"] { background: var(--glass-bg-hover); color: var(--moon); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 1px var(--glass-line); }
+.dl-btn { color: var(--moon); }
+@media (min-width: 1024px) { .dl-btn { background: var(--glass-bg); } }
+
+.reader .reader-btn { background: transparent; border-color: var(--r-line); box-shadow: none; }
