@@ -176,6 +176,17 @@
     const eq = document.createElement("span"); eq.className = "mini-eq"; eq.setAttribute("aria-hidden", "true");
     eq.innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
     $("#miniInfo").after(eq);
+    // زر الإغلاق: يوقف الصوت ويخفي المشغل
+    const x = document.createElement("button");
+    x.className = "mini-close"; x.type = "button"; x.setAttribute("aria-label", "إغلاق المشغل");
+    x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    eq.after(x);
+    x.addEventListener("click", () => {
+      audio.pause(); audio.removeAttribute("src"); audio.load();
+      P.queue = []; P.index = -1; P.path = [];
+      if ("mediaSession" in navigator) { try { navigator.mediaSession.metadata = null; } catch (e) {} }
+      syncUI();
+    });
   })();
 
   /* ---------- اختصارات الكيبورد (الكمبيوتر) ---------- */
@@ -256,13 +267,13 @@
   }
   // بطاقة وحدة: صورة القصيدة، أو زخرفة بلون القسم إذا ما لها صورة
   // موجة صوت ذهبية للمقاطع اللي ما لها صورة (نمطها يختلف حسب العنوان)
-  function waveSvg(seed, fill = "#d9b45f", flat) {
+  function waveSvg(seed, fill = "#d9b45f", flat, thin) {
     let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
     const a = 0.35 + (h % 7) / 10, b = 1.2 + (h % 5) / 3, c = (h % 13) / 2;
     let bars = "";
     for (let i = 0; i < 48; i++) {
-      const v = 6 + Math.abs(Math.sin(i * a + c) * 22 + Math.sin(i * b) * 9);
-      bars += `<rect x="${(2 + i * 4.1).toFixed(1)}" y="${(30 - v / 2).toFixed(1)}" width="2.2" height="${v.toFixed(1)}" rx="1.1" fill="${fill}" opacity="${flat ? 1 : (0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
+      const v = thin ? 5 + Math.abs(Math.sin(i * a + c) * 14 + Math.sin(i * b) * 6) : 6 + Math.abs(Math.sin(i * a + c) * 22 + Math.sin(i * b) * 9);
+      bars += `<rect x="${(2 + i * 4.1).toFixed(1)}" y="${(30 - v / 2).toFixed(1)}" width="${thin ? 1.2 : 2.2}" height="${v.toFixed(1)}" rx="${thin ? .6 : 1.1}" fill="${fill}" opacity="${flat ? 1 : (0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
     }
     return `<svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>`;
   }
@@ -373,8 +384,8 @@
                 <div class="pc-bottom">
                   <div class="pc-times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
                   <div class="pc-wave" id="pWave">
-                    <span class="pw-base">${waveSvg(it.title, "#ffffff", true)}</span>
-                    <span class="pw-fill">${waveSvg(it.title, "#d9b45f", true)}</span>
+                    <span class="pw-base">${waveSvg(it.title, "#ffffff", true, true)}</span>
+                    <span class="pw-fill">${waveSvg(it.title, "#d9b45f", true, true)}</span>
                     <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
                   </div>
                   <div class="pc-ctl">

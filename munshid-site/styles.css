@@ -508,10 +508,11 @@ body.reading { overflow: hidden; }
 .reader .reader-btn { background: transparent; border-color: var(--r-line); box-shadow: none; }
 
 /* ---------- شريط التقدم: موجة صوت ---------- */
-.pc-wave { --p: 0%; position: relative; height: 46px; margin: 4px 0 8px; }
+.pc-wave { --p: 0%; position: relative; height: 30px; margin: 6px 0 10px; }
 .pc-wave .pw-base, .pc-wave .pw-fill { position: absolute; inset: 0; }
 .pc-wave svg { width: 100%; height: 100%; display: block; }
-.pc-wave .pw-base { opacity: .28; }
+.pc-wave .pw-base { opacity: .18; }
+.pc-wave .pw-fill { opacity: .9; }
 /* الجزء اللي انسمع يتلون ذهبي، من اليمين لليسار */
 .pc-wave .pw-fill { clip-path: inset(0 0 0 calc(100% - var(--p))); }
 .pc-wave .pc-seek { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
@@ -553,3 +554,7 @@ body.is-playing .mini-eq i:nth-child(5) { animation-duration: 1s; animation-dela
   .pcard.spin .pc-fallback svg rect, body.is-playing .mini-eq i { animation: none; }
   .stack-img { transform: none; transition: none; }
 }
+
+.mini-close { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 16px; color: #fff;
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); }
+.mini-close:hover { background: rgba(255, 255, 255, .16); }
