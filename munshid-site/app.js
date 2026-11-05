@@ -175,7 +175,7 @@
       <section class="hero">
         <img class="hero-img" src="img/banner.jpg" alt="${esc(S.name)} أثناء الإنشاد">
         <div class="hero-copy">
-          <h1>${esc(S.name)}</h1>
+          <h1>${(S.heroLines || [S.name]).map(esc).join("<br>")}</h1>
           ${S.tagline ? `<p>${esc(S.tagline)}</p>` : ""}
         </div>
       </section>

@@ -285,7 +285,7 @@ main:focus { outline: none; }
   .hero { height: min(80vh, 780px); }
   .hero-img { object-position: 70% 28%; }
   /* الاسم في المساحة الفاضية بين الطرف ووجه المنشد */
-  .hero-copy { right: 47%; left: auto; top: 20%; bottom: auto; max-width: 42%; margin: 0; }
+  .hero-copy { left: 18%; right: auto; top: 30%; bottom: auto; max-width: none; margin: 0; }
   .hero h1 { font-size: clamp(4.5rem, 7vw, 7.5rem); }
   .index { padding-top: 32px; }
   .index-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; }

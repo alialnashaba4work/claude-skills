@@ -8,6 +8,8 @@
 */
 window.SITE = {
   name: "السيد أحمد الموسوي",
+  // الاسم كما يظهر في الغلاف، كل عنصر سطر
+  heroLines: ["السيد أحمد", "الموســـــوي"],
   tagline: "",
   cover: "img/cover-512.jpg",
   sections: [
