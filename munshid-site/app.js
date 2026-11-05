@@ -201,8 +201,14 @@
   }
 
   // صور القصائد داخل قسم (لرزمة البطاقات)
+  // الصورة العريضة (16:9) للقصيدة: صورة يوتيوب إذا موجودة، وإلا صورتها المربعة
+  function wideOf(it) {
+    const id = ytId(it.youtube);
+    const known = id && ((window.YT && window.YT.videos) || []).find((v) => v.id === id);
+    return (known && known.thumb) || it.cover || "";
+  }
   function coversOf(node) {
-    if (isItem(node)) return node.cover ? [node.cover] : [];
+    if (isItem(node)) { const w = wideOf(node); return w ? [w] : []; }
     return children(node).flatMap(coversOf);
   }
   // بطاقة وحدة: صورة القصيدة، أو زخرفة بلون القسم إذا ما لها صورة
@@ -211,9 +217,11 @@
   function stackCard(href, title, meta, covers, single) {
     const c = single ? [covers[0] || ""] : covers.concat(["", "", ""]).slice(0, 3);
     return `<a class="stack${single ? " single" : ""}" href="${href}">
-      ${single ? "" : `<span class="card c3" aria-hidden="true">${face(c[2])}</span><span class="card c2" aria-hidden="true">${face(c[1])}</span>`}
-      <span class="card c1">${face(c[0])}</span>
-      <span class="lbl glass"><b>${esc(title)}</b>${meta ? `<small>${esc(meta)}</small>` : ""}</span>
+      <span class="stack-img">
+        ${single ? "" : `<span class="card c3" aria-hidden="true">${face(c[2])}</span><span class="card c2" aria-hidden="true">${face(c[1])}</span>`}
+        <span class="card c1">${face(c[0])}</span>
+      </span>
+      <span class="lbl"><b>${esc(title)}</b>${meta ? `<small>${esc(meta)}</small>` : ""}</span>
     </a>`;
   }
 
