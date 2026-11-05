@@ -277,7 +277,8 @@
                   <text class="label-title"><textPath href="#arc" startOffset="50%" text-anchor="middle">${esc(it.title)}</textPath></text>
                   <circle cx="100" cy="100" r="13" class="label-ring"/>
                   <circle cx="100" cy="100" r="5" class="label-hole"/>
-                  <text x="100" y="150" text-anchor="middle" class="label-artist">${esc(parent.title)}</text>
+                  <path id="arcLow" d="M 24,100 A 76,76 0 0,0 176,100" fill="none"/>
+                  <text class="label-artist"><textPath href="#arcLow" startOffset="50%" text-anchor="middle">${esc(parent.title)}</textPath></text>
                 </svg>
               </div>
               <svg class="arm" viewBox="0 0 100 420" aria-hidden="true">

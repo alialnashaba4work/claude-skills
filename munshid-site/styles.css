@@ -179,7 +179,7 @@ main:focus { outline: none; }
 }
 .deck.armed .arm { transform: rotate(13deg); }
 .deck.spin .record { animation-play-state: running; }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin { to { transform: rotate(-360deg); } }
 
 .deck-meta { margin-top: 6px; }
 .deck-title { margin: 0; font-weight: 900; font-size: clamp(1.6rem, 7vw, 2.2rem); line-height: 1.25; }
