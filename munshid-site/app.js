@@ -87,7 +87,8 @@
       title: current().title,
       artist: S.name,
       album: chain.map((c) => c.title).join(" — "),
-      artwork: [{ src: new URL(S.cover, location.href).href, sizes: "512x512", type: "image/jpeg" }]
+      // صورة القصيدة نفسها في شاشة القفل (المربعة أفضل)، وإلا صورة الموقع
+      artwork: [{ src: new URL(current().cover || wideOf(current()) || S.cover, location.href).href, sizes: "512x512", type: "image/jpeg" }]
     });
     const ms = navigator.mediaSession;
     const set = (a, f) => { try { ms.setActionHandler(a, f); } catch (e) {} };
@@ -736,6 +737,9 @@
       else renderNode(parts, chain);
     }
     $("#brand").hidden = !parts.length;
+    // انتقال ناعم بين الصفحات
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches && view.animate)
+      view.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 280, easing: "ease-out" });
     window.scrollTo(0, 0);
     syncUI();
   }
@@ -814,6 +818,21 @@
   sBtn.className = "icon-btn"; sBtn.id = "searchBtn"; sBtn.type = "button";
   sBtn.setAttribute("aria-label", "بحث"); sBtn.innerHTML = SI;
   $("#fsBtn").before(sBtn);
+
+  /* ---------- الوضع الفاتح والداكن ---------- */
+  const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>';
+  const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
+  const tBtn = document.createElement("button");
+  tBtn.className = "icon-btn"; tBtn.id = "themeBtn"; tBtn.type = "button";
+  const applyTheme = (t) => {
+    if (t === "light") document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme;
+    tBtn.innerHTML = t === "light" ? MOON : SUN;
+    tBtn.setAttribute("aria-label", t === "light" ? "الوضع الداكن" : "الوضع الفاتح");
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === "light" ? "#eef0f6" : "#070c24";
+  };
+  applyTheme(localGet("theme") === "light" ? "light" : "dark");
+  tBtn.addEventListener("click", () => { const t = document.documentElement.dataset.theme === "light" ? "dark" : "light"; localSet("theme", t); applyTheme(t); });
+  sBtn.after(tBtn);
 
   const panel = document.createElement("div");
   panel.className = "search"; panel.hidden = true;
