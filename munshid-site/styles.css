@@ -151,59 +151,42 @@ main:focus { outline: none; }
 .track.is-current .track-title { color: var(--green-soft); }
 .track-sub { color: var(--mist); font-size: .85rem; }
 
-/* ---------- محافظ الأسطوانات داخل الأقسام ---------- */
-.crate {
-  list-style: none; margin: 28px 0 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 28px 18px;
+/* ---------- رزمة البطاقات داخل الأقسام ---------- */
+.stacks {
+  list-style: none; margin: 28px 0 0; padding: 14px 6px 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(44%, 200px), 1fr)); gap: 30px 16px;
 }
-.crate-item { position: relative; }
-.page { overflow-x: clip; }
-/* مساحة على اليسار تطلع فيها الأسطوانة */
-.sleeve-card { position: relative; display: block; padding-left: 16%; }
-.sleeve-face {
-  position: relative; z-index: 1; aspect-ratio: 1; display: flex; flex-direction: column; justify-content: flex-end;
-  gap: 2px; padding: 14px; border-radius: 6px; overflow: hidden;
-  background:
-    linear-gradient(160deg, rgba(255, 255, 255, .10), transparent 45%),
-    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c) 55%, transparent), transparent 70%),
-    color-mix(in srgb, var(--c) 22%, var(--night-2));
-  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .7), inset 0 0 0 1px rgba(255, 255, 255, .08);
+.stack-item { position: relative; }
+.stack { position: relative; display: block; aspect-ratio: 1; color: #fff; }
+.stack .card {
+  position: absolute; inset: 0; border-radius: 22px; overflow: hidden; background: #111;
+  box-shadow: 0 14px 28px -12px rgba(0, 0, 0, .85), inset 0 0 0 1px rgba(255, 255, 255, .1);
+  transition: transform .55s cubic-bezier(.2, .8, .2, 1);
 }
-/* فتحة المحفظة على الجهة اليسرى */
-.sleeve-face::before {
-  content: ""; position: absolute; left: 0; top: 8%; bottom: 8%; width: 3px; border-radius: 2px;
-  background: rgba(0, 0, 0, .35);
-}
-.sf-title { font-weight: 900; font-size: clamp(1rem, 4vw, 1.3rem); line-height: 1.3; color: #fff; text-wrap: balance; }
-.sf-meta { font-size: .82rem; color: rgba(255, 255, 255, .7); }
-.disc {
-  position: absolute; z-index: 0; left: 16%; top: 4%; width: 92%; aspect-ratio: 1; border-radius: 50%;
-  background:
-    conic-gradient(from 30deg, transparent 0 10%, rgba(255,255,255,.14) 14%, transparent 20% 55%, rgba(255,255,255,.1) 64%, transparent 70%),
-    repeating-radial-gradient(circle, #0b0b0b 0 2px, #171717 2px 3px),
-    #0a0a0a;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, .5), inset 0 0 0 4px #050505;
-  translate: -12% 0;
-  transition: translate .5s cubic-bezier(.2, .8, .2, 1), rotate .5s cubic-bezier(.2, .8, .2, 1);
-}
-.disc-label {
-  position: absolute; inset: 33%; border-radius: 50%; background: var(--c);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25);
-}
-.disc-label::after { content: ""; position: absolute; inset: 44%; border-radius: 50%; background: #111; }
+.stack .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.stack .fb { width: 100%; height: 100%; display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c) 65%, #000), color-mix(in srgb, var(--c) 18%, #05081c) 75%); }
+.stack .fb svg { width: 70%; height: auto; margin-top: -12%; }
+.stack .c3 { transform: rotate(-7deg) translate(-6%, -2%) scale(.92); filter: brightness(.6); }
+.stack .c2 { transform: rotate(5deg) translate(5%, -3%) scale(.95); filter: brightness(.75); }
+.stack .c1::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 45%, rgba(0, 0, 0, .75)); }
 @media (hover: hover) {
-  .sleeve-card:hover .disc, .sleeve-card:focus-visible .disc { translate: -40% 0; rotate: -40deg; }
-  .sleeve-card:hover .sleeve-face { box-shadow: 0 18px 36px -12px rgba(0, 0, 0, .8), inset 0 0 0 1px rgba(255, 255, 255, .14); }
+  .stack:hover .c3, .stack:focus-visible .c3 { transform: rotate(-14deg) translate(-22%, -6%) scale(.9); }
+  .stack:hover .c2, .stack:focus-visible .c2 { transform: rotate(11deg) translate(20%, -8%) scale(.93); }
+  .stack:hover .c1, .stack:focus-visible .c1 { transform: translateY(-6px); }
 }
-.crate-item.is-current .disc { translate: -40% 0; animation: spin 6s linear infinite; }
-body:not(.is-playing) .crate-item.is-current .disc { animation-play-state: paused; }
-.crate-item.is-current .sf-title { color: var(--green-soft); }
-.crate .row-play {
-  position: absolute; z-index: 2; left: calc(16% + 10px); top: 10px; width: 40px; height: 40px; font-size: 16px;
-  background: rgba(7, 12, 36, .55); border-color: rgba(255, 255, 255, .25);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+.stack .lbl { position: absolute; z-index: 2; inset: auto 10px 10px 10px; padding: 8px 12px; border-radius: 16px; transition: translate .4s; }
+.stack .lbl b { display: block; font-weight: 900; font-size: 1rem; line-height: 1.35; }
+.stack.single .lbl b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stack .lbl small { display: block; color: rgba(255, 255, 255, .75); font-size: .78rem; }
+.stack-item.is-current .c1 { box-shadow: 0 0 0 2px var(--green-soft), 0 14px 28px -12px rgba(0, 0, 0, .85); }
+.stack-item.is-current .lbl b { color: var(--green-soft); }
+.stacks .row-play {
+  position: absolute; z-index: 3; left: 10px; top: 10px; width: 42px; height: 42px; font-size: 16px;
+  border-radius: 50%; display: grid; place-items: center; border: 0;
 }
-.crate-item.is-current .row-play { background: var(--green); border-color: var(--green); }
+.stack-item.is-current .row-play { background: var(--green); }
+.page { overflow-x: clip; }
 
 /* ---------- التبويبات ---------- */
 .tabs {
@@ -422,7 +405,7 @@ body.reading { overflow: hidden; }
   /* القوائم في عمودين */
   .page { padding-top: 96px; }
   .groups, .tracks { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; }
-  .crate { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 40px 32px; }
+  .stacks { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 44px 36px; }
 
   /* صفحة المقطع: المشغل ثابت على جنب، والنص بجانبه، بدون تبويبات */
   .track-page .tabs { display: none; }

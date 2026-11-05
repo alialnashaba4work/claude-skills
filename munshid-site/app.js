@@ -198,14 +198,20 @@
       </section>`;
   }
 
-  // غلاف أسطوانة: الأسطوانة داخل المحفظة، وتطلع شوي عند تمرير الماوس
-  function sleeve(href, title, meta) {
-    return `<a class="sleeve-card" href="${href}">
-      <span class="disc" aria-hidden="true"><span class="disc-label"></span></span>
-      <span class="sleeve-face">
-        <span class="sf-title">${esc(title)}</span>
-        ${meta ? `<span class="sf-meta">${esc(meta)}</span>` : ""}
-      </span>
+  // صور القصائد داخل قسم (لرزمة البطاقات)
+  function coversOf(node) {
+    if (isItem(node)) return node.cover ? [node.cover] : [];
+    return children(node).flatMap(coversOf);
+  }
+  // بطاقة وحدة: صورة القصيدة، أو زخرفة بلون القسم إذا ما لها صورة
+  const face = (src) => src ? `<img src="${esc(src)}" alt="" loading="lazy">` : `<span class="fb">${rosette()}</span>`;
+  // رزمة بطاقات: ثلاث بطاقات فوق بعض تنفرد عند تمرير الماوس
+  function stackCard(href, title, meta, covers, single) {
+    const c = single ? [covers[0] || ""] : covers.concat(["", "", ""]).slice(0, 3);
+    return `<a class="stack${single ? " single" : ""}" href="${href}">
+      ${single ? "" : `<span class="card c3" aria-hidden="true">${face(c[2])}</span><span class="card c2" aria-hidden="true">${face(c[1])}</span>`}
+      <span class="card c1">${face(c[0])}</span>
+      <span class="lbl glass"><b>${esc(title)}</b>${meta ? `<small>${esc(meta)}</small>` : ""}</span>
     </a>`;
   }
 
@@ -217,20 +223,20 @@
     if (!kids.length) {
       body = `<p class="empty">لا توجد مقاطع في هذا القسم بعد.</p>`;
     } else if (itemsHere) {
-      body = `<ol class="crate">${kids.map((it, i) => {
+      body = `<ol class="stacks">${kids.map((it, i) => {
         const h = hrefOf([...parts, it.id]);
         const c = colorOf([...chain, it]);
-        return `<li class="crate-item" data-row="${h}" style="--c:${esc(c)}">
-          ${sleeve(h, it.title, "")}
-          <button class="row-play" type="button" data-i="${i}" aria-label="تشغيل ${esc(it.title)}">${IC.play}</button>
+        return `<li class="stack-item" data-row="${h}" style="--c:${esc(c)}">
+          ${stackCard(h, it.title, "", coversOf(it), true)}
+          <button class="row-play glass" type="button" data-i="${i}" aria-label="تشغيل ${esc(it.title)}">${IC.play}</button>
         </li>`;
       }).join("")}</ol>`;
     } else {
-      body = `<ul class="crate">${kids.map((g) => {
+      body = `<ul class="stacks">${kids.map((g) => {
         const n = countItems(g);
         const c = colorOf([...chain, g]);
-        return `<li class="crate-item" style="--c:${esc(c)}">
-          ${sleeve(hrefOf([...parts, g.id]), g.title, n ? arNum(n) + " مقطع" : "قريباً")}
+        return `<li class="stack-item" style="--c:${esc(c)}">
+          ${stackCard(hrefOf([...parts, g.id]), g.title, n ? arNum(n) + " مقطع" : "قريباً", coversOf(g), false)}
         </li>`;
       }).join("")}</ul>`;
     }
