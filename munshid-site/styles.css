@@ -90,6 +90,18 @@ main:focus { outline: none; }
 }
 .hero-copy { text-align: center; }
 .hero p { margin: .4rem 0 0; color: var(--mist); font-size: clamp(1rem, 3.6vw, 1.25rem); }
+/* التلفون والتابلت: الصورة بعرض الشاشة وبشكلها الكامل، والاسم تحتها */
+@media (max-width: 1023px) {
+  .hero { height: auto; min-height: 0; overflow: visible; }
+  .hero-img { position: relative; display: block; height: auto; aspect-ratio: 1672 / 941; object-position: center; }
+  .hero::after {
+    inset: 0 0 auto 0; aspect-ratio: 1672 / 941;
+    background: linear-gradient(to top, var(--night) 2%, rgba(7, 12, 36, .35) 30%, transparent 55%),
+                linear-gradient(to bottom, rgba(7, 12, 36, .55), transparent 28%);
+  }
+  .hero-copy { position: relative; inset: auto; margin: -6px var(--gutter) 0; padding-bottom: 8px; }
+  .hero h1 { font-size: clamp(2.6rem, 12vw, 5rem); }
+}
 @keyframes settle { from { transform: scale(1.08); opacity: 0; } to { transform: none; opacity: 1; } }
 
 /* ---------- فهرس الأقسام ---------- */
