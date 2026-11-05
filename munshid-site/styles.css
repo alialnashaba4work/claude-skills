@@ -199,7 +199,6 @@ main:focus { outline: none; }
 .stack .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .stack .fb { width: 100%; height: 100%; display: grid; place-items: center;
   background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c) 65%, #000), color-mix(in srgb, var(--c) 18%, #05081c) 75%); }
-.stack .fb svg { width: auto; height: 74%; margin-top: -8%; }
 .stack .c3 { transform: rotate(-7deg) translate(-6%, -2%) scale(.92); filter: brightness(.6); }
 .stack .c2 { transform: rotate(5deg) translate(5%, -3%) scale(.95); filter: brightness(.75); }
 @media (hover: hover) {
@@ -245,8 +244,6 @@ main:focus { outline: none; }
 .pc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .pc-fallback { position: absolute; inset: 0; display: grid; place-items: center;
   background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c) 65%, #000), color-mix(in srgb, var(--c) 18%, #05081c) 75%); }
-.pc-fallback svg { width: auto; height: 78%; margin-top: 4%; animation: spin 60s linear infinite; animation-play-state: paused; }
-.pcard.spin .pc-fallback svg { animation-play-state: running; }
 .glass { background: rgba(60, 60, 66, .42); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); color: #fff; }
 .pc-top { display: flex; align-items: center; gap: 8px; padding: 14px 14px 2px 16px; }
@@ -483,5 +480,4 @@ body.reading { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .hero-img { animation: none; }
   .toast { transition: none; }
-  .pc-fallback svg { animation: none; }
 }

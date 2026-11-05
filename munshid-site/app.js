@@ -213,7 +213,7 @@
     return children(node).flatMap(coversOf);
   }
   // بطاقة وحدة: صورة القصيدة، أو زخرفة بلون القسم إذا ما لها صورة
-  const face = (src) => src ? `<img src="${esc(src)}" alt="" loading="lazy">` : `<span class="fb">${rosette()}</span>`;
+  const face = (src) => src ? `<img src="${esc(src)}" alt="" loading="lazy">` : `<span class="fb"></span>`;
   // رزمة بطاقات: ثلاث بطاقات فوق بعض تنفرد عند تمرير الماوس
   function stackCard(href, title, meta, covers, single) {
     const c = single ? [covers[0] || ""] : covers.concat(["", "", ""]).slice(0, 3);
@@ -306,7 +306,7 @@
             <div class="pc-frame">
               <div class="pcard${cover ? "" : " no-cover"}" data-track="${h}">
                 <div class="pc-media">
-                  ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true">${rosette()}</div>`}
+                  ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true"></div>`}
                 </div>
                 <div class="pc-top">
                   <div class="pc-pill">
@@ -444,22 +444,6 @@
     applySize();
   }
 
-  /* زخرفة الشمسة: تستخدم خلفية للقصائد اللي ما لها صورة */
-  function rosette() {
-    const P = (n, r, off = 0) => Array.from({ length: n }, (_, i) => { const a = off + (i * 2 * Math.PI) / n - Math.PI / 2; return [120 + r * Math.cos(a), 120 + r * Math.sin(a)]; });
-    const star = (n, k, r, off = 0) => { const p = P(n, r, off); let d = "", i = 0; for (let q = 0; q <= n; q++) { const v = p[i % n]; d += (q ? "L" : "M") + v[0].toFixed(1) + "," + v[1].toFixed(1); i += k; } return d + "Z"; };
-    const G = "#d9b45f";
-    return `<svg viewBox="0 0 240 240"><g fill="none" stroke-linejoin="round">
-      <circle cx="120" cy="120" r="88" stroke="${G}" stroke-width="1.2" opacity=".7"/>
-      <path d="${star(16, 6, 86)}" stroke="${G}" opacity=".55"/>
-      <path d="${star(8, 3, 70)}" fill="color-mix(in srgb, var(--c) 45%, transparent)" stroke="${G}" stroke-width="1.4"/>
-      <path d="${star(8, 3, 70, Math.PI / 8)}" stroke="${G}" opacity=".6"/>
-      <path d="${star(8, 2, 46)}" fill="color-mix(in srgb, var(--c) 70%, #000)" stroke="${G}" stroke-width="1.4"/>
-      <circle cx="120" cy="120" r="26" stroke="${G}" stroke-width="1.2"/>
-      <path d="${star(8, 3, 22)}" fill="${G}" opacity=".85"/>
-      ${P(16, 78).map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="${G}"/>`).join("")}
-    </g></svg>`;
-  }
 
   /* خانة يوتيوب للمقطع */
   function ytId(url) {
