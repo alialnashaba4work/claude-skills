@@ -57,6 +57,7 @@ main:focus { outline: none; }
   font-size: 20px; border: 1px solid var(--line); background: rgba(13, 21, 56, .6);
 }
 .brand[hidden] { display: none; }
+#brand { margin-inline-start: 8px; }
 .icon-btn {
   width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%;
   font-size: 20px; border: 1px solid var(--line); background: rgba(13, 21, 56, .6);
