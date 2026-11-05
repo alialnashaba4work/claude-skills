@@ -228,6 +228,7 @@ main:focus { outline: none; }
 .poem h2 { font-weight: 900; font-size: 1.4em; margin: 0 0 .8em; line-height: 1.4; }
 .stanza { margin-bottom: 1.4em; }
 .line, .bayt { margin: 0; }
+.line { text-wrap: balance; }
 .bayt { display: grid; grid-template-columns: 1fr; margin-bottom: .5em; }
 @media (min-width: 640px) {
   .bayt { grid-template-columns: 1fr 1fr; gap: 2.2em; margin-bottom: 0; }

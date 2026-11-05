@@ -242,7 +242,7 @@
         const h = l.split("|");
         return h.length === 2
           ? `<p class="bayt"><span>${esc(h[0].trim())}</span><span>${esc(h[1].trim())}</span></p>`
-          : `<p class="line">${esc(l.trim())}</p>`;
+          : `<p class="line">${esc(l.trim()).replace(/ \.\. /g, "\u00A0.. ")}</p>`;
       }).join("")
     }</div>`).join("");
   }
