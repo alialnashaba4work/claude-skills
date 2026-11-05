@@ -97,10 +97,12 @@ main:focus { outline: none; }
   .hero::after {
     inset: 0 0 auto 0; aspect-ratio: 1672 / 941;
     background: linear-gradient(to top, var(--night) 2%, rgba(7, 12, 36, .35) 30%, transparent 55%),
-                linear-gradient(to bottom, rgba(7, 12, 36, .55), transparent 28%);
+                linear-gradient(to bottom, rgba(7, 12, 36, .55), transparent 28%),
+                linear-gradient(to left, transparent 40%, rgba(7, 12, 36, .5));
   }
-  .hero-copy { position: relative; inset: auto; margin: -6px var(--gutter) 0; padding-bottom: 8px; }
-  .hero h1 { font-size: clamp(2.6rem, 12vw, 5rem); }
+  /* الاسم على الصورة: الجهة اليسرى وفي النص عمودياً */
+  .hero-copy { left: 4%; right: auto; top: 50%; bottom: auto; width: 46%; margin: 0; transform: translateY(-50%); }
+  .hero h1 { font-size: 9vw; line-height: 1.1; }
 }
 @keyframes settle { from { transform: scale(1.08); opacity: 0; } to { transform: none; opacity: 1; } }
 
