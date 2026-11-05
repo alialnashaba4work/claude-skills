@@ -8,7 +8,7 @@
 */
 window.SITE = {
   name: "السيد أحمد الموسوي",
-  tagline: "قصائد ولطميات ومجالس حسينية",
+  tagline: "",
   cover: "img/cover-512.jpg",
   sections: [
     {

@@ -176,7 +176,7 @@
         <img class="hero-img" src="img/banner.jpg" alt="${esc(S.name)} أثناء الإنشاد">
         <div class="hero-copy">
           <h1>${esc(S.name)}</h1>
-          <p>${esc(S.tagline)}</p>
+          ${S.tagline ? `<p>${esc(S.tagline)}</p>` : ""}
         </div>
       </section>
       <section class="index" aria-label="الأقسام">
