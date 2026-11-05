@@ -44,13 +44,6 @@ window.SITE = {
           "title": "أدعية",
           "items": [
             {
-              "id": "7Pkn5GCdizc",
-              "title": "اللهم إني أفتتح العزاء بحمدك",
-              "cover": "img/covers/7Pkn5GCdizc.jpg",
-              "youtube": "https://www.youtube.com/watch?v=7Pkn5GCdizc",
-              "duration": "1:44"
-            },
-            {
               "id": "G80TVwsCFIk",
               "title": "دعاء الافتتاح",
               "cover": "img/covers/G80TVwsCFIk.jpg",
@@ -221,6 +214,13 @@ window.SITE = {
           "id": "1448",
           "title": "موسم ١٤٤٨هـ",
           "items": [
+            {
+              "id": "7Pkn5GCdizc",
+              "title": "اللهم إني أفتتح العزاء بحمدك",
+              "cover": "img/covers/7Pkn5GCdizc.jpg",
+              "youtube": "https://www.youtube.com/watch?v=7Pkn5GCdizc",
+              "duration": "1:44"
+            },
             {
               "id": "BOTQvpvNKEo",
               "title": "دنبال تو می‌گردم",
