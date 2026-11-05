@@ -287,7 +287,7 @@
     const h = hrefOf(parts);
     const file = (it.audio || "").split("/").pop();
     const color = colorOf(chain);
-    const cover = it.cover || "";
+    const cover = wideOf(it);
 
     view.innerHTML = `
       <section class="page track-page">
@@ -304,31 +304,30 @@
             ${cover ? `<div class="pc-blur" style="background-image:url('${esc(cover)}')"></div>` : ""}
             <div class="pc-frame">
               <div class="pcard${cover ? "" : " no-cover"}" data-track="${h}">
-                ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true">${rosette()}</div>`}
-                <div class="pc-top">
-                  <div class="pc-pill glass">
-                    ${cover ? `<img src="${esc(cover)}" alt="">` : `<span class="pc-dot" aria-hidden="true">${rosette()}</span>`}
-                    <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => c.title).join(" · "))}</small></span>
+                <div class="pc-media">
+                  ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true">${rosette()}</div>`}
+                  <div class="pc-top">
+                    <div class="pc-pill glass">
+                      <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => c.title).join(" · "))}${it.duration && !it.audio ? " · " + esc(arNum(it.duration)) : ""}</small></span>
+                    </div>
+                    <button class="pc-ic glass" id="pShare" type="button" aria-label="مشاركة">${IC.share}</button>
+                    <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
                   </div>
-                  <button class="pc-ic glass" id="pShare" type="button" aria-label="مشاركة">${IC.share}</button>
-                  <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
                 </div>
+                ${it.audio ? `
                 <div class="pc-bottom">
-                  ${it.audio ? `
                   <div class="pc-times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
                   <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
                   <div class="pc-ctl">
                     <button class="glass" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
                     <button class="glass pc-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
                     <button class="glass" id="pNext" type="button" aria-label="التالي" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
-                  </div>` : ytId(it.youtube) ? `
-                  <div class="pc-times"><span>${it.duration ? esc(arNum(it.duration)) : ""}</span><span></span></div>
-                  <a class="pc-watch glass" id="pWatch" href="https://www.youtube.com/watch?v=${esc(ytId(it.youtube))}" target="_blank" rel="noopener">${IC.play}<span>شاهد على يوتيوب</span></a>` : ""}
-                </div>
+                  </div>
+                </div>` : ""}
               </div>
             </div>
           </div>
-          ${ytBox(it)}
+          ${ytBtn(it)}
         </div>
 
         <div class="pane" id="pane-text" role="tabpanel" aria-labelledby="tab-text" hidden>
@@ -362,12 +361,8 @@
         </div>
       </section>`;
 
-    // زر "شاهد على يوتيوب" داخل البطاقة يشغّل المقطع في خانة يوتيوب تحتها
-    const watch = $("#pWatch");
-    if (watch && canEmbed()) watch.addEventListener("click", (e) => { const b = view.querySelector(".ytbox"); if (b) { e.preventDefault(); b.click(); b.scrollIntoView({ block: "nearest", behavior: "smooth" }); } });
-
     // يوتيوب: على الاستضافة الحقيقية يشتغل المقطع داخل الخانة، وفي صفحة المعاينة يفتح في يوتيوب
-    const ytb = view.querySelector(".ytbox");
+    const ytb = view.querySelector(".yt-btn");
     if (ytb && canEmbed()) ytb.addEventListener("click", (e) => {
       e.preventDefault();
       audio.pause();
@@ -378,6 +373,7 @@
       f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
       f.allowFullscreen = true;
       ytb.replaceWith(f);
+      f.scrollIntoView({ block: "nearest", behavior: "smooth" });
     });
 
     // المشاركة والمفضلة
@@ -477,14 +473,12 @@
   }
   // صفحة المعاينة في Claude تمنع تشغيل يوتيوب داخلها
   const canEmbed = () => !/claudeusercontent\.com$|claude\.ai$/.test(location.hostname);
-  function ytBox(it) {
+  // زر "شاهد على يوتيوب" تحت المشغل
+  function ytBtn(it) {
     const id = ytId(it.youtube);
     if (!id) return "";
-    const known = ((window.YT && window.YT.videos) || []).find((v) => v.id === id);
-    const thumb = (known && known.thumb) || it.cover || "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
-    return `<a class="ytbox" href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener" data-yt="${esc(id)}">
-      <span class="ytb-thumb"><img src="${esc(thumb)}" alt="" loading="lazy"><span class="ytb-play" aria-hidden="true">${IC.play}</span></span>
-      <span class="ytb-txt"><b>شاهد على يوتيوب</b><small>${esc(it.title)}</small></span>
+    return `<a class="yt-btn" href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener" data-yt="${esc(id)}">
+      <span class="yt-btn-ic" aria-hidden="true">${IC.play}</span><span>شاهد على يوتيوب</span>
     </a>`;
   }
 
