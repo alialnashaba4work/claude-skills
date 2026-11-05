@@ -61,7 +61,8 @@ main:focus { outline: none; }
   width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%;
   font-size: 20px; border: 1px solid var(--line); background: rgba(13, 21, 56, .6);
 }
-#fsBtn { margin-inline-start: auto; }
+#searchBtn { margin-inline-start: auto; }
+#fsBtn { margin-inline-start: 8px; }
 .icon-btn:hover { border-color: var(--mist); }
 
 /* ---------- البطل ---------- */
@@ -276,6 +277,39 @@ main:focus { outline: none; }
   .stage { max-width: 520px; margin: 0 auto; }
   .deck-meta, .seek, .controls { max-width: 520px; margin-inline: auto; }
 }
+
+/* ---------- البحث ---------- */
+.search {
+  position: fixed; inset: 0; z-index: 50; overflow-y: auto;
+  background: rgba(7, 12, 36, .94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: calc(14px + env(safe-area-inset-top)) var(--gutter) calc(24px + env(safe-area-inset-bottom));
+}
+.search[hidden] { display: none; }
+body.searching { overflow: hidden; }
+.search-inner { max-width: var(--maxw); margin: 0 auto; }
+.search-bar {
+  display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 8px;
+  border-radius: 16px; background: var(--night-2); border: 1px solid var(--line);
+}
+.search-bar:focus-within { border-color: var(--mist); }
+.search-ic { font-size: 22px; color: var(--mist); display: grid; padding-inline-start: 8px; }
+.search-bar input {
+  flex: 1; min-width: 0; height: 44px; border: 0; outline: 0; background: transparent;
+  color: var(--moon); font: inherit; font-size: 1.1rem;
+}
+.search-bar input::placeholder { color: var(--mist); opacity: .8; }
+.search-bar input::-webkit-search-cancel-button { display: none; }
+.search-close { padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: .95rem; color: var(--mist); }
+.search-close:hover { color: var(--moon); background: rgba(255, 255, 255, .05); }
+.search-count { color: var(--mist); font-size: .9rem; margin: 14px 4px 4px; min-height: 1.5em; }
+.search-results { list-style: none; margin: 0; padding: 0; }
+.search-results li { border-bottom: 1px solid var(--line); }
+.search-results a { display: flex; flex-direction: column; gap: 2px; padding: 14px 4px; }
+.search-results a:hover .sr-title { color: var(--green-soft); }
+.sr-title { font-weight: 800; font-size: 1.15rem; }
+.sr-where { color: var(--mist); font-size: .85rem; }
+.sr-line { color: var(--moon); opacity: .85; font-size: .95rem; margin-top: 4px; }
+.search mark { background: rgba(143, 194, 143, .28); color: inherit; border-radius: 4px; padding: 0 2px; }
 
 /* ---------- الكمبيوتر: تصميم خاص للشاشات العريضة ---------- */
 @media (min-width: 1024px) {

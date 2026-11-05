@@ -429,4 +429,110 @@
     t.textContent = msg; t.classList.add("show");
     clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 2200);
   }
+
+  /* ---------- البحث ---------- */
+  // توحيد الحروف: يتجاهل التشكيل والتطويل ويوحّد أشكال الألف والتاء المربوطة والياء
+  const NORM = { "أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ة": "ه", "ى": "ي", "ئ": "ي", "ؤ": "و" };
+  const SKIP = /[ـً-ٰٟۖ-ۭ]/;
+  // يرجّع النص الموحّد مع خريطة لمكان كل حرف في النص الأصلي
+  function normMap(str) {
+    let out = "", map = [];
+    for (let k = 0; k < str.length; k++) {
+      const c = str[k];
+      if (SKIP.test(c)) continue;
+      out += (NORM[c] || c).toLowerCase(); map.push(k);
+    }
+    return { out, map };
+  }
+  const norm = (s) => normMap(s).out.replace(/\s+/g, " ").trim();
+
+  const INDEX = [];
+  (function walk(node, parts, titles) {
+    for (const c of children(node)) {
+      const p = [...parts, c.id];
+      if (isItem(c)) {
+        INDEX.push({ item: c, parts: p, where: titles.join(" / "), title: c.title, text: String(c.text || "").replace(/\s*\|\s*/g, "  ") });
+      } else walk(c, p, [...titles, c.title]);
+    }
+  })(S, [], []);
+
+  function mark(str, q) {
+    const { out, map } = normMap(str);
+    const at = out.indexOf(q);
+    if (at < 0) return null;
+    const a = map[at], b = map[at + q.length - 1] + 1;
+    return { a, b };
+  }
+  function snippet(text, q) {
+    // السطر اللي فيه الكلمة، مع تمييزها
+    const lines = text.split("\n");
+    for (const line of lines) {
+      const m = mark(line, q);
+      if (m) return esc(line.slice(0, m.a)) + "<mark>" + esc(line.slice(m.a, m.b)) + "</mark>" + esc(line.slice(m.b));
+    }
+    return "";
+  }
+
+  const SI = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>';
+  const sBtn = document.createElement("button");
+  sBtn.className = "icon-btn"; sBtn.id = "searchBtn"; sBtn.type = "button";
+  sBtn.setAttribute("aria-label", "بحث"); sBtn.innerHTML = SI;
+  $("#fsBtn").before(sBtn);
+
+  const panel = document.createElement("div");
+  panel.className = "search"; panel.hidden = true;
+  panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); panel.setAttribute("aria-label", "بحث");
+  panel.innerHTML = `
+    <div class="search-inner">
+      <div class="search-bar">
+        <span class="search-ic">${SI}</span>
+        <input id="searchInput" type="search" placeholder="اكتب عنوان القصيدة أو كلمة منها" autocomplete="off" enterkeyhint="search" aria-label="كلمة البحث">
+        <button class="search-close" id="searchClose" type="button">إغلاق</button>
+      </div>
+      <p class="search-count" id="searchCount" aria-live="polite"></p>
+      <ul class="search-results" id="searchResults"></ul>
+    </div>`;
+  document.body.appendChild(panel);
+  const sIn = $("#searchInput"), sRes = $("#searchResults"), sCount = $("#searchCount");
+
+  function runSearch() {
+    const q = norm(sIn.value);
+    if (q.length < 2) { sRes.innerHTML = ""; sCount.textContent = q ? "اكتب حرفين أو أكثر" : ""; return; }
+    const hits = [];
+    for (const e of INDEX) {
+      const inTitle = mark(e.title, q), inText = mark(e.text, q), inWhere = mark(e.where, q);
+      if (!inTitle && !inText && !inWhere) continue;
+      hits.push({ e, rank: inTitle ? 0 : inText ? 1 : 2, inTitle });
+    }
+    hits.sort((x, y) => x.rank - y.rank);
+    sCount.textContent = hits.length ? "عدد النتائج: " + arNum(hits.length) : "ما في نتائج. جرّب كلمة ثانية من القصيدة.";
+    sRes.innerHTML = hits.map(({ e, inTitle }) => {
+      const t = inTitle ? esc(e.title.slice(0, inTitle.a)) + "<mark>" + esc(e.title.slice(inTitle.a, inTitle.b)) + "</mark>" + esc(e.title.slice(inTitle.b)) : esc(e.title);
+      const sn = snippet(e.text, q);
+      return `<li><a href="${hrefOf(e.parts)}">
+        <span class="sr-title">${t}</span>
+        <span class="sr-where">${esc(e.where)}</span>
+        ${sn ? `<span class="sr-line">${sn}</span>` : ""}
+      </a></li>`;
+    }).join("");
+  }
+  let lastFocus = null;
+  function openSearch() {
+    lastFocus = document.activeElement;
+    panel.hidden = false; document.body.classList.add("searching");
+    sIn.focus(); sIn.select(); runSearch();
+  }
+  function closeSearch() {
+    panel.hidden = true; document.body.classList.remove("searching");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  sBtn.addEventListener("click", openSearch);
+  $("#searchClose").addEventListener("click", closeSearch);
+  sIn.addEventListener("input", runSearch);
+  sRes.addEventListener("click", (ev) => { if (ev.target.closest("a")) { panel.hidden = true; document.body.classList.remove("searching"); } });
+  panel.addEventListener("click", (ev) => { if (ev.target === panel) closeSearch(); });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && !panel.hidden) closeSearch();
+    else if (ev.key === "/" && panel.hidden && !/input|textarea/i.test(document.activeElement.tagName)) { ev.preventDefault(); openSearch(); }
+  });
 })();
