@@ -737,6 +737,10 @@
       else renderNode(parts, chain);
     }
     $("#brand").hidden = !parts.length;
+    // جو الصفحة بلون القسم
+    const ch = parts.length ? resolve(parts) : null;
+    if (ch) document.body.style.setProperty("--page-c", colorOf(ch));
+    document.body.classList.toggle("tinted", !!ch);
     // انتقال ناعم بين الصفحات
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches && view.animate)
       view.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 280, easing: "ease-out" });
