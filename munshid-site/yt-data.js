@@ -3,6 +3,7 @@ window.YT = {
   channel: "https://www.youtube.com/@s_ahmedalmosawi/videos",
   videos: [
     { id: "Hy-HSME8A2A", title: "رحم الله من قرأ الفاتحة", thumb: "img/yt/Hy-HSME8A2A.jpg" },
-    { id: "4yMI189xwLc", title: "زيارة أمين الله", thumb: "img/yt/4yMI189xwLc.jpg" }
+    { id: "4yMI189xwLc", title: "زيارة أمين الله", thumb: "img/yt/4yMI189xwLc.jpg" },
+    { id: "ZpEoEvORd4s", title: "قد علمتني جدّتي", thumb: "img/yt/ZpEoEvORd4s.jpg" }
   ]
 };
