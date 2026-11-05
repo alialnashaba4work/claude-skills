@@ -49,6 +49,8 @@
     next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 6v12l-8-6zM12 6v12l-8-6z" fill="currentColor" stroke="none"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
     down: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>',
+    share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.2-7.5 10.2z" fill="currentColor" stroke="none"/></svg>',
     book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5V19.5"/></svg>',
     back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
   };
@@ -132,7 +134,7 @@
       if (b) b.innerHTML = on && playing ? IC.pause : IC.play;
     });
     // صفحة المقطع
-    const deck = $(".deck");
+    const deck = $(".pcard");
     if (deck) {
       const mine = t && deck.dataset.track === hrefOf([...P.path, t.id]);
       deck.classList.toggle("spin", mine && playing);
@@ -147,13 +149,13 @@
     const t = current();
     const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
     $("#miniProg").style.width = pct + "%";
-    const deck = $(".deck");
+    const deck = $(".pcard");
     if (deck && t && deck.dataset.track === hrefOf([...P.path, t.id])) {
       const r = $("#pSeek");
       if (!r.matches(":active")) r.value = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
       r.style.setProperty("--p", (r.value / 10) + "%");
       $("#pCur").textContent = fmt(audio.currentTime);
-      $("#pDur").textContent = fmt(audio.duration);
+      $("#pDur").textContent = "-" + fmt((audio.duration || 0) - audio.currentTime);
     }
   }
   ["play", "pause", "ended", "loadedmetadata"].forEach((e) => audio.addEventListener(e, () => { syncUI(); setPosition(); }));
@@ -268,6 +270,8 @@
     const parentPath = parts.slice(0, -1);
     const h = hrefOf(parts);
     const file = (it.audio || "").split("/").pop();
+    const color = colorOf(chain);
+    const cover = it.cover || "";
 
     view.innerHTML = `
       <section class="page track-page">
@@ -280,42 +284,29 @@
 
         <div class="track-grid">
         <div class="pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio">
-          <div class="deck" data-track="${h}" style="--label:${esc(colorOf(chain))};--label-ink:${inkOn(colorOf(chain))}">
-            <div class="stage">
-              <div class="record">
-                <div class="grooves"></div>
-                <svg class="label" viewBox="0 0 200 200" aria-hidden="true">
-                  <circle cx="100" cy="100" r="100" class="label-bg"/>
-                  <image class="label-art" x="0" y="0" width="200" height="200" href="" />
-                  <circle cx="100" cy="100" r="13" class="label-ring"/>
-                  <circle cx="100" cy="100" r="5" class="label-hole"/>
-                </svg>
+          <div class="pc-stage" style="--c:${esc(color)}">
+            ${cover ? `<div class="pc-blur" style="background-image:url('${esc(cover)}')"></div>` : ""}
+            <div class="pc-frame">
+              <div class="pcard${cover ? "" : " no-cover"}" data-track="${h}">
+                ${cover ? `<img class="pc-img" src="${esc(cover)}" alt="">` : `<div class="pc-fallback" aria-hidden="true">${rosette()}</div>`}
+                <div class="pc-top">
+                  <div class="pc-pill glass">
+                    ${cover ? `<img src="${esc(cover)}" alt="">` : `<span class="pc-dot" aria-hidden="true">${rosette()}</span>`}
+                    <span class="pc-txt"><h1 class="pc-title">${esc(it.title)}</h1><small>${esc(chain.slice(0, -1).slice(-2).map((c) => c.title).join(" · "))}</small></span>
+                  </div>
+                  <button class="pc-ic glass" id="pShare" type="button" aria-label="مشاركة">${IC.share}</button>
+                  <button class="pc-ic glass" id="pFav" type="button" aria-label="المفضلة" aria-pressed="${isFav(h)}">${IC.heart}</button>
+                </div>
+                <div class="pc-bottom">
+                  <div class="pc-times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
+                  <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
+                  <div class="pc-ctl">
+                    <button class="glass" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
+                    <button class="glass pc-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
+                    <button class="glass" id="pNext" type="button" aria-label="التالي" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
+                  </div>
+                </div>
               </div>
-              <svg class="arm" viewBox="0 0 100 420" aria-hidden="true">
-                <defs>
-                  <linearGradient id="steel" x1="0" x2="1"><stop offset="0" stop-color="#9aa0aa"/><stop offset=".45" stop-color="#f4f5f7"/><stop offset="1" stop-color="#8b9099"/></linearGradient>
-                  <radialGradient id="knob" cx=".4" cy=".35"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#c3c7ce"/><stop offset="1" stop-color="#7d828b"/></radialGradient>
-                </defs>
-                <circle cx="50" cy="50" r="40" fill="rgba(255,255,255,.35)" stroke="rgba(0,0,0,.08)"/>
-                <circle cx="50" cy="50" r="22" fill="url(#knob)"/>
-                <rect x="20" y="8" width="12" height="22" rx="3" transform="rotate(-40 26 19)" fill="url(#steel)"/>
-                <path d="M50 70 L62 110 Q72 140 72 170 L72 340" stroke="url(#steel)" stroke-width="9" fill="none" stroke-linecap="round"/>
-                <rect x="61" y="98" width="13" height="16" rx="3" transform="rotate(-18 67 106)" fill="url(#steel)"/>
-                <rect x="63" y="335" width="18" height="50" rx="3" fill="url(#steel)" stroke="rgba(0,0,0,.15)"/>
-              </svg>
-            </div>
-            <div class="deck-meta">
-              <h1 class="deck-title">${esc(it.title)}</h1>
-              <p class="deck-artist">${esc(chain.slice(0, -1).map((c) => c.title).join(" / "))}</p>
-            </div>
-            <div class="seek">
-              <input type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
-              <div class="times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
-            </div>
-            <div class="controls">
-              <button class="ctl" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
-              <button class="ctl ctl-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
-              <button class="ctl" id="pNext" type="button" aria-label="التالي" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
             </div>
           </div>
         </div>
@@ -351,10 +342,16 @@
         </div>
       </section>`;
 
-    // الكتابة المقوسة على الأسطوانة
-    labelArt(it.title, parent.title, inkOn(colorOf(chain))).then((url) => {
-      const img = view.querySelector(".label-art");
-      if (img && url) img.setAttribute("href", url);
+    // المشاركة والمفضلة
+    $("#pShare").addEventListener("click", async () => {
+      const data = { title: it.title, url: location.href };
+      if (navigator.share) { try { await navigator.share(data); return; } catch (e) { if (e.name === "AbortError") return; } }
+      try { await navigator.clipboard.writeText(location.href); toast("تم نسخ رابط القصيدة"); } catch (e) { toast("انسخ الرابط من شريط العنوان"); }
+    });
+    $("#pFav").addEventListener("click", (e) => {
+      const on = toggleFav(h);
+      e.currentTarget.setAttribute("aria-pressed", on);
+      toast(on ? "أُضيفت إلى المفضلة" : "أُزيلت من المفضلة");
     });
 
     // التبويبات
@@ -416,47 +413,31 @@
     applySize();
   }
 
-  /*
-    الكتابة المقوسة: نرسم الكلمة مستقيمة أولاً (عشان الحروف العربية تتصل صح في كل المتصفحات)
-    وبعدين نقصّها شرائح رفيعة ونوزعها على القوس. textPath في Safari يفصل الحروف العربية.
-  */
-  async function labelArt(top, bottom, ink) {
-    try { await document.fonts.load('900 40px "Abar"'); await document.fonts.load('600 40px "Abar"'); } catch (e) {}
-    const K = 4, SIZE = 200 * K, C = SIZE / 2;
-    const cv = document.createElement("canvas");
-    cv.width = cv.height = SIZE;
-    const ctx = cv.getContext("2d");
-    if (!ctx) return "";
+  /* زخرفة الشمسة: تستخدم خلفية للقصائد اللي ما لها صورة */
+  function rosette() {
+    const P = (n, r, off = 0) => Array.from({ length: n }, (_, i) => { const a = off + (i * 2 * Math.PI) / n - Math.PI / 2; return [120 + r * Math.cos(a), 120 + r * Math.sin(a)]; });
+    const star = (n, k, r, off = 0) => { const p = P(n, r, off); let d = "", i = 0; for (let q = 0; q <= n; q++) { const v = p[i % n]; d += (q ? "L" : "M") + v[0].toFixed(1) + "," + v[1].toFixed(1); i += k; } return d + "Z"; };
+    const G = "#d9b45f";
+    return `<svg viewBox="0 0 240 240"><g fill="none" stroke-linejoin="round">
+      <circle cx="120" cy="120" r="88" stroke="${G}" stroke-width="1.2" opacity=".7"/>
+      <path d="${star(16, 6, 86)}" stroke="${G}" opacity=".55"/>
+      <path d="${star(8, 3, 70)}" fill="color-mix(in srgb, var(--c) 45%, transparent)" stroke="${G}" stroke-width="1.4"/>
+      <path d="${star(8, 3, 70, Math.PI / 8)}" stroke="${G}" opacity=".6"/>
+      <path d="${star(8, 2, 46)}" fill="color-mix(in srgb, var(--c) 70%, #000)" stroke="${G}" stroke-width="1.4"/>
+      <circle cx="120" cy="120" r="26" stroke="${G}" stroke-width="1.2"/>
+      <path d="${star(8, 3, 22)}" fill="${G}" opacity=".85"/>
+      ${P(16, 78).map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="${G}"/>`).join("")}
+    </g></svg>`;
+  }
 
-    function strip(text, weight, size, radius, side, alpha) {
-      if (!text) return;
-      const maxArc = Math.PI * radius * 0.78; // أقصى طول للقوس
-      let f = size;
-      const t = document.createElement("canvas");
-      const tc = t.getContext("2d");
-      const setFont = () => { tc.font = `${weight} ${f * K}px "Abar", sans-serif`; };
-      setFont();
-      let w = tc.measureText(text).width;
-      while (w > maxArc * K && f > 9) { f -= 0.5; setFont(); w = tc.measureText(text).width; }
-      const h = Math.ceil(f * K * 1.7), base = Math.round(f * K * 1.2);
-      t.width = Math.ceil(w) + 4; t.height = h;
-      setFont();
-      tc.direction = "rtl"; tc.textAlign = "right"; tc.textBaseline = "alphabetic";
-      tc.fillStyle = ink; tc.globalAlpha = alpha;
-      tc.fillText(text, t.width - 2, base);
-      const R = radius * K, step = 2;
-      for (let x = 0; x < t.width; x += step) {
-        const a = (x + step / 2 - t.width / 2) / R;
-        ctx.save();
-        ctx.translate(C, C);
-        if (side === "top") { ctx.rotate(a); ctx.drawImage(t, x, 0, step, h, -step / 2, -R - base, step + 0.6, h); }
-        else { ctx.rotate(-a); ctx.drawImage(t, x, 0, step, h, -step / 2, R - base, step + 0.6, h); }
-        ctx.restore();
-      }
-    }
-    strip(top, 900, 18, 62, "top", 1);
-    strip(bottom, 600, 13, 80, "bottom", 0.72);
-    try { return cv.toDataURL("image/png"); } catch (e) { return ""; }
+  /* المفضلة: تنحفظ في جهاز الزائر بس */
+  function favs() { try { return JSON.parse(localGet("favs") || "[]"); } catch (e) { return []; } }
+  function isFav(h) { return favs().includes(h); }
+  function toggleFav(h) {
+    const f = favs(); const i = f.indexOf(h);
+    if (i >= 0) f.splice(i, 1); else f.push(h);
+    localSet("favs", JSON.stringify(f));
+    return i < 0;
   }
 
   /*
