@@ -150,7 +150,7 @@ main:focus { outline: none; }
   position: absolute; left: 4%; top: 9%; width: 80%; aspect-ratio: 1; border-radius: 50%;
   background: #0a0a0a;
   box-shadow: 0 18px 36px rgba(0, 0, 0, .35), 0 2px 4px rgba(0, 0, 0, .3);
-  animation: spin 3.2s linear infinite; animation-play-state: paused;
+  animation: spin 6s linear infinite; animation-play-state: paused;
 }
 .grooves {
   position: absolute; inset: 0; border-radius: 50%;
@@ -283,7 +283,8 @@ main:focus { outline: none; }
   /* الرئيسية: الاسم في الجهة الفاضية من الصورة، والأقسام في عمودين */
   .hero { height: min(80vh, 780px); }
   .hero-img { object-position: 70% 28%; }
-  .hero-copy { right: auto; left: var(--gutter); bottom: 72px; max-width: min(620px, 46%); margin: 0; }
+  /* الاسم في المساحة الفاضية بين الطرف ووجه المنشد */
+  .hero-copy { right: 47%; left: auto; top: 20%; bottom: auto; max-width: 42%; margin: 0; }
   .hero h1 { font-size: clamp(4.5rem, 7vw, 7.5rem); }
   .index { padding-top: 32px; }
   .index-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; }
