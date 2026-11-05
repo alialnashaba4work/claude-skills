@@ -123,7 +123,8 @@
     if (t) {
       $("#miniTitle").textContent = t.title;
       const th = t.cover || wideOf(t);
-      $("#miniThumb").innerHTML = th ? `<img src="${esc(th)}" alt="">` : waveSvg(t.title);
+      const mt = $("#miniThumb");
+      if (mt.dataset.for !== t.title) { mt.dataset.for = t.title; mt.innerHTML = th ? `<img src="${esc(th)}" alt="">` : waveSvg(t.title); }
       $("#mini").style.setProperty("--c", colorOf(resolve([...P.path, t.id]) || []));
       $("#miniSub").textContent = ((resolve(P.path) || []).slice(-1)[0] || {}).title || "";
       $("#miniInfo").href = hrefOf([...P.path, t.id]);
@@ -169,6 +170,18 @@
   audio.addEventListener("ended", () => { if (P.index < P.queue.length - 1) step(1); });
   audio.addEventListener("error", () => { if (audio.getAttribute("src")) toast("تعذّر تحميل ملف الصوت"); });
   $("#miniPlay").addEventListener("click", toggle);
+  // إغلاق الصوت: يوقفه ويرجّع كل شي للبداية ويخفي المشغل الصغير
+  function stopAudio() {
+    audio.pause(); audio.removeAttribute("src"); audio.load();
+    P.queue = []; P.index = -1; P.path = [];
+    if ("mediaSession" in navigator) { try { navigator.mediaSession.metadata = null; } catch (e) {} }
+    syncUI(); syncTime();
+    const w = $("#pWave"); if (w) { w.style.setProperty("--p", "0%"); $("#pSeek").value = 0; $("#pCur").textContent = "٠:٠٠"; $("#pDur").textContent = "٠:٠٠"; }
+  }
+
+  // الصور: زجاج يلمع لين تتحمل الصورة
+  document.addEventListener("load", (e) => { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); }, true);
+  document.addEventListener("error", (e) => { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); }, true);
   // المشغل الصغير: صورة القصيدة وموجة صوت صغيرة تتحرك وقت التشغيل
   (function () {
     const th = document.createElement("span"); th.className = "mini-thumb"; th.id = "miniThumb"; th.setAttribute("aria-hidden", "true");
@@ -181,12 +194,7 @@
     x.className = "mini-close"; x.type = "button"; x.setAttribute("aria-label", "إغلاق المشغل");
     x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
     eq.after(x);
-    x.addEventListener("click", () => {
-      audio.pause(); audio.removeAttribute("src"); audio.load();
-      P.queue = []; P.index = -1; P.path = [];
-      if ("mediaSession" in navigator) { try { navigator.mediaSession.metadata = null; } catch (e) {} }
-      syncUI();
-    });
+    x.addEventListener("click", stopAudio);
   })();
 
   /* ---------- اختصارات الكيبورد (الكمبيوتر) ---------- */
@@ -405,6 +413,7 @@
                     <button class="glass" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
                     <button class="glass pc-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
                     <button class="glass" id="pNext" type="button" aria-label="التالي" ${idx < siblings.length - 1 ? "" : "disabled"}>${IC.next}</button>
+                    <button class="glass pc-stop" id="pStop" type="button" aria-label="إغلاق الصوت"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
                   </div>
                 </div>` : ""}
               </div>
@@ -498,6 +507,7 @@
     $("#pPlay").addEventListener("click", () => (mine() ? toggle() : load(siblings, idx, parentPath)));
     $("#pPrev").addEventListener("click", () => { location.hash = hrefOf([...parentPath, siblings[idx - 1].id]); if (current()) load(siblings, idx - 1, parentPath); });
     $("#pNext").addEventListener("click", () => { location.hash = hrefOf([...parentPath, siblings[idx + 1].id]); if (current()) load(siblings, idx + 1, parentPath); });
+    $("#pStop").addEventListener("click", () => { if (mine()) stopAudio(); });
     const seek = $("#pSeek");
     seek.addEventListener("input", () => {
       seek.parentElement.style.setProperty("--p", (seek.value / 10) + "%");
@@ -811,6 +821,7 @@
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches && view.animate)
       view.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 280, easing: "ease-out" });
     window.scrollTo(0, 0);
+    view.querySelectorAll("img").forEach((im) => { if (im.complete && im.naturalWidth) im.classList.add("is-loaded"); });
     syncUI();
   }
   window.addEventListener("hashchange", route);

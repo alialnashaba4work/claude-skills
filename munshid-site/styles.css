@@ -558,3 +558,18 @@ body.is-playing .mini-eq i:nth-child(5) { animation-duration: 1s; animation-dela
 .mini-close { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 16px; color: #fff;
   background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); }
 .mini-close:hover { background: rgba(255, 255, 255, .16); }
+
+/* ---------- الصور: زجاج يلمع لين تتحمل ---------- */
+@keyframes shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+.stack .card:has(> img), .pc-media:has(> img), .mini-thumb:has(> img) {
+  background: linear-gradient(110deg, rgba(255, 255, 255, .04) 30%, rgba(255, 255, 255, .16) 50%, rgba(255, 255, 255, .04) 70%) 0 0 / 250% 100%, rgba(255, 255, 255, .06);
+  animation: shine 1.4s linear infinite;
+}
+.stack .card > img, .pc-media > img, .mini-thumb > img { opacity: 0; transition: opacity .45s ease; }
+.stack .card > img.is-loaded, .pc-media > img.is-loaded, .mini-thumb > img.is-loaded { opacity: 1; }
+.stack .card:has(> img.is-loaded), .pc-media:has(> img.is-loaded), .mini-thumb:has(> img.is-loaded) { animation: none; }
+
+/* زر إغلاق الصوت في المشغل: على اليسار تحت الوقت الباقي */
+.pc-ctl { position: relative; }
+.pc-ctl .pc-stop { position: absolute; left: 0; top: 50%; translate: 0 -50%; width: 38px; height: 38px; font-size: 15px; }
+@media (prefers-reduced-motion: reduce) { .stack .card, .pc-media, .mini-thumb { animation: none !important; } }
