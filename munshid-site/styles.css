@@ -508,7 +508,7 @@ body.reading { overflow: hidden; }
 .reader .reader-btn { background: transparent; border-color: var(--r-line); box-shadow: none; }
 
 /* ---------- شريط التقدم: موجة صوت ---------- */
-.pc-wave { --p: 0%; position: relative; height: 30px; margin: 6px 0 10px; }
+.pc-wave { --p: 0%; position: relative; height: 48px; margin: 4px 0 8px; }
 .pc-wave .pw-base, .pc-wave .pw-fill { position: absolute; inset: 0; }
 .pc-wave svg { width: 100%; height: 100%; display: block; }
 .pc-wave .pw-base { opacity: .18; }
@@ -516,7 +516,7 @@ body.reading { overflow: hidden; }
 /* الجزء اللي انسمع يتلون ذهبي، من اليمين لليسار */
 .pc-wave .pw-fill { clip-path: inset(0 0 0 calc(100% - var(--p))); }
 .pc-wave .pc-seek { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-.pc-wave:has(.pc-seek:focus-visible) { outline: 2px solid var(--green-soft); outline-offset: 4px; border-radius: 6px; }
+.pc-wave .pc-seek:focus-visible { outline: none; }
 
 /* ---------- موجة المقاطع بدون صورة تتحرك وقت التشغيل ---------- */
 @keyframes wave-beat { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.45); } }
