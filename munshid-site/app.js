@@ -11,13 +11,6 @@
   $("#brand").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5"/></svg>';
   $("#brand").setAttribute("aria-label", "الرئيسية");
 
-  // زر الرجوع: يرجّعك مستوى واحد لفوق
-  const backBtn = document.createElement("a");
-  backBtn.className = "brand"; backBtn.id = "backBtn"; backBtn.hidden = true;
-  backBtn.setAttribute("aria-label", "رجوع");
-  backBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
-  $("#brand").before(backBtn);
-
   /* لون وسط الأسطوانة: من المقطع نفسه أو أقرب قسم فوقه */
   const colorOf = (chain) => { for (let i = chain.length - 1; i >= 0; i--) if (chain[i].color) return chain[i].color; return "#c6d65b"; };
   const inkOn = (hex) => {
@@ -174,7 +167,9 @@
     chain.forEach((c, i) => {
       if (i < chain.length - 1) links.push(`<a href="${hrefOf(parts.slice(0, i + 1))}">${esc(c.title)}</a>`);
     });
-    return `<nav class="crumbs" aria-label="مسار التصفح">${links.join('<span aria-hidden="true">/</span>')}</nav>`;
+    // زر الرجوع: يرجّعك مستوى واحد لفوق
+    const back = parts.length > 1 ? hrefOf(parts.slice(0, -1)) : "#/";
+    return `<nav class="crumbs" aria-label="مسار التصفح"><a class="back-btn" id="backBtn" href="${back}" aria-label="رجوع">${IC.back}</a>${links.join('<span aria-hidden="true">/</span>')}</nav>`;
   }
 
   function renderHome() {
@@ -464,8 +459,6 @@
       else renderNode(parts, chain);
     }
     $("#brand").hidden = !parts.length;
-    backBtn.hidden = !parts.length;
-    backBtn.href = parts.length > 1 ? hrefOf(parts.slice(0, -1)) : "#/";
     window.scrollTo(0, 0);
     syncUI();
   }

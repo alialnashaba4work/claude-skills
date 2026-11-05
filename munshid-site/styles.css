@@ -108,8 +108,13 @@ main:focus { outline: none; }
 
 /* ---------- الصفحات الداخلية ---------- */
 .page { max-width: var(--maxw); margin: 0 auto; padding: calc(72px + env(safe-area-inset-top)) var(--gutter) 48px; }
-.crumbs { display: flex; flex-wrap: wrap; gap: 6px; color: var(--mist); font-size: .9rem; margin-bottom: 10px; }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--mist); font-size: .9rem; margin-bottom: 10px; }
 .crumbs a:hover { color: var(--moon); }
+.back-btn {
+  width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; font-size: 18px;
+  margin-inline-end: 4px; color: var(--moon); border: 1px solid var(--line); background: var(--night-2);
+}
+.back-btn:hover { border-color: var(--mist); }
 .page-title { font-weight: 900; font-size: clamp(2rem, 9vw, 3.4rem); line-height: 1.15; margin: 0; }
 .page-note { color: var(--mist); margin: .3rem 0 0; }
 .empty { color: var(--mist); padding: 24px 0; }
