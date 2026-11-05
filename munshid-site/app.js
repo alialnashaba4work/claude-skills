@@ -273,12 +273,9 @@
                 <div class="grooves"></div>
                 <svg class="label" viewBox="0 0 200 200" aria-hidden="true">
                   <circle cx="100" cy="100" r="100" class="label-bg"/>
-                  <path id="arc" d="M 34,104 A 66,66 0 0,1 166,104" fill="none"/>
-                  <text class="label-title"><textPath href="#arc" startOffset="50%" text-anchor="middle">${esc(it.title)}</textPath></text>
+                  <image class="label-art" x="0" y="0" width="200" height="200" href="" />
                   <circle cx="100" cy="100" r="13" class="label-ring"/>
                   <circle cx="100" cy="100" r="5" class="label-hole"/>
-                  <path id="arcLow" d="M 24,100 A 76,76 0 0,0 176,100" fill="none"/>
-                  <text class="label-artist"><textPath href="#arcLow" startOffset="50%" text-anchor="middle">${esc(parent.title)}</textPath></text>
                 </svg>
               </div>
               <svg class="arm" viewBox="0 0 100 420" aria-hidden="true">
@@ -336,6 +333,12 @@
         </div>
       </section>`;
 
+    // الكتابة المقوسة على الأسطوانة
+    labelArt(it.title, parent.title, inkOn(colorOf(chain))).then((url) => {
+      const img = view.querySelector(".label-art");
+      if (img && url) img.setAttribute("href", url);
+    });
+
     // التبويبات
     const tabs = [...view.querySelectorAll('[role="tab"]')];
     const show = (tab) => {
@@ -381,6 +384,49 @@
     $("#fsUp").addEventListener("click", () => { size = Math.min(2.2, size + 0.125); applySize(); });
     $("#fsDown").addEventListener("click", () => { size = Math.max(0.875, size - 0.125); applySize(); });
     applySize();
+  }
+
+  /*
+    الكتابة المقوسة: نرسم الكلمة مستقيمة أولاً (عشان الحروف العربية تتصل صح في كل المتصفحات)
+    وبعدين نقصّها شرائح رفيعة ونوزعها على القوس. textPath في Safari يفصل الحروف العربية.
+  */
+  async function labelArt(top, bottom, ink) {
+    try { await document.fonts.load('900 40px "Abar"'); await document.fonts.load('600 40px "Abar"'); } catch (e) {}
+    const K = 4, SIZE = 200 * K, C = SIZE / 2;
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = SIZE;
+    const ctx = cv.getContext("2d");
+    if (!ctx) return "";
+
+    function strip(text, weight, size, radius, side, alpha) {
+      if (!text) return;
+      const maxArc = Math.PI * radius * 0.78; // أقصى طول للقوس
+      let f = size;
+      const t = document.createElement("canvas");
+      const tc = t.getContext("2d");
+      const setFont = () => { tc.font = `${weight} ${f * K}px "Abar", sans-serif`; };
+      setFont();
+      let w = tc.measureText(text).width;
+      while (w > maxArc * K && f > 9) { f -= 0.5; setFont(); w = tc.measureText(text).width; }
+      const h = Math.ceil(f * K * 1.7), base = Math.round(f * K * 1.2);
+      t.width = Math.ceil(w) + 4; t.height = h;
+      setFont();
+      tc.direction = "rtl"; tc.textAlign = "right"; tc.textBaseline = "alphabetic";
+      tc.fillStyle = ink; tc.globalAlpha = alpha;
+      tc.fillText(text, t.width - 2, base);
+      const R = radius * K, step = 2;
+      for (let x = 0; x < t.width; x += step) {
+        const a = (x + step / 2 - t.width / 2) / R;
+        ctx.save();
+        ctx.translate(C, C);
+        if (side === "top") { ctx.rotate(a); ctx.drawImage(t, x, 0, step, h, -step / 2, -R - base, step + 0.6, h); }
+        else { ctx.rotate(-a); ctx.drawImage(t, x, 0, step, h, -step / 2, R - base, step + 0.6, h); }
+        ctx.restore();
+      }
+    }
+    strip(top, 900, 18, 62, "top", 1);
+    strip(bottom, 600, 13, 80, "bottom", 0.72);
+    try { return cv.toDataURL("image/png"); } catch (e) { return ""; }
   }
 
   function localGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
