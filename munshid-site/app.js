@@ -408,13 +408,7 @@
     show(tabs[0]);
 
     // التحكم
-    view.querySelectorAll(".pdf-btn").forEach((b) => b.addEventListener("click", async () => {
-      if (b.disabled) return;
-      b.disabled = true; toast("جاري تجهيز ملف PDF…");
-      try { const r = await poemPdf(it, colorOf(chain)); if (r !== "preview") toast("تم تحميل ملف PDF"); }
-      catch (e) { toast("تعذّر تجهيز ملف PDF، حاول مرة ثانية"); }
-      b.disabled = false;
-    }));
+    view.querySelectorAll(".pdf-btn").forEach((b) => b.addEventListener("click", () => openPdfDialog(it, colorOf(chain))));
 
     const mine = () => current() === it;
     if (it.audio) {
@@ -509,72 +503,110 @@
     return jsPdfLoading;
   }
 
-  async function poemPdf(it, accent) {
-    // صفحة المعاينة في Claude تمنع التحميل: نعرض الصفحات كصور بدال الملف
-    const preview = !canEmbed();
-    const [{ jsPDF }] = await Promise.all([
-      preview ? Promise.resolve({}) : loadJsPdf(),
-      document.fonts.load('900 40px "Abar"'), document.fonts.load('600 40px "Abar"'), document.fonts.load('400 40px "Abar"')
-    ]);
-    const W = 1654, H = 2339, M = 160, INK = "#14182b", SOFT = "#6b7290";
-    const BODY = 46, GAP = 90, bottom = H - M - 40;
-    const pages = [];
-    let ctx, y;
-    const newPage = () => {
-      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-      ctx = cv.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
-      ctx.direction = "rtl"; ctx.textBaseline = "alphabetic";
-      pages.push(cv); y = M;
-    };
-    const font = (w, px) => { ctx.font = `${w} ${px}px "Abar", sans-serif`; };
-    // يصغّر الخط إذا الكلام أطول من المساحة
-    const fit = (text, w, px, max) => { font(w, px); while (ctx.measureText(text).width > max && px > 24) { px -= 2; font(w, px); } return px; };
+  // يرسم صفحات A4 للنص. scale يكبّر أو يصغّر خط الأبيات (الهوامش ثابتة)
+  function buildPdfPages(it, accent, scale, countOnly) {
+    // صفحة A4 بدقة 200 نقطة في البوصة
+    const W = 1654, H = 2339, M = 190, INK = "#16192b", SOFT = "#767c95", GOLD = "#b8954a";
+    const BODY = Math.round(50 * scale), LINE = Math.round(BODY * 2.15), GAP = 150, COL = 560, STANZA_GAP = Math.round(LINE * 0.75);
+    const TOP = M + 10, BOTTOM = H - M - 90;
+    const sub = (() => { const ch = []; let n = S; for (const id of location.hash.replace(/^#\/?/, "").split("/").map(decodeURIComponent).slice(0, -1)) { n = children(n).find((c) => c.id === id); if (!n) break; ch.push(n.title); } return ch.slice(-2).join(" · "); })();
 
-    newPage();
-    // رأس الصفحة الأولى: خط بلون القسم، العنوان، واسم المنشد مرة وحدة
-    ctx.fillStyle = accent; ctx.fillRect(W / 2 - 70, y, 140, 8); y += 120;
-    ctx.fillStyle = INK; ctx.textAlign = "center";
-    fit(it.title, 900, 92, W - 2 * M); ctx.fillText(it.title, W / 2, y); y += 70;
-    ctx.fillStyle = SOFT; font(400, 36); ctx.fillText(S.name, W / 2, y); y += 110;
+    // قياس النص
+    const mc = document.createElement("canvas").getContext("2d");
+    const setF = (c, w, px) => { c.font = `${w} ${px}px "Abar", sans-serif`; };
+    const fitPx = (text, w, px, max) => { setF(mc, w, px); while (mc.measureText(text).width > max && px > 26) { px -= 2; setF(mc, w, px); } return px; };
 
-    const lineH = BODY * 2;
-    const ensure = (h) => { if (y + h > bottom) newPage(); };
-    const stanzas = String(it.text || "").split(/\n\s*\n/);
-    stanzas.forEach((st, si) => {
-      const lines = st.split("\n").map((l) => l.trim()).filter(Boolean);
-      lines.forEach((l) => {
-        ensure(lineH);
+    // نحوّل النص لعناصر: بيت (صدر وعجز)، سطر، أو فاصل بين المقاطع
+    const blocks = [];
+    String(it.text || "").split(/\n\s*\n/).forEach((st, si, arr) => {
+      st.split("\n").map((l) => l.trim()).filter(Boolean).forEach((l) => {
         const h = l.split("|");
-        ctx.fillStyle = INK;
         if (h.length === 2) {
-          const half = (W - 2 * M - GAP) / 2;
           const a = h[0].trim(), b = h[1].trim();
-          const px = Math.min(fit(a, 400, BODY, half), fit(b, 400, BODY, half));
-          font(400, px);
-          ctx.textAlign = "right"; ctx.fillText(a, W - M, y + BODY);
-          ctx.textAlign = "left"; ctx.fillText(b, M, y + BODY);
-        } else {
-          fit(l, 400, BODY, W - 2 * M);
-          ctx.textAlign = "center"; ctx.fillText(l, W / 2, y + BODY);
-        }
-        y += lineH;
+          blocks.push({ kind: "bayt", a, b, px: Math.min(fitPx(a, 400, BODY, COL), fitPx(b, 400, BODY, COL)), h: LINE });
+        } else blocks.push({ kind: "line", t: l, px: fitPx(l, 400, BODY, W - 2 * M - 40), h: LINE });
       });
-      if (si < stanzas.length - 1) y += BODY * 0.9;
+      if (si < arr.length - 1) blocks.push({ kind: "sep", h: STANZA_GAP });
     });
 
-    // رقم الصفحة فقط في التذييل
-    pages.forEach((cv, i) => {
+    const HEADER1 = 330, HEADER_N = 120;
+    // توزيع العناصر على الصفحات
+    const pagesB = [[]]; let used = HEADER1;
+    blocks.forEach((b) => {
+      const room = BOTTOM - TOP;
+      if (used + b.h > room) { if (b.kind === "sep") return; pagesB.push([]); used = HEADER_N; }
+      if (b.kind === "sep" && !pagesB[pagesB.length - 1].length) return;
+      pagesB[pagesB.length - 1].push(b); used += b.h;
+    });
+
+    if (countOnly) return pagesB.length;
+    const pages = pagesB.map((list, pi) => {
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
       const c = cv.getContext("2d");
-      c.direction = "rtl"; c.textAlign = "center"; c.fillStyle = SOFT;
-      c.font = `400 28px "Abar", sans-serif`;
-      if (pages.length > 1) c.fillText(arNum(i + 1) + " / " + arNum(pages.length), W / 2, H - M / 2);
+      c.fillStyle = "#fff"; c.fillRect(0, 0, W, H);
+      c.direction = "rtl"; c.textBaseline = "alphabetic";
+      // إطار ذهبي مزدوج
+      c.strokeStyle = GOLD; c.lineWidth = 3; c.strokeRect(95, 95, W - 190, H - 190);
+      c.lineWidth = 1.2; c.globalAlpha = .7; c.strokeRect(112, 112, W - 224, H - 224); c.globalAlpha = 1;
+      [[95, 95], [W - 95, 95], [95, H - 95], [W - 95, H - 95]].forEach(([x, yy]) => { diamond(c, x, yy, 13, GOLD); });
+
+      const bodyH = list.reduce((t, b) => t + b.h, 0);
+      const headH = pi === 0 ? HEADER1 : HEADER_N;
+      // صفحة وحدة: نوسّط المحتوى عمودياً
+      let y = pagesB.length === 1 ? Math.max(TOP, TOP + (BOTTOM - TOP - headH - bodyH) / 2) : TOP;
+
+      c.textAlign = "center";
+      if (pi === 0) {
+        diamond(c, W / 2, y + 10, 12, accent);
+        y += 130;
+        c.fillStyle = INK; setF(c, 900, fitPx(it.title, 900, 100, W - 2 * M)); c.fillText(it.title, W / 2, y);
+        y += 70;
+        c.fillStyle = SOFT; setF(c, 400, 34); c.fillText([S.name, sub].filter(Boolean).join("  ·  "), W / 2, y);
+        y += 60;
+        ornament(c, W / 2, y, accent);
+        y += 70;
+      } else {
+        c.fillStyle = SOFT; setF(c, 700, 32); c.fillText(it.title, W / 2, y + 30);
+        y += HEADER_N;
+      }
+
+      list.forEach((b) => {
+        c.fillStyle = INK;
+        if (b.kind === "bayt") {
+          setF(c, 400, b.px);
+          c.textAlign = "center";
+          c.fillText(b.a, W / 2 + GAP / 2 + COL / 2, y + BODY * 1.15);
+          c.fillText(b.b, W / 2 - GAP / 2 - COL / 2, y + BODY * 1.15);
+        } else if (b.kind === "line") {
+          setF(c, 400, b.px); c.textAlign = "center"; c.fillText(b.t, W / 2, y + BODY * 1.15);
+        } else {
+          diamond(c, W / 2, y + b.h / 2 - 4, 7, GOLD);
+        }
+        y += b.h;
+      });
+
+      // التذييل: "نسألكم الدعاء" في كل صفحة، ورقم الصفحة إذا أكثر من صفحة
+      c.fillStyle = GOLD; setF(c, 700, 32); c.textAlign = "center"; c.fillText("نسألكم الدعاء", W / 2, H - 150);
+      if (pagesB.length > 1) { c.fillStyle = SOFT; setF(c, 400, 26); c.textAlign = "left"; c.fillText(arNum(pi + 1) + " / " + arNum(pagesB.length), 150, H - 150); }
+      return cv;
     });
 
-    if (preview) { showPages(it.title, pages.map((cv) => cv.toDataURL("image/jpeg", 0.9))); return "preview"; }
+    function diamond(c, x, yy, r, color) { c.save(); c.fillStyle = color; c.beginPath(); c.moveTo(x, yy - r); c.lineTo(x + r, yy); c.lineTo(x, yy + r); c.lineTo(x - r, yy); c.closePath(); c.fill(); c.restore(); }
+    function ornament(c, x, yy, color) {
+      c.save(); c.strokeStyle = GOLD; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(x - 260, yy); c.lineTo(x - 30, yy); c.moveTo(x + 30, yy); c.lineTo(x + 260, yy); c.stroke();
+      c.restore(); diamond(c, x, yy, 12, color); diamond(c, x - 270, yy, 5, GOLD); diamond(c, x + 270, yy, 5, GOLD);
+    }
+
+    return pages;
+  }
+
+  async function savePdf(it, pages) {
+    const { jsPDF } = await loadJsPdf();
     const doc = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait", compress: true });
     pages.forEach((cv, i) => {
       if (i) doc.addPage("a4", "portrait");
-      doc.addImage(cv.toDataURL("image/jpeg", 0.9), "JPEG", 0, 0, 595.28, 841.89);
+      doc.addImage(cv.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 595.28, 841.89);
     });
     doc.setProperties({ title: it.title });
     const url = URL.createObjectURL(doc.output("blob"));
@@ -582,6 +614,64 @@
     link.href = url; link.download = it.title + ".pdf";
     document.body.appendChild(link); link.click(); link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+
+  const pagesWord = (n) => n === 1 ? "صفحة وحدة" : n === 2 ? "صفحتين" : arNum(n) + " صفحات";
+
+  // نافذة تجهيز الـ PDF: معاينة الصفحات، وتغيير حجم الخط قبل التحميل
+  async function openPdfDialog(it, accent) {
+    try { await Promise.all([document.fonts.load('900 40px "Abar"'), document.fonts.load('700 40px "Abar"'), document.fonts.load('400 40px "Abar"')]); } catch (e) {}
+    const preview = !canEmbed();
+    let scale = parseFloat(localGet("pdfScale") || "1");
+    const o = document.createElement("div");
+    o.className = "pages-view"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "تجهيز PDF");
+    o.innerHTML = `<div class="pv-bar"><button class="reader-btn" type="button" data-act="close">إغلاق</button><b>${esc(it.title)}</b></div>
+      <div class="pd-tools">
+        <div class="pd-size">
+          <button class="reader-btn" type="button" data-act="down" aria-label="تصغير الخط">أ-</button>
+          <span class="pd-val" aria-live="polite"></span>
+          <button class="reader-btn" type="button" data-act="up" aria-label="تكبير الخط">أ+</button>
+        </div>
+        <button class="reader-btn" type="button" data-act="fit">صفحة وحدة</button>
+        <span class="pd-count"></span>
+      </div>
+      ${preview
+        ? `<p class="pv-note">صفحة المعاينة هذي ما تسمح بتحميل الملفات. على الموقع المنشور ينزل ملف الـ PDF مباشرة. هنا تقدر تحفظ الصفحة كصورة بالضغط المطوّل عليها.</p>`
+        : `<button class="dl-btn pd-dl" type="button" data-act="save">${IC.down}<span>تحميل PDF</span></button>`}
+      <div class="pd-pages"></div>`;
+    document.body.appendChild(o); document.body.classList.add("reading");
+    let pages = [];
+    const render = () => {
+      scale = Math.round(scale * 100) / 100;
+      localSet("pdfScale", scale);
+      pages = buildPdfPages(it, accent, scale);
+      o.querySelector(".pd-val").textContent = "حجم الخط " + arNum(Math.round(scale * 100)) + "٪";
+      o.querySelector(".pd-count").textContent = pagesWord(pages.length);
+      o.querySelector(".pd-pages").innerHTML = pages.map((cv, i) => `<img src="${cv.toDataURL("image/jpeg", 0.85)}" alt="صفحة ${arNum(i + 1)}">`).join("");
+    };
+    render();
+    const close = () => { o.remove(); document.body.classList.remove("reading"); document.removeEventListener("keydown", k); };
+    const k = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", k);
+    o.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-act]"); if (!b) return;
+      const a = b.dataset.act;
+      if (a === "close") close();
+      else if (a === "down") { scale = Math.max(0.5, scale - 0.05); render(); }
+      else if (a === "up") { scale = Math.min(1.4, scale + 0.05); render(); }
+      else if (a === "fit") {
+        // أكبر خط يخلي النص في صفحة وحدة
+        let s2 = Math.min(scale, 1);
+        while (s2 > 0.5 && buildPdfPages(it, accent, s2, true) > 1) s2 -= 0.05;
+        if (buildPdfPages(it, accent, s2, true) > 1) toast("النص طويل، ما يدخل في صفحة وحدة حتى بأصغر خط");
+        scale = s2; render();
+      } else if (a === "save") {
+        b.disabled = true; toast("جاري تجهيز ملف PDF…");
+        try { await savePdf(it, pages); toast("تم تحميل ملف PDF"); } catch (err) { toast("تعذّر تجهيز ملف PDF، حاول مرة ثانية"); }
+        b.disabled = false;
+      }
+    });
+    o.querySelector('[data-act="close"]').focus();
   }
 
   /* ---------- وضع القراءة ---------- */
@@ -635,21 +725,6 @@
     r.querySelector('[data-act="close"]').focus();
   }
   function readBtnFocus() { const b = $("#readBtn"); if (b) b.focus(); }
-
-  // عرض صفحات الـ PDF كصور (في صفحة المعاينة فقط)
-  function showPages(title, urls) {
-    const o = document.createElement("div");
-    o.className = "pages-view"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "صفحات PDF");
-    o.innerHTML = `<div class="pv-bar"><button class="reader-btn" type="button" data-close>إغلاق</button><b>${esc(title)}</b></div>
-      <p class="pv-note">صفحة المعاينة هذي ما تسمح بتحميل الملفات. على الموقع المنشور ينزل ملف الـ PDF مباشرة. هنا تقدر تحفظ الصفحة كصورة بالضغط المطوّل عليها.</p>
-      ${urls.map((u, i) => `<img src="${u}" alt="صفحة ${arNum(i + 1)}">`).join("")}`;
-    document.body.appendChild(o); document.body.classList.add("reading");
-    const close = () => { o.remove(); document.body.classList.remove("reading"); document.removeEventListener("keydown", k); };
-    const k = (e) => { if (e.key === "Escape") close(); };
-    document.addEventListener("keydown", k);
-    o.querySelector("[data-close]").addEventListener("click", close);
-    o.querySelector("[data-close]").focus();
-  }
 
   // زر تحميل الصوت في صفحة المعاينة: نوضح إن التحميل يشتغل على الموقع المنشور
   document.addEventListener("click", (e) => {
