@@ -259,7 +259,6 @@
         <div class="pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio">
           <div class="deck" data-track="${h}">
             <div class="stage">
-              <div class="sleeve"><img src="${esc(S.cover)}" alt=""><span>${esc(S.name)}</span></div>
               <div class="record">
                 <div class="grooves"></div>
                 <svg class="label" viewBox="0 0 200 200" aria-hidden="true">
