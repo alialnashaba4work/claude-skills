@@ -86,7 +86,7 @@ main:focus { outline: none; }
   font-size: clamp(3rem, 13vw, 7rem);
   text-shadow: 0 6px 40px rgba(42, 70, 196, .45);
 }
-.hero-copy { text-align: left; }
+.hero-copy { text-align: center; }
 .hero p { margin: .4rem 0 0; color: var(--mist); font-size: clamp(1rem, 3.6vw, 1.25rem); }
 @keyframes settle { from { transform: scale(1.08); opacity: 0; } to { transform: none; opacity: 1; } }
 
@@ -285,7 +285,7 @@ main:focus { outline: none; }
   .hero { height: min(80vh, 780px); }
   .hero-img { object-position: 70% 28%; }
   /* الاسم في المساحة الفاضية بين الطرف ووجه المنشد */
-  .hero-copy { left: 18%; right: auto; top: 30%; bottom: auto; max-width: none; margin: 0; }
+  .hero-copy { left: 18%; right: auto; top: 30%; bottom: auto; max-width: none; margin: 0; text-align: left; }
   .hero h1 { font-size: clamp(4.5rem, 7vw, 7.5rem); }
   .index { padding-top: 32px; }
   .index-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; }
