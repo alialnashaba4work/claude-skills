@@ -265,6 +265,7 @@
           <button role="tab" id="tab-dl" aria-controls="pane-dl" aria-selected="false">تحميل الصوت</button>
         </div>
 
+        <div class="track-grid">
         <div class="pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio">
           <div class="deck" data-track="${h}" style="--label:${esc(colorOf(chain))};--label-ink:${inkOn(colorOf(chain))}">
             <div class="stage">
@@ -330,6 +331,7 @@
                  <p class="dl-hint">يُحفظ الملف في مجلد التنزيلات على جهازك.</p>`
               : `<p class="empty">لم يُرفع الصوت لهذا المقطع بعد.</p>`}
           </div>
+        </div>
         </div>
       </section>`;
 

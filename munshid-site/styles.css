@@ -276,6 +276,47 @@ main:focus { outline: none; }
   .deck-meta, .seek, .controls { max-width: 520px; margin-inline: auto; }
 }
 
+/* ---------- الكمبيوتر: تصميم خاص للشاشات العريضة ---------- */
+@media (min-width: 1024px) {
+  :root { --gutter: 56px; --maxw: 1200px; }
+
+  /* الرئيسية: الاسم في الجهة الفاضية من الصورة، والأقسام في عمودين */
+  .hero { height: min(80vh, 780px); }
+  .hero-img { object-position: 70% 28%; }
+  .hero-copy { right: auto; left: var(--gutter); bottom: 72px; max-width: min(620px, 46%); margin: 0; }
+  .hero h1 { font-size: clamp(4.5rem, 7vw, 7.5rem); }
+  .index { padding-top: 32px; }
+  .index-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; }
+  .index-list a { padding: 26px 0; }
+
+  /* القوائم في عمودين */
+  .page { padding-top: 96px; }
+  .groups, .tracks { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; }
+
+  /* صفحة المقطع: المشغل ثابت على جنب، والنص بجانبه، بدون تبويبات */
+  .track-page .tabs { display: none; }
+  .track-grid {
+    display: grid; align-items: start; column-gap: 56px; margin-top: 12px;
+    grid-template-columns: minmax(360px, 400px) minmax(0, 1fr);
+    grid-template-areas: "audio text" "dl text";
+  }
+  .track-grid > .pane[hidden] { display: block !important; }
+  #pane-audio { grid-area: audio; position: sticky; top: 24px; }
+  #pane-text { grid-area: text; padding-top: 4px; }
+  #pane-dl { grid-area: dl; }
+  .deck { padding: 24px 28px 28px; }
+  .dl { padding: 16px 0 0; }
+  .dl-name, .dl-hint { display: none; }
+  .dl-btn { width: 100%; justify-content: center; background: transparent; border: 1px solid var(--line); color: var(--moon); }
+  .dl-btn:hover { background: var(--night-2); border-color: var(--mist); }
+  .poem { max-width: 50rem; margin-inline: auto; }
+  .bayt { gap: 1.6em; }
+  .poem h2 { display: none; }
+  .text-tools { position: sticky; top: 0; z-index: 2; padding: 10px 0; background: var(--night); border-bottom: 1px solid var(--line); }
+
+  .mini { max-width: 720px; bottom: 20px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-img { animation: none; }
   .arm, .toast { transition: none; }
