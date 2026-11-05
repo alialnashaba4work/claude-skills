@@ -8,7 +8,16 @@
   const arNum = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
 
   document.title = S.name;
-  $("#brand").textContent = S.name;
+  $("#brand").innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5"/></svg>';
+  $("#brand").setAttribute("aria-label", "الرئيسية");
+
+  /* لون وسط الأسطوانة: من المقطع نفسه أو أقرب قسم فوقه */
+  const colorOf = (chain) => { for (let i = chain.length - 1; i >= 0; i--) if (chain[i].color) return chain[i].color; return "#c6d65b"; };
+  const inkOn = (hex) => {
+    const n = parseInt(hex.replace("#", ""), 16);
+    const l = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+    return l > 0.6 ? "#1a1d12" : "#ffffff";
+  };
 
   /* ---------- شجرة المحتوى ---------- */
   const children = (node) => node.sections || node.groups || node.items || [];
@@ -109,7 +118,7 @@
     document.body.classList.toggle("has-mini", !mini.hidden);
     if (t) {
       $("#miniTitle").textContent = t.title;
-      $("#miniSub").textContent = S.name;
+      $("#miniSub").textContent = ((resolve(P.path) || []).slice(-1)[0] || {}).title || "";
       $("#miniInfo").href = hrefOf([...P.path, t.id]);
       $("#miniPlay").innerHTML = playing ? IC.pause : IC.play;
       $("#miniPlay").setAttribute("aria-label", playing ? "إيقاف مؤقت" : "تشغيل");
@@ -257,7 +266,7 @@
         </div>
 
         <div class="pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio">
-          <div class="deck" data-track="${h}">
+          <div class="deck" data-track="${h}" style="--label:${esc(colorOf(chain))};--label-ink:${inkOn(colorOf(chain))}">
             <div class="stage">
               <div class="record">
                 <div class="grooves"></div>
@@ -267,7 +276,7 @@
                   <text class="label-title"><textPath href="#arc" startOffset="50%" text-anchor="middle">${esc(it.title)}</textPath></text>
                   <circle cx="100" cy="100" r="13" class="label-ring"/>
                   <circle cx="100" cy="100" r="5" class="label-hole"/>
-                  <text x="100" y="150" text-anchor="middle" class="label-artist">${esc(S.name)}</text>
+                  <text x="100" y="150" text-anchor="middle" class="label-artist">${esc(parent.title)}</text>
                 </svg>
               </div>
               <svg class="arm" viewBox="0 0 100 420" aria-hidden="true">
@@ -285,7 +294,7 @@
             </div>
             <div class="deck-meta">
               <h1 class="deck-title">${esc(it.title)}</h1>
-              <p class="deck-artist">${esc(S.name)}</p>
+              <p class="deck-artist">${esc(chain.slice(0, -1).map((c) => c.title).join(" / "))}</p>
             </div>
             <div class="seek">
               <input type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
@@ -388,6 +397,7 @@
       else if (isItem(chain[chain.length - 1])) renderTrack(parts, chain);
       else renderNode(parts, chain);
     }
+    $("#brand").hidden = !parts.length;
     window.scrollTo(0, 0);
     syncUI();
   }

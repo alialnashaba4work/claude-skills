@@ -3,15 +3,16 @@
   - كل قسم فيه "groups" (أقسام فرعية مثل المواسم حسب السنة)، ويمكن أن تحتوي الأقسام الفرعية على أقسام فرعية أخرى.
   - آخر مستوى فيه "items" وهي المقاطع/القصائد.
   - كل مقطع: id (بالإنجليزي بدون مسافات)، title، audio (مسار ملف الصوت)، text (النص).
+  - color: لون وسط الأسطوانة. يوضع على القسم، ويمكن وضعه على قسم فرعي أو مقطع ليغطي لون القسم.
   - في النص: كل سطر بيت، والسطر الفارغ يفصل بين المقاطع، وعلامة | تفصل صدر البيت عن عجزه.
 */
 window.SITE = {
-  name: "اسم المنشد",
+  name: "السيد أحمد الموسوي",
   tagline: "قصائد ولطميات ومجالس حسينية",
   cover: "img/cover-512.jpg",
   sections: [
     {
-      id: "quran", title: "القرآن الكريم", note: "تلاوات",
+      id: "quran", color: "#d4b25a", title: "القرآن الكريم", note: "تلاوات",
       groups: [
         { id: "tilawat", title: "تلاوات مختارة", items: [
           { id: "q1", title: "تلاوة نموذجية", audio: "audio/sample.mp3", text: "يوضع هنا نص الآيات المتلوة." }
@@ -19,7 +20,7 @@ window.SITE = {
       ]
     },
     {
-      id: "duaa", title: "أدعية ومناجاة", note: "أدعية الأيام والليالي",
+      id: "duaa", color: "#8fb3e0", title: "أدعية ومناجاة", note: "أدعية الأيام والليالي",
       groups: [
         { id: "adiya", title: "أدعية", items: [
           { id: "d1", title: "دعاء نموذجي", audio: "audio/sample.mp3", text: "يوضع هنا نص الدعاء." }
@@ -28,11 +29,11 @@ window.SITE = {
       ]
     },
     {
-      id: "seerah", title: "دروس سيرة", note: "سيرة النبي وأهل بيته",
+      id: "seerah", color: "#b58a5c", title: "دروس سيرة", note: "سيرة النبي وأهل بيته",
       groups: [ { id: "general", title: "دروس عامة", items: [] } ]
     },
     {
-      id: "latmiyat", title: "لطميات", note: "حسب الموسم",
+      id: "latmiyat", color: "#a3232b", title: "لطميات", note: "حسب الموسم",
       groups: [
         { id: "1447", title: "موسم ١٤٤٧هـ", items: [
           { id: "l1", title: "يا حسين", audio: "audio/sample.mp3",
@@ -45,7 +46,7 @@ window.SITE = {
       ]
     },
     {
-      id: "rithaa", title: "رثاء ومجالس حسينية", note: "المواسم حسب السنة",
+      id: "rithaa", color: "#a3232b", title: "رثاء ومجالس حسينية", note: "المواسم حسب السنة",
       groups: [
         { id: "1447", title: "موسم ١٤٤٧هـ", groups: [
           { id: "muharram", title: "محرم", items: [
@@ -61,17 +62,17 @@ window.SITE = {
       ]
     },
     {
-      id: "madaeh", title: "مدائح", note: "مواليد وأفراح أهل البيت",
+      id: "madaeh", color: "#3a9a4f", title: "مدائح", note: "مواليد وأفراح أهل البيت",
       groups: [ { id: "mawalid", title: "مواليد", items: [
         { id: "m1", title: "مدحة نموذجية", audio: "audio/sample.mp3", text: "يوضع هنا نص المدحة." }
       ]}]
     },
     {
-      id: "recorded", title: "إنتاجات مسجلة", note: "إصدارات الاستوديو",
+      id: "recorded", color: "#c6d65b", title: "إنتاجات مسجلة", note: "إصدارات الاستوديو",
       groups: [ { id: "albums", title: "الإصدارات", items: [] } ]
     },
     {
-      id: "other", title: "أخرى", note: "",
+      id: "other", color: "#b9bcc6", title: "أخرى", note: "",
       groups: [ { id: "misc", title: "متفرقات", items: [] } ]
     }
   ]

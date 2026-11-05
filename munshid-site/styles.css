@@ -48,15 +48,20 @@ main:focus { outline: none; }
 /* ---------- الشريط العلوي ---------- */
 .topbar {
   position: absolute; inset: 0 0 auto 0; z-index: 20;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; min-height: 60px;
   padding: calc(10px + env(safe-area-inset-top)) var(--gutter) 10px;
   background: linear-gradient(var(--night) 0%, rgba(7, 12, 36, .7) 60%, transparent);
 }
-.brand { font-weight: 800; font-size: 1.05rem; letter-spacing: 0; }
+.brand {
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%;
+  font-size: 20px; border: 1px solid var(--line); background: rgba(13, 21, 56, .6);
+}
+.brand[hidden] { display: none; }
 .icon-btn {
   width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%;
   font-size: 20px; border: 1px solid var(--line); background: rgba(13, 21, 56, .6);
 }
+#fsBtn { margin-inline-start: auto; }
 .icon-btn:hover { border-color: var(--mist); }
 
 /* ---------- البطل ---------- */
