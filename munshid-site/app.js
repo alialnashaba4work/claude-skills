@@ -509,7 +509,6 @@
     const W = 1654, H = 2339, M = 190, INK = "#16192b", SOFT = "#767c95", GOLD = "#b8954a";
     const BODY = Math.round(50 * scale), LINE = Math.round(BODY * 2.15), GAP = 150, COL = 560, STANZA_GAP = Math.round(LINE * 0.75);
     const TOP = M + 10, BOTTOM = H - M - 90;
-    const sub = (() => { const ch = []; let n = S; for (const id of location.hash.replace(/^#\/?/, "").split("/").map(decodeURIComponent).slice(0, -1)) { n = children(n).find((c) => c.id === id); if (!n) break; ch.push(n.title); } return ch.slice(-2).join(" · "); })();
 
     // قياس النص
     const mc = document.createElement("canvas").getContext("2d");
@@ -529,7 +528,7 @@
       if (si < arr.length - 1) blocks.push({ kind: "sep", h: STANZA_GAP });
     });
 
-    const HEADER1 = 330, HEADER_N = 120;
+    const HEADER1 = 230, HEADER_N = 120;
     // توزيع العناصر على الصفحات
     const pagesB = [[]]; let used = HEADER1;
     blocks.forEach((b) => {
@@ -545,10 +544,6 @@
       const c = cv.getContext("2d");
       c.fillStyle = "#fff"; c.fillRect(0, 0, W, H);
       c.direction = "rtl"; c.textBaseline = "alphabetic";
-      // إطار ذهبي مزدوج
-      c.strokeStyle = GOLD; c.lineWidth = 3; c.strokeRect(95, 95, W - 190, H - 190);
-      c.lineWidth = 1.2; c.globalAlpha = .7; c.strokeRect(112, 112, W - 224, H - 224); c.globalAlpha = 1;
-      [[95, 95], [W - 95, 95], [95, H - 95], [W - 95, H - 95]].forEach(([x, yy]) => { diamond(c, x, yy, 13, GOLD); });
 
       const bodyH = list.reduce((t, b) => t + b.h, 0);
       const headH = pi === 0 ? HEADER1 : HEADER_N;
@@ -557,14 +552,10 @@
 
       c.textAlign = "center";
       if (pi === 0) {
-        diamond(c, W / 2, y + 10, 12, accent);
-        y += 130;
+        // اسم القصيدة بس، ومسافة قبل الأبيات
+        y += 100;
         c.fillStyle = INK; setF(c, 900, fitPx(it.title, 900, 100, W - 2 * M)); c.fillText(it.title, W / 2, y);
-        y += 70;
-        c.fillStyle = SOFT; setF(c, 400, 34); c.fillText([S.name, sub].filter(Boolean).join("  ·  "), W / 2, y);
-        y += 60;
-        ornament(c, W / 2, y, accent);
-        y += 70;
+        y += HEADER1 - 100;
       } else {
         c.fillStyle = SOFT; setF(c, 700, 32); c.fillText(it.title, W / 2, y + 30);
         y += HEADER_N;
@@ -592,11 +583,6 @@
     });
 
     function diamond(c, x, yy, r, color) { c.save(); c.fillStyle = color; c.beginPath(); c.moveTo(x, yy - r); c.lineTo(x + r, yy); c.lineTo(x, yy + r); c.lineTo(x - r, yy); c.closePath(); c.fill(); c.restore(); }
-    function ornament(c, x, yy, color) {
-      c.save(); c.strokeStyle = GOLD; c.lineWidth = 2;
-      c.beginPath(); c.moveTo(x - 260, yy); c.lineTo(x - 30, yy); c.moveTo(x + 30, yy); c.lineTo(x + 260, yy); c.stroke();
-      c.restore(); diamond(c, x, yy, 12, color); diamond(c, x - 270, yy, 5, GOLD); diamond(c, x + 270, yy, 5, GOLD);
-    }
 
     return pages;
   }
