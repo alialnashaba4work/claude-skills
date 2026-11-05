@@ -296,7 +296,10 @@ body:not(.is-playing) .crate-item.is-current .disc { animation-play-state: pause
 /* ---------- النص ---------- */
 .text-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 18px; }
 .size { display: flex; gap: 6px; }
-.tt-actions { display: flex; gap: 6px; }
+.tt-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.text-tools { flex-wrap: wrap; }
+.text-tools .chip { padding: 8px 12px; font-size: .9rem; gap: 6px; }
+.reader-btn svg { font-size: 18px; display: block; }
 .chip:disabled { opacity: .5; cursor: progress; }
 .dl-alt { margin-top: 12px; background: transparent; border: 1px solid var(--line); color: var(--moon); }
 .dl-alt:hover { background: var(--night-2); border-color: var(--mist); }
@@ -399,6 +402,41 @@ body.searching { overflow: hidden; }
 .sr-where { color: var(--mist); font-size: .85rem; }
 .sr-line { color: var(--moon); opacity: .85; font-size: .95rem; margin-top: 4px; }
 .search mark { background: rgba(143, 194, 143, .28); color: inherit; border-radius: 4px; padding: 0 2px; }
+
+/* ---------- وضع القراءة ---------- */
+.reader {
+  --r-bg: #05081c; --r-ink: #e9edf9; --r-soft: #8e99c2; --r-line: rgba(147, 160, 200, .2);
+  position: fixed; inset: 0; z-index: 60; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background: var(--r-bg); color: var(--r-ink);
+}
+.reader[data-theme="light"] { --r-bg: #f3f1ec; --r-ink: #1a1d2e; --r-soft: #6b7086; --r-line: rgba(26, 29, 46, .14); }
+body.reading { overflow: hidden; }
+.reader-bar {
+  position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top)) var(--gutter) 10px;
+  background: linear-gradient(var(--r-bg) 70%, transparent);
+}
+.reader-tools { display: flex; gap: 6px; }
+.reader-btn {
+  min-width: 44px; height: 40px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: .95rem;
+  color: var(--r-ink); border: 1px solid var(--r-line); background: transparent;
+}
+.reader-btn:hover { border-color: var(--r-soft); }
+.reader-text {
+  --reader-size: 1.7rem;
+  max-width: 44rem; margin: 0 auto; padding: 24px var(--gutter) calc(80px + env(safe-area-inset-bottom));
+  font-size: var(--reader-size); line-height: 2.2; text-align: center;
+  -webkit-user-select: text; user-select: text;
+}
+.reader-text h2 { font-weight: 900; font-size: 1.15em; margin: 0 0 1em; line-height: 1.4; }
+.reader-text .stanza { margin-bottom: 1.6em; }
+.reader-text .bayt { display: grid; grid-template-columns: 1fr; margin-bottom: .6em; }
+.reader-text ::selection { background: var(--green); color: #fff; }
+@media (min-width: 720px) {
+  .reader-text .bayt { grid-template-columns: 1fr 1fr; gap: 2em; margin-bottom: 0; }
+  .reader-text .bayt span:first-child { text-align: right; }
+  .reader-text .bayt span:last-child { text-align: left; }
+}
 
 /* ---------- الكمبيوتر: تصميم خاص للشاشات العريضة ---------- */
 @media (min-width: 1024px) {

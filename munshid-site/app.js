@@ -49,6 +49,7 @@
     next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 6v12l-8-6zM12 6v12l-8-6z" fill="currentColor" stroke="none"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
     down: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>',
+    book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5V19.5"/></svg>',
     back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
   };
 
@@ -322,8 +323,9 @@
         <div class="pane" id="pane-text" role="tabpanel" aria-labelledby="tab-text" hidden>
           <div class="text-tools">
             <div class="tt-actions">
-              <button class="chip" id="copyBtn" type="button">${IC.copy}<span>نسخ النص</span></button>
-              ${it.text ? `<button class="chip pdf-btn" type="button">${IC.down}<span>PDF</span></button>` : ""}
+              <button class="chip" id="copyBtn" type="button">${IC.copy}<span>نسخ</span></button>
+              ${it.text ? `<button class="chip pdf-btn" type="button">${IC.down}<span>PDF</span></button>
+              <button class="chip" id="readBtn" type="button" aria-label="وضع القراءة">${IC.book}<span>قراءة</span></button>` : ""}
             </div>
             <div class="size">
               <button class="chip" id="fsDown" type="button" aria-label="تصغير الخط">أ-</button>
@@ -392,6 +394,10 @@
       seek.style.setProperty("--p", (seek.value / 10) + "%");
       if (mine() && audio.duration) audio.currentTime = (seek.value / 1000) * audio.duration;
     });
+
+    // وضع القراءة: النص لحاله بملء الشاشة
+    const readBtn = $("#readBtn");
+    if (readBtn) readBtn.addEventListener("click", () => openReader(it));
 
     // النص
     $("#copyBtn").addEventListener("click", async () => {
@@ -541,6 +547,58 @@
     document.body.appendChild(link); link.click(); link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
+
+  /* ---------- وضع القراءة ---------- */
+  let wakeLock = null;
+  function openReader(it) {
+    const old = document.querySelector(".reader");
+    if (old) old.remove();
+    const r = document.createElement("div");
+    r.className = "reader";
+    r.setAttribute("role", "dialog"); r.setAttribute("aria-modal", "true"); r.setAttribute("aria-label", "وضع القراءة");
+    r.dataset.theme = localGet("readerTheme") || "dark";
+    r.innerHTML = `
+      <div class="reader-bar">
+        <button class="reader-btn" data-act="close" type="button">إغلاق</button>
+        <div class="reader-tools">
+          <button class="reader-btn" data-act="theme" type="button" aria-label="تغيير لون الصفحة"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg></button>
+          <button class="reader-btn" data-act="down" type="button" aria-label="تصغير الخط">أ-</button>
+          <button class="reader-btn" data-act="up" type="button" aria-label="تكبير الخط">أ+</button>
+        </div>
+      </div>
+      <article class="reader-text">
+        <h2>${esc(it.title)}</h2>
+        ${renderText(it.text)}
+      </article>`;
+    document.body.appendChild(r);
+    document.body.classList.add("reading");
+    let size = parseFloat(localGet("readerSize") || "1.7");
+    const apply = () => { r.style.setProperty("--reader-size", size + "rem"); localSet("readerSize", size); };
+    apply();
+    const close = () => {
+      r.remove(); document.body.classList.remove("reading");
+      document.removeEventListener("keydown", onKey);
+      if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+      if (document.fullscreenElement === r) document.exitFullscreen().catch(() => {});
+      readBtnFocus();
+    };
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    r.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-act]");
+      if (!b) return;
+      const a = b.dataset.act;
+      if (a === "close") close();
+      else if (a === "up") { size = Math.min(3.4, size + 0.15); apply(); }
+      else if (a === "down") { size = Math.max(1, size - 0.15); apply(); }
+      else if (a === "theme") { r.dataset.theme = r.dataset.theme === "dark" ? "light" : "dark"; localSet("readerTheme", r.dataset.theme); }
+    });
+    // يخلي الشاشة شغالة وقت القراءة، ويفتح ملء الشاشة إذا الجهاز يدعمه
+    if (navigator.wakeLock) navigator.wakeLock.request("screen").then((l) => { wakeLock = l; }).catch(() => {});
+    if (r.requestFullscreen) r.requestFullscreen().catch(() => {});
+    r.querySelector('[data-act="close"]').focus();
+  }
+  function readBtnFocus() { const b = $("#readBtn"); if (b) b.focus(); }
 
   function localGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function localSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
