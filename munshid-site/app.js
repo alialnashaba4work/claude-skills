@@ -270,14 +270,23 @@
   function waveSvg(seed, fill = "#d9b45f", flat, thin) {
     let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
     const a = 0.35 + (h % 7) / 10, b = 1.2 + (h % 5) / 3, c = (h % 13) / 2;
-    // thin: خطوط كثيرة ورفيعة (شريط التقدم)
-    const n = thin ? 52 : 48, step = 196 / n, w = thin ? 0.9 : 2.2, k = thin ? 0.9 : 1;
     let bars = "";
-    for (let i = 0; i < n; i++) {
-      const j = i * k;
-      const v = thin ? 4 + Math.abs(Math.sin(j * a + c) * 30 + Math.sin(j * b) * 14) : 6 + Math.abs(Math.sin(j * a + c) * 22 + Math.sin(j * b) * 9);
-      const hh = Math.min(58, v);
-      bars += `<rect x="${(2 + i * step).toFixed(2)}" y="${(30 - hh / 2).toFixed(1)}" width="${w}" height="${hh.toFixed(1)}" rx="${w / 2}" fill="${fill}" opacity="${flat ? 1 : (0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
+    if (thin) {
+      // شريط التقدم: خطوط طالعة من خط الأساس، وتحتها انعكاس أقصر وأبهت بدون فراغ بينهم
+      const n = 64, step = 196 / n, w = 1.3, base = 40;
+      let r = h || 7; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 4294967296);
+      for (let i = 0; i < n; i++) {
+        // ارتفاعات عشوائية ثابتة لكل قصيدة، مثل موجة صوت حقيقية
+        const v = 10 + rnd() * 16 + Math.abs(Math.sin(i * 0.35 + c)) * 10;
+        const x = (2 + i * step).toFixed(2);
+        bars += `<rect x="${x}" y="${(base - v).toFixed(1)}" width="${w}" height="${v.toFixed(1)}" fill="${fill}"/>`;
+        bars += `<rect x="${x}" y="${base}" width="${w}" height="${(v * 0.45).toFixed(1)}" fill="${fill}" opacity=".45"/>`;
+      }
+      return `<svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>`;
+    }
+    for (let i = 0; i < 48; i++) {
+      const v = 6 + Math.abs(Math.sin(i * a + c) * 22 + Math.sin(i * b) * 9);
+      bars += `<rect x="${(2 + i * 4.1).toFixed(1)}" y="${(30 - v / 2).toFixed(1)}" width="2.2" height="${v.toFixed(1)}" rx="1.1" fill="${fill}" opacity="${flat ? 1 : (0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
     }
     return `<svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>`;
   }

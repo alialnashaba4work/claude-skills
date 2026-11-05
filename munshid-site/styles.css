@@ -186,7 +186,7 @@ main:focus { outline: none; }
 /* ---------- رزمة البطاقات داخل الأقسام ---------- */
 .stacks {
   list-style: none; margin: 28px 0 0; padding: 14px 6px 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 22px 18px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 40px 28px;
 }
 .stack-item { position: relative; }
 .stack { position: relative; display: block; color: var(--moon); }
@@ -452,7 +452,7 @@ body.reading { overflow: hidden; }
   /* القوائم في عمودين */
   .page { padding-top: 96px; }
   .groups, .tracks { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; }
-  .stacks { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 44px 32px; }
+  .stacks { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 64px 56px; }
 
   /* صفحة المقطع: المشغل ثابت على جنب، والنص بجانبه، بدون تبويبات */
   .track-page .tabs { display: none; }
@@ -508,10 +508,10 @@ body.reading { overflow: hidden; }
 .reader .reader-btn { background: transparent; border-color: var(--r-line); box-shadow: none; }
 
 /* ---------- شريط التقدم: موجة صوت ---------- */
-.pc-wave { --p: 0%; position: relative; height: 48px; margin: 4px 0 8px; }
+.pc-wave { --p: 0%; position: relative; height: 54px; margin: 2px 0 6px; }
 .pc-wave .pw-base, .pc-wave .pw-fill { position: absolute; inset: 0; }
 .pc-wave svg { width: 100%; height: 100%; display: block; }
-.pc-wave .pw-base { opacity: .18; }
+.pc-wave .pw-base { opacity: .3; }
 .pc-wave .pw-fill { opacity: .9; }
 /* الجزء اللي انسمع يتلون ذهبي، من اليمين لليسار */
 .pc-wave .pw-fill { clip-path: inset(0 0 0 calc(100% - var(--p))); }
