@@ -803,7 +803,13 @@
       <p class="page-note">ربما نُقل المقطع أو تغيّر رابطه.</p><p><a class="chip" href="#/">العودة إلى الرئيسية</a></p></section>`;
   }
 
+  // نحفظ مكان التمرير لكل صفحة، ونرجع له لما يرجع الزائر لنفس الصفحة من صفحة أعمق
+  const scrollMemo = {};
+  let lastHash = location.hash;
   function route() {
+    const goingBack = lastHash.startsWith(location.hash === "" ? "#/" : location.hash) && lastHash !== location.hash && lastHash.length > (location.hash || "#/").length;
+    scrollMemo[lastHash || "#/"] = window.scrollY;
+    lastHash = location.hash;
     const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean).map(decodeURIComponent);
     if (!parts.length) renderHome();
     else {
@@ -820,7 +826,8 @@
     // انتقال ناعم بين الصفحات
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches && view.animate)
       view.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 280, easing: "ease-out" });
-    window.scrollTo(0, 0);
+    const back = goingBack && scrollMemo[location.hash || "#/"];
+    if (back) requestAnimationFrame(() => window.scrollTo(0, back)); else window.scrollTo(0, 0);
     view.querySelectorAll("img").forEach((im) => { if (im.complete && im.naturalWidth) im.classList.add("is-loaded"); });
     syncUI();
   }
