@@ -122,6 +122,9 @@
     document.body.classList.toggle("has-mini", !mini.hidden);
     if (t) {
       $("#miniTitle").textContent = t.title;
+      const th = t.cover || wideOf(t);
+      $("#miniThumb").innerHTML = th ? `<img src="${esc(th)}" alt="">` : waveSvg(t.title);
+      $("#mini").style.setProperty("--c", colorOf(resolve([...P.path, t.id]) || []));
       $("#miniSub").textContent = ((resolve(P.path) || []).slice(-1)[0] || {}).title || "";
       $("#miniInfo").href = hrefOf([...P.path, t.id]);
       $("#miniPlay").innerHTML = playing ? IC.pause : IC.play;
@@ -156,7 +159,7 @@
     if (deck && t && deck.dataset.track === hrefOf([...P.path, t.id]) && $("#pSeek")) {
       const r = $("#pSeek");
       if (!r.matches(":active")) r.value = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
-      r.style.setProperty("--p", (r.value / 10) + "%");
+      r.parentElement.style.setProperty("--p", (r.value / 10) + "%");
       $("#pCur").textContent = fmt(audio.currentTime);
       $("#pDur").textContent = "-" + fmt((audio.duration || 0) - audio.currentTime);
     }
@@ -166,6 +169,45 @@
   audio.addEventListener("ended", () => { if (P.index < P.queue.length - 1) step(1); });
   audio.addEventListener("error", () => { if (audio.getAttribute("src")) toast("تعذّر تحميل ملف الصوت"); });
   $("#miniPlay").addEventListener("click", toggle);
+  // المشغل الصغير: صورة القصيدة وموجة صوت صغيرة تتحرك وقت التشغيل
+  (function () {
+    const th = document.createElement("span"); th.className = "mini-thumb"; th.id = "miniThumb"; th.setAttribute("aria-hidden", "true");
+    $("#miniPlay").after(th);
+    const eq = document.createElement("span"); eq.className = "mini-eq"; eq.setAttribute("aria-hidden", "true");
+    eq.innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
+    $("#miniInfo").after(eq);
+  })();
+
+  /* ---------- اختصارات الكيبورد (الكمبيوتر) ---------- */
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!current() && !(e.code === "Space" && $("#pPlay"))) return;
+    const el = document.activeElement;
+    const onWave = el && el.id === "pSeek";
+    if (el && !onWave && (/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(el.tagName) || el.isContentEditable || el.getAttribute("role") === "tab")) return;
+    if (onWave && e.code !== "Space") return;
+    if (document.querySelector(".search:not([hidden]), .reader, .pages-view")) return;
+    if (e.code === "Space") { e.preventDefault(); if (!current() || (view.querySelector(".pcard") && $("#pPlay") && !view.querySelector(".pcard").classList.contains("spin") && audio.paused && view.querySelector(".pcard").dataset.track !== hrefOf([...P.path, current().id]))) $("#pPlay").click(); else toggle(); }
+    // في الاتجاه العربي: السهم اليسار تقديم، واليمين تأخير
+    else if (e.key === "ArrowLeft") { e.preventDefault(); audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); toast("تقديم ١٠ ثواني"); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); audio.currentTime = Math.max(0, audio.currentTime - 10); toast("تأخير ١٠ ثواني"); }
+  });
+
+  /* ---------- البطاقات تميل مع الماوس (الكمبيوتر) ---------- */
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    view.addEventListener("mousemove", (e) => {
+      const card = e.target.closest(".stack-img");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.setProperty("--ry", (x * 10).toFixed(2) + "deg");
+      card.style.setProperty("--rx", (-y * 8).toFixed(2) + "deg");
+    });
+    view.addEventListener("mouseout", (e) => {
+      const card = e.target.closest(".stack-img");
+      if (card && !card.contains(e.relatedTarget)) { card.style.removeProperty("--ry"); card.style.removeProperty("--rx"); }
+    });
+  }
 
   /* ---------- الصفحات ---------- */
   function crumbs(parts, chain) {
@@ -214,13 +256,13 @@
   }
   // بطاقة وحدة: صورة القصيدة، أو زخرفة بلون القسم إذا ما لها صورة
   // موجة صوت ذهبية للمقاطع اللي ما لها صورة (نمطها يختلف حسب العنوان)
-  function waveSvg(seed) {
+  function waveSvg(seed, fill = "#d9b45f", flat) {
     let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
     const a = 0.35 + (h % 7) / 10, b = 1.2 + (h % 5) / 3, c = (h % 13) / 2;
     let bars = "";
     for (let i = 0; i < 48; i++) {
       const v = 6 + Math.abs(Math.sin(i * a + c) * 22 + Math.sin(i * b) * 9);
-      bars += `<rect x="${(2 + i * 4.1).toFixed(1)}" y="${(30 - v / 2).toFixed(1)}" width="2.2" height="${v.toFixed(1)}" rx="1.1" fill="#d9b45f" opacity="${(0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
+      bars += `<rect x="${(2 + i * 4.1).toFixed(1)}" y="${(30 - v / 2).toFixed(1)}" width="2.2" height="${v.toFixed(1)}" rx="1.1" fill="${fill}" opacity="${flat ? 1 : (0.5 + 0.5 * Math.abs(Math.sin(i * 0.3 + c))).toFixed(2)}"/>`;
     }
     return `<svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>`;
   }
@@ -330,7 +372,11 @@
                 ${it.audio ? `
                 <div class="pc-bottom">
                   <div class="pc-times"><span id="pCur">٠:٠٠</span><span id="pDur">٠:٠٠</span></div>
-                  <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
+                  <div class="pc-wave" id="pWave">
+                    <span class="pw-base">${waveSvg(it.title, "#ffffff", true)}</span>
+                    <span class="pw-fill">${waveSvg(it.title, "#d9b45f", true)}</span>
+                    <input class="pc-seek" type="range" id="pSeek" min="0" max="1000" value="0" aria-label="موضع التشغيل">
+                  </div>
                   <div class="pc-ctl">
                     <button class="glass" id="pPrev" type="button" aria-label="السابق" ${idx > 0 ? "" : "disabled"}>${IC.prev}</button>
                     <button class="glass pc-main" id="pPlay" type="button" aria-label="تشغيل">${IC.play}</button>
@@ -430,7 +476,7 @@
     $("#pNext").addEventListener("click", () => { location.hash = hrefOf([...parentPath, siblings[idx + 1].id]); if (current()) load(siblings, idx + 1, parentPath); });
     const seek = $("#pSeek");
     seek.addEventListener("input", () => {
-      seek.style.setProperty("--p", (seek.value / 10) + "%");
+      seek.parentElement.style.setProperty("--p", (seek.value / 10) + "%");
       if (mine() && audio.duration) audio.currentTime = (seek.value / 1000) * audio.duration;
     });
     }
