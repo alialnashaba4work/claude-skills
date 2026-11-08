@@ -463,6 +463,20 @@ body.resizing{cursor:ns-resize;user-select:none}
 @keyframes crab{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
 .smoke{animation:smoke 4s ease-out infinite}
 @keyframes smoke{from{transform:translateY(0);opacity:.7}to{transform:translateY(-14px);opacity:0}}
+.g-farmer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:14px;padding:8px 12px}
+.g-farmer button{border:0;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:#0EA89C;color:#fff}
+.farmer-in{animation:farmerIn 4.2s linear forwards}
+@keyframes farmerIn{from{transform:translateX(-540px)}to{transform:translateX(0)}}
+.farmer-out{animation:farmerOut 4.2s linear forwards}
+@keyframes farmerOut{from{transform:translateX(0)}to{transform:translateX(620px)}}
+.fleg.fwalk,.fleg2.fwalk{transform-box:fill-box;transform-origin:50% 0;animation:fleg .42s ease-in-out infinite alternate}
+.fleg2.fwalk{animation-direction:alternate-reverse}
+@keyframes fleg{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+.farmer-in,.farmer-out{}
+.frake.working{transform-box:view-box;transform-origin:6px -32px;animation:rake .55s ease-in-out infinite alternate}
+@keyframes rake{from{transform:rotate(-14deg)}to{transform:rotate(16deg)}}
+.sparkle{transform-box:fill-box;transform-origin:center;animation:sparkle 1.6s ease-in-out infinite}
+@keyframes sparkle{0%,100%{opacity:0;scale:.4}50%{opacity:1;scale:1.2}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--solid);color:var(--on-solid);padding:10px 18px;border-radius:999px;z-index:30;font-size:13px;max-width:calc(100% - 32px)}
 
@@ -624,6 +638,7 @@ body.resizing{cursor:ns-resize;user-select:none}
   <div class="g-scene" id="g-scene"></div>
   <div class="g-prog"><div class="g-bar"><i id="g-bar"></i></div><div class="g-next" id="g-next"></div></div>
   <div class="g-list" id="g-list"></div>
+  <div class="g-farmer"><span id="g-farmer-t"></span><button type="button" id="g-farmer-b">👨‍🌾 نادِ الفلاح الحين</button></div>
   <div class="g-worlds" id="g-worlds"></div>
   <section class="mkt" id="mkt" aria-label="سوق الحديقة">
     <div class="mkt-h"><b>🛒 سوق الحديقة</b><span class="bal" id="mkt-bal"></span></div>
@@ -657,7 +672,7 @@ function localLoad(){try{return JSON.parse(localStorage.getItem('tb-tasks')||'[]
 function localSave(){try{localStorage.setItem('tb-tasks',JSON.stringify(state.tasks))}catch(e){}}
 function useLocal(){
   if(mode==='db')return;
-  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.badges=JSON.parse(localStorage.getItem('tb-badges')||'{}')}catch(e){}try{state.garden=Object.assign({count:0,seen:0},JSON.parse(localStorage.getItem('tb-garden')||'{}'))}catch(e){}try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
+  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.badges=JSON.parse(localStorage.getItem('tb-badges')||'{}')}catch(e){}try{state.garden=Object.assign({count:0,seen:0},JSON.parse(localStorage.getItem('tb-garden')||'{}'))}catch(e){}gardenLoaded=true;setTimeout(checkFarmer,1500);try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
   $('store-note').textContent='(يتم الحفظ في هذا المتصفح فقط)';
   render();
 }
@@ -1121,9 +1136,9 @@ const structMsg=x=>WORLD_NAMES[curWorld()]&&WORLD_NAMES[curWorld()][x.name]?`ص�
 function switchWorld(id){
   const g=state.garden,cur=curWorld();if(id===cur)return;
   if(gardenCount()>=100)g.unlockedNew=true; // reaching a reserve once opens every world for good
-  g.worlds=Object.assign({},g.worlds||{});g.worlds[cur]={count:gardenCount(),picks:g.picks||{},seen:g.seen||0};
+  g.worlds=Object.assign({},g.worlds||{});g.worlds[cur]={count:gardenCount(),picks:g.picks||{},seen:g.seen||0,tidyCount:g.tidyCount||0};
   const nx=g.worlds[id]||{count:0,picks:{},seen:0};
-  g.world=id;g.count=nx.count;g.picks=nx.picks;g.seen=nx.seen;g.noFallback=true;saveGarden();
+  g.world=id;g.count=nx.count;g.picks=nx.picks;g.seen=nx.seen;g.tidyCount=nx.tidyCount||0;g.noFallback=true;saveGarden();
   lastPeriod=null;bannerN=null;renderSky();renderGarden(true);renderGardenBtn();toast(`انتقلت إلى ${WORLDS[id].icon} ${WORLDS[id].name}`);
 }
 
@@ -1188,7 +1203,7 @@ const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
-function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew};
+function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
 function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?plantWeight(t):1;const g=state.garden;g.count=g.noFallback?(g.count||0)+w:Math.max((g.count||0)+w,doneWeight());saveGarden();return g.count}
@@ -1196,6 +1211,56 @@ const levelOf=n=>{let l=LEVELS[0];for(const x of LEVELS)if(n>=x.min)l=x;return l
 function renderGardenBtn(){$('garden-lv').textContent=levelOf(gardenCount()).name;renderSky()}
 
 const RES=[{x:590,y:205,w:260,h:150},{x:190,y:415,w:290,h:110},{x:160,y:285,w:110,h:95},{x:10,y:230,w:140,h:170},{x:760,y:395,w:230,h:130},{x:470,y:330,w:70,h:230}];
+/* ---------- the farmer: every day at 10 am he groups the garden (groves, flower beds, palm rows, bushes along the path) ---------- */
+const TIDY_HOUR=10;
+const kindGroup=k=>({big:'tall',tree:'tall',pine:'tall',palm:'palm',flower:'flower',shell:'flower',bush:'bush',rock:'bush',shrub:'bush',grass:'grass',beachgrass:'grass'})[k]||'grass';
+const isFree=(x,y)=>!(x>515&&x<605&&y>440&&y<482)&&!RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h)&&!DECOR_RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h);
+let tidyCache={key:'',pts:[]};
+function tidyLayout(count){
+  const key=curWorld()+'|'+count+'|'+JSON.stringify(state.garden.picks||{}).length;if(tidyCache.key===key)return tidyCache.pts;
+  const r=rnd(77),j=a=>(r()-.5)*a;const Z={palm:[],tall:[],flower:[],bush:[],grass:[]};
+  for(const y of [290,546])for(let x=30;x<=980;x+=40)Z.palm.push([x+j(4),y]);                       // palm rows along the fence and the front
+  for(let y=412;y<=545;y+=30)for(let x=30;x<=170;x+=32)Z.tall.push([x+j(6),y+j(4)]);                // grove, left
+  for(let y=292;y<=392;y+=28)for(let x=868;x<=990;x+=30)Z.tall.push([x+j(6),y+j(4)]);               // grove, right
+  for(let y=290;y<=330;y+=26)for(let x=300;x<=470;x+=30)Z.tall.push([x+j(6),y+j(4)]);               // small grove behind the pond
+  {const beds=[[612,526],[732,522],[952,440],[262,404],[800,545],[360,545],[690,452]].filter(([x,y])=>isFree(x,y)).map(([cx,cy])=>{const L=[[cx,cy]];for(let ring=1;ring<=3;ring++)for(let a=0;a<6*ring;a++){const t=a/(6*ring)*Math.PI*2;L.push([cx+Math.cos(t)*9*ring,cy+Math.sin(t)*5*ring])}return L});
+    for(let k=0;k<37;k++)for(const L of beds)if(L[k])Z.flower.push(L[k])}  // round flower beds, filled one ring at a time across all beds
+  for(let t=0;t<=1;t+=.1){const x=(1-t)**3*505+3*(1-t)**2*t*500+3*(1-t)*t*t*520+t**3*560,y=(1-t)**3*560+3*(1-t)**2*t*480+3*(1-t)*t*t*420+t**3*380;Z.bush.push([x-42,y],[x+42,y])}  // bushes lining the path
+  for(let t=0;t<=1;t+=.17){const x=560+140*t,y=380-50*Math.sin(t*1.57);Z.bush.push([x,y-30],[x,y+32])}
+  for(let y=300;y<=545;y+=34)for(let x=40;x<=960;x+=46)Z.grass.push([x+j(14),y+j(10)]);              // grass spread evenly
+  for(const k in Z)Z[k]=Z[k].filter(([x,y])=>y>=284&&y<=548&&x>=20&&x<=985&&isFree(x,y));
+  const used=new Set(),take=g=>{const L=Z[g];while(L.length){const q=L.shift(),id=Math.round(q[0]/6)+','+Math.round(q[1]/6);if(!used.has(id)){used.add(id);return q}}return null};
+  const fallback=slots(count),out=[];
+  for(let i=0;i<count;i++){const g=kindGroup(plantKind(i));const q=take(g)||take('grass')||[fallback[i].x,fallback[i].y];out.push({x:q[0],y:q[1],v:fallback[i]?fallback[i].v:.5})}
+  tidyCache={key,pts:out};return out;
+}
+let farmerPhase=null,farmerTimers=[];
+function farmerSVG(){
+  if(!farmerPhase)return '';
+  const legs=farmerPhase==='work'?'':' fwalk';
+  const body=`<ellipse cy="2" rx="14" ry="3.5" fill="#0B3B2E" opacity=".18"/>
+    <g class="fleg${legs}"><path d="M-4-18v16" stroke="#6B4B33" stroke-width="5" stroke-linecap="round"/><ellipse cx="-3" cy="-1" rx="5" ry="2.6" fill="#3A2A1E"/></g>
+    <g class="fleg2${legs}"><path d="M4-18v16" stroke="#5A3E2A" stroke-width="5" stroke-linecap="round"/><ellipse cx="5" cy="-1" rx="5" ry="2.6" fill="#3A2A1E"/></g>
+    <path d="M-10-38Q0-42 10-38L11-16Q0-13-11-16Z" fill="#3F8FC2"/><path d="M-7-38V-20H7V-38" fill="#2E6E99"/><circle cx="-4" cy="-30" r="1" fill="#F4D27A"/><circle cx="4" cy="-30" r="1" fill="#F4D27A"/>
+    <rect x="-2.2" y="-43" width="4.4" height="5" rx="2" fill="#C98E62"/>
+    <circle cy="-50" r="8.5" fill="#D9A06E"/><path d="M-7-46q7 7 14 0v3q-7 8-14 0z" fill="#5A3E2A"/><circle cx="3.2" cy="-51" r="1.1" fill="#2B211C"/><path d="M1.5-47q2 1.4 4 0" stroke="#5A3A20" stroke-width="1" fill="none"/>
+    <ellipse cy="-57" rx="17" ry="4" fill="#E8C46A"/><path d="M-9-57q1-10 9-10t9 10z" fill="#E8C46A"/><path d="M-9-58h18" stroke="#B5422F" stroke-width="2.2"/><path d="M-15-56q15 5 30 0" stroke="#C9A24A" stroke-width="1" fill="none"/>
+    <g class="frake${farmerPhase==='work'?' working':''}"><path d="M6-34L30 6" stroke="#8B6B4A" stroke-width="2.6" stroke-linecap="round"/><path d="M24 8l14-6" stroke="#6B6B6B" stroke-width="3" stroke-linecap="round"/><path d="M26 7l-2 5M30 5l-2 5M34 3l-2 5" stroke="#6B6B6B" stroke-width="1.6"/><circle cx="6" cy="-32" r="2.8" fill="#D9A06E"/></g>`;
+  let sp='';if(farmerPhase==='work'){const r=rnd(3);for(let i=0;i<14;i++)sp+=`<path class="sparkle" style="animation-delay:-${(r()*1.6).toFixed(2)}s" transform="translate(${(80+r()*840).toFixed(0)} ${(300+r()*230).toFixed(0)})" d="M0-6l1.6 4.4L6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-4.4z" fill="#FFE27A"/>`}
+  return `${sp}<g transform="translate(470 402)"><g class="farmer-${farmerPhase}">${body}</g></g>`;
+}
+function rerenderGarden(){lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)}
+function runFarmer(manual){
+  if(farmerPhase)return;farmerTimers.forEach(clearTimeout);
+  farmerPhase='in';rerenderGarden();toast('👨‍🌾 الفلاح وصل يرتب حديقتك');
+  farmerTimers=[
+    setTimeout(()=>{const g=state.garden;g.tidyCount=gardenCount();g.tidyDay=todayKey();saveGarden();farmerPhase='work';rerenderGarden()},4200),
+    setTimeout(()=>{farmerPhase='out';rerenderGarden();toast('🌿 الفلاح رتّب الحديقة: الأشجار مع بعض، والورد في أحواض، والنخل صفوف')},8200),
+    setTimeout(()=>{farmerPhase=null;rerenderGarden()},12400)];
+}
+let gardenLoaded=false;
+function checkFarmer(){if(!gardenLoaded||farmerPhase)return;const g=state.garden;if(g.tidyDay===todayKey())return;if(!g.tidyDay||new Date().getHours()>=TIDY_HOUR)runFarmer(false)}
+setInterval(checkFarmer,60000);
 function slots(n){const r=rnd(11),out=[];let guard=0;
   while(out.length<n&&guard<n*40){guard++;const x=25+r()*950,y=285+r()*258;
     if(RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h)||DECOR_RES.some(z=>x>z.x&&x<z.x+z.w&&y>z.y&&y<z.y+z.h))continue;out.push({x,y,v:r()})}return out}
@@ -1454,7 +1519,9 @@ function gardenSVG(n,palms,seen,animate,wide){
   else if(has(100))o+='<g transform="translate(75 250)"><rect x="-52" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><rect x="32" y="-8" width="20" height="132" rx="4" fill="#C9A77C"/><path d="M-52-8Q0-58 52-8" stroke="#C9A77C" stroke-width="16" fill="none"/><rect x="-44" y="-50" width="88" height="26" rx="6" fill="#383838"/>'+label(0,-32,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>';
   o+=decorSVG(night,has,wide);
   const pts=slots(Math.min(n,260));
+  {const tc=Math.min(state.garden.tidyCount||0,pts.length);if(tc){const tl=tidyLayout(tc);for(let i=0;i<tc;i++)pts[i]=tl[i]}}
   const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
+  const farmer=farmerSVG();
   if(dry>0)o+='<g filter="url(#gd)">';
   for(const it of items){const svg=plantSVG(it.i,it.p);o+=animate&&it.i>=seen?svg.replace('<g transform','<g class="new" style="animation-delay:'+((it.i-seen)*120)+'ms"><g transform')+'</g>':svg}
   if(dry>0)o+='</g>';
@@ -1470,6 +1537,7 @@ function gardenSVG(n,palms,seen,animate,wide){
     else o+=oryx(860,470)+oryx(930,430,-0.85)}
   if(has(150)&&W==='beach'){const gull=(x,y)=>`<g transform="translate(${x} ${y})"><ellipse rx="9" ry="5" fill="#FFFFFF"/><circle cx="7" cy="-5" r="3.6" fill="#FFFFFF"/><path d="M10-5l4 1-4 1z" fill="#F4A340"/><path d="M-8-2q4-4 10-2" fill="#C9D2D6"/><path d="M-2 4v6M2 4v6" stroke="#F4A340" stroke-width="1.4"/></g>`;o+=gull(760,530)+gull(700,545)}
   else if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-14 0v16M-6 1v15M8 1v15M14 0v16" stroke="#B9875A" stroke-width="2.6"/><ellipse cy="-2" rx="18" ry="8" fill="#D9A46F"/><path d="M12-6l8-10" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><ellipse cx="22" cy="-18" rx="5" ry="4" fill="#D9A46F"/><path d="M21-21l-3-10M24-21l1-10" stroke="#4A3B2E" stroke-width="1.6"/></g>`;o+=gz(780,520)+gz(700,540)}
+  o+=farmer;
   // birds fly across the sky (not at night)
   if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><path class="flap" d="M-10 0q5-7 10 0q5-7 10 0" stroke="#383838" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g></g>`;
     o+=bird(150,34,1,4)+bird(175,40,.8,18)+bird(135,46,.7,30)+(has(80)?bird(190,38,.9,10):'');}
@@ -1556,6 +1624,7 @@ function renderGarden(animate){
   else{$('g-bar').style.width='100%';$('g-next').textContent='محميتك اكتملت. كل مهمة تخلّصها تزيد فيها زرع.'}
   const list=$('g-list');list.replaceChildren();
   for(const x of STRUCTS){const sp=document.createElement('span');sp.className=n>=x.at?'on':'';sp.textContent=(n>=x.at?'✓ ':'')+structName(x)+(n>=x.at?'':` · ${x.at}`);list.append(sp)}
+  {const g=state.garden;$('g-farmer-t').textContent=`👨‍🌾 الفلاح يجي كل يوم الساعة 10 الصبح يرتب الحديقة · آخر ترتيب: ${g.tidyDay===todayKey()?'اليوم':g.tidyDay?new Intl.DateTimeFormat('ar-u-nu-latn',{day:'numeric',month:'short'}).format(new Date(g.tidyDay+'T12:00')):'لسا'}`}
   renderWorlds();renderMarket();
   if(animate&&n>(state.garden.seen||0)){state.garden.seen=n;saveGarden()}
 }
@@ -1571,6 +1640,7 @@ function gardenPlay(root){
     if(sound.on&&sound.ctx)chirp()});
 }
 gardenPlay($('sky-deco'));gardenPlay($('g-scene'));
+$('g-farmer-b').onclick=()=>runFarmer(true);
 $('g-close').onclick=closeGarden;$('g-scrim').onclick=closeGarden;
 
 /* ---------- motivational line, changes every 10 minutes ---------- */
@@ -1711,7 +1781,7 @@ function plusBubble(w,d){const el=document.createElement('span');el.className='p
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+weatherNow()+'|'+openCount()+'|'+Math.floor(Date.now()/6e5)+'|'+JSON.stringify(state.garden.picks||{}).length;
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+farmerPhase+'|'+(state.garden.tidyCount||0)+'|'+weatherNow()+'|'+openCount()+'|'+Math.floor(Date.now()/6e5)+'|'+JSON.stringify(state.garden.picks||{}).length;
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
   {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=[dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: الجو في أحسن حالاته':''].filter(Boolean).join(' · ')}
@@ -1856,7 +1926,7 @@ if(window.claude&&typeof window.claude.use==='function'){
       for(const id of deletedIds)map.delete(id);
       state.tasks=[...map.values()];render();
     },()=>{toast('انقطع الاتصال بقاعدة البيانات');});
-    db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.garden=Object.assign({count:0,seen:0},d||{});renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
+    db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.garden=Object.assign({count:0,seen:0},d||{});if(!gardenLoaded){gardenLoaded=true;setTimeout(checkFarmer,1500)}renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
     db.doc('meta/badges').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.badges=d&&d.weeks&&typeof d.weeks==='object'?d.weeks:{};renderMedals()},()=>{});
     db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
     db.collection('clients').onSnapshot(snap=>{const inc=snap.docs.map(s=>Object.assign({id:s.id},s.data()));const ids=new Set(inc.map(c=>c.id));
