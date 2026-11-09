@@ -1470,7 +1470,7 @@ function itemArt(id,l,night){
   case 'windmill':return `${SH(16)}<path d="M-12 0L-7-56H7L12 0Z" fill="#F3EDE3" stroke="#D9CDB8" stroke-width="1.4"/><rect x="-4" y="-16" width="8" height="16" rx="3" fill="#8B6B4A"/><path d="M-9-62h18l-9-9z" fill="#C2410C"/><g transform="translate(0 -58)"><g class="blades"><path d="M0 0L-4-38H4ZM0 0L38-4V4ZM0 0L4 38H-4ZM0 0L-38 4V-4Z" fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"/><circle r="3.4" fill="#5A4636"/></g></g>`;
   case 'goldtree':return `${SH(26)}<path d="M-4 0c1-12 0-22 1-34h6c1 12 0 22 1 34z" fill="url(#gxTrunk)"/><circle cx="-15" cy="-42" r="15" fill="#6E9A2E"/><circle cx="15" cy="-42" r="15" fill="#6E9A2E"/><circle cy="-56" r="18" fill="#86B23A"/><circle cy="-40" r="14" fill="#7AA834"/><g class="glow" fill="#FFD84A" stroke="#E0A030" stroke-width=".8"><ellipse cx="-14" cy="-46" rx="3.6" ry="2.8"/><ellipse cx="8" cy="-58" rx="3.6" ry="2.8"/><ellipse cx="16" cy="-40" rx="3.6" ry="2.8"/><ellipse cx="-4" cy="-36" rx="3.6" ry="2.8"/><ellipse cx="-6" cy="-64" rx="3.2" ry="2.6"/></g><path d="M-20-62l2 2M22-56l2-2M0-78v3" stroke="#FFE27A" stroke-width="1.6" stroke-linecap="round"/>`;
   }return ''}
-const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[965,388],fountain:[312,366],flowercart:[880,542],archway:[371,326],birdhouse:[742,298],peacock:[962,524],sprinkler:[500,394],hive:[172,546],greenhouse:[892,302],basket:[792,374],bell:[972,306],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
+const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[134,418],fountain:[312,366],flowercart:[880,542],archway:[371,326],birdhouse:[292,404],peacock:[962,524],sprinkler:[500,394],hive:[172,546],greenhouse:[842,398],basket:[792,374],bell:[58,444],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
 const DECOR_RES=Object.values(DECOR_POS).map(([x,y])=>({x:x-34,y:y-56,w:68,h:62}));
 function decorSVG(night,has,wide){
   const show=id=>owned(id)&&!(state.garden.hidden||{})[id];let o='';
@@ -1607,7 +1607,7 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){
     for(let u=11.2;u<=15.6;u+=1.1)for(let v=.6;v<=3.6;v+=1.1)slotsE.push([u+j(.2),v+j(.2)]);
     const blocked=(u,v)=>{if(has(100)&&u<0&&u>-1.6&&v>gateV[0]-.8&&v<gateV[1]+.8)return true;if(u<0&&v>5.6&&v<7.6)return true;
       if(has(25)&&u>5.6&&u<11.4&&v>0&&v<4.6)return true;if(has(80)&&u>0&&u<4.2&&v>.8&&v<5.4)return true;if(has(10)&&u>1&&u<3&&v>10.4&&v<12.4)return true;if(has(40)&&u>2&&u<9.4&&v>11.4&&v<16)return true;
-      if(has(100)&&u>13.5&&v>2&&v<9)return true;const [x,y]=IP(u,v);return x<12||x>988||y<172||y>556};
+      if(has(100)&&u>13.5&&v>2&&v<9)return true;const [x,y]=IP(u,v);if(Object.keys(DECOR_POS).some(id=>owned(id)&&!(state.garden.hidden||{})[id]&&Math.abs(DECOR_POS[id][0]-x)<44&&Math.abs(DECOR_POS[id][1]-y)<30))return true;return x<12||x>988||y<172||y>556};
     const E=slotsE.filter(([u,v])=>!blocked(u,v)).map(([u,v])=>{const [x,y]=IP(u,v);return {x,y,out:u<0||v<0}});const behindL=[];
     tall.forEach((i,k)=>{const q=E[k%Math.max(1,E.length)];if(!q)return;const extra=Math.floor(k/Math.max(1,E.length));const p={x:q.x+extra*9,y:q.y+extra*5,v:((i*7919)%100)/100,s:isTall(plantKind(i))?.78:.95};
       let s=plantSVG(i,p);if(animate&&i>=seen)s=`<g class="new" style="animation-delay:${(i-seen)*120}ms">${s}</g>`;if(q.out)behindL.push([p.y,s]);else add(p.y,s)});
