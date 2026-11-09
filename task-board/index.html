@@ -1408,7 +1408,7 @@ function dryFilter(d){const k=d*0.8,sat=1-d*0.55,S=[[.393,.769,.189],[.349,.686,
   return `<filter id="gd"><feColorMatrix type="saturate" values="${sat.toFixed(2)}"/><feColorMatrix type="matrix" values="${m}"/></filter>`}
 function hijri(d=new Date()){try{const pr=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric'}).formatToParts(d);return{m:+pr.find(x=>x.type==='month').value,d:+pr.find(x=>x.type==='day').value}}catch(e){return null}}
 // text that stays readable inside the mirrored banner
-const label=(x,y,txt,wide,attrs)=>`<g transform="translate(${x} ${y})${wide?' scale(-1 1)':''}"><text text-anchor="middle" ${attrs}>${txt}</text></g>`;
+const label=(x,y,txt,wide,attrs)=>`<g transform="translate(${x} ${y})"><text text-anchor="middle" ${attrs}>${txt}</text></g>`;
 /* moon phase from the Hijri day: 1 = new crescent, 14-15 = full */
 function moonInfo(){const h=hijri();const d=h?h.d:15;const f=Math.min(.97,Math.max(.045,d/29.5));
   const name=d<=6?'هلال':d<=8?'تربيع أول':d<=13?'أحدب متزايد':d<=16?'بدر':d<=21?'أحدب متناقص':d<=23?'تربيع ثاني':'هلال متناقص';return{f,d,name}}
@@ -2132,7 +2132,7 @@ const ZOOMS=[0.5,0.7,1,1.4,2,2.8];let zoomI=2;
 try{const z=parseInt(localStorage.getItem('tb-zoom'),10);if(z>=0&&z<ZOOMS.length)zoomI=z}catch(e){}
 /* ---------- zoom with the mouse wheel toward the cursor, drag to look around ---------- */
 const BV={z:ZOOMS[zoomI],cx:null,cy:null,min:.45,max:4};   // banner view
-try{const v=JSON.parse(localStorage.getItem('tb-view')||'null');if(v&&v.z){BV.z=v.z;BV.cx=v.cx;BV.cy=v.cy}}catch(e){}
+try{const v=JSON.parse(localStorage.getItem('tb-view2')||'null');if(v&&v.z){BV.z=v.z;BV.cx=v.cx;BV.cy=v.cy}}catch(e){}
 const GV={z:1,cx:500,cy:280,min:.45,max:4};                    // garden window view
 function bannerDims(S){const W=1000/S.z,H=340/S.z;if(S.cx==null){S.cx=500;const cy=S.z>1?330:(innerWidth<=620?300:290);S.cy=Math.min(cy-H/2,560-H*0.55)+H/2}return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
 function sceneDims(S){const W=1000/S.z,H=560/S.z;return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
@@ -2151,7 +2151,7 @@ function makeZoomer(host,S,dims,save,lim,svgHost=host){
   host.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
   return {apply,zoomBy:f=>{const d=dims(S);zoomAt([S.cx,S.cy],f)},reset:()=>{S.z=1;S.cx=500;S.cy=280;apply()}};
 }
-const saveBV=()=>{try{localStorage.setItem('tb-view',JSON.stringify({z:BV.z,cx:BV.cx,cy:BV.cy}))}catch(e){}showZoom()};
+const saveBV=()=>{try{localStorage.setItem('tb-view2',JSON.stringify({z:BV.z,cx:BV.cx,cy:BV.cy}))}catch(e){}showZoom()};
 let bannerZoom=null,gardenZoom=null;
 function setZoom(d){bannerZoom&&bannerZoom.zoomBy(d>0?1.4:1/1.4)}
 function showZoom(){$('z-in').disabled=BV.z>=BV.max-1e-3;$('z-out').disabled=BV.z<=BV.min+1e-3}
@@ -2189,10 +2189,10 @@ function renderSky(){
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
   const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sgrd])"/g,'id="b$1"').replace(/url\(#g([sgrd])\)/g,'url(#b$1)');
   // empty garden: put the shoot in the middle of the banner
-  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
+  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>'))
     // bring the sun, clouds and moon down into the banner's sky
 ;
-  $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
+  $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g>${inner}</g></svg>`;
   if(!bannerZoom)bannerZoom=makeZoomer($('hello'),BV,bannerDims,saveBV,[-300,1300,-40,640],$('sky-deco'));
   bannerZoom.apply();
 }
