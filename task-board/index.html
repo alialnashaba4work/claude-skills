@@ -1299,7 +1299,7 @@ function canopy(circles){
     body+=`<circle cx="${x+r*.1}" cy="${y-r*.08}" r="${(r*.88).toFixed(1)}"/>`;
     for(let a=-165;a<=-15;a+=30){const t=(a+k*13)*Math.PI/180,rr=r*(.26+((k*7+a)%5+5)%5*.03);bumps+=`<circle cx="${(x+r*.1+Math.cos(t)*r*.8).toFixed(1)}" cy="${(y-r*.08+Math.sin(t)*r*.8).toFixed(1)}" r="${rr.toFixed(1)}"/>`}
     hi+=`<circle cx="${(x+r*.32).toFixed(1)}" cy="${(y-r*.36).toFixed(1)}" r="${(r*.42).toFixed(1)}"/>`});
-  return `<g transform="scale(${sunSide} 1)"><g fill="#05524A">${dark}</g><g fill="url(#gxLeafA)">${body}</g><g fill="#12A497">${bumps}</g><g fill="url(#gxTLeaf)" opacity=".38">${body}${bumps}</g><g fill="#8FE6D6" opacity=".22">${hi}</g></g>`;
+  return `<g transform="scale(${sunSide} 1)"><g fill="#05524A">${dark}</g><g fill="url(#gxLeafA)">${body}</g><g fill="#12A497">${bumps}</g><g fill="#8FE6D6" opacity=".22">${hi}</g></g>`;
 }
 const FLOWERS=[['#F7C548','#E8A21E'],['#F08AA4','#D45D7E'],['#FFFFFF','#E6E2F0'],['#C4A5F0','#9A78D6'],['#FF9E6B','#E8743E']];
 // shared paint for the garden (gradients are defined once per scene in gardenDefs)
