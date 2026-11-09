@@ -1705,10 +1705,25 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
     behindL.sort((a,b)=>a[0]-b[0]);behind=behindL.map(a=>a[1]).join('')}
   // golden palms from the streak
   {const sp=[[930,420],[70,430],[960,470],[40,470]];for(let i=0;i<Math.min(palms,sp.length);i++){const [x,y]=sp[i];add(y,`<g transform="translate(${x} ${y}) scale(1.3)"><path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#F4B740" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/></g></g>`)}}
-  if(n>0){storeSVG(add,night);ground+=townSVG(add,night)}
+  if(n>0){storeSVG(add,night);add(IP(16.45,14.6)[1],sellerSVG());add(IP(12.6,14)[1]-.5,farmHandsSVG(crops.length));ground+=townSVG(add,night)}
   spr.sort((a,b)=>a[0]-b[0]);
   const fo=dry>0?'<g filter="url(#gd)">':'',fc=dry>0?'</g>':'';let o=ground+fo+behind+fc+back+fo+spr.map(a=>a[1]).join('')+fc;
   return o}
+// people the size of the townsfolk: a farm hand who never stops (bed to bed, then the harvest to the storehouse) and a seller at the stand
+function personSVG(c1,c2,hat,extra='',walk=true){return `<g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><g class="${walk?'fwalk ':''}fleg"><path d="M-2-12v11" stroke="#2E3A4A" stroke-width="2.6"/></g><g class="${walk?'fwalk ':''}fleg2"><path d="M2-12v11" stroke="#2E3A4A" stroke-width="2.6"/></g><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M-5-33q5-6 10 0" fill="${c2}"/>${hat}${extra}</g>`}
+function farmHandsSVG(cropCount){
+  const beds=Math.max(1,Math.min(BEDS.length,Math.ceil(cropCount/BED.per)));
+  // route: storehouse door, then beside each bed in use, then back with the basket
+  const pts=[[15.65,15.3],[15.65,12.2]];for(let b=0;b<Math.min(beds,6);b++){const [u0,v0]=BEDS[b];pts.push([u0+BED.S*.5,v0+BED.S+.25])}pts.push([15.65,12.2],[15.65,15.3]);
+  const P=pts.map(([u,v])=>IP(u,v));let L=[0];for(let k=1;k<P.length;k++)L.push(L[k-1]+Math.hypot(P[k][0]-P[k-1][0],P[k][1]-P[k-1][1]));
+  const speed=22,dwell=2.2,tot=L[L.length-1]/speed+dwell*(P.length-1);let t=0,kp=[],kt=[];
+  for(let k=0;k<P.length;k++){if(k){t+=(L[k]-L[k-1])/speed;kp.push(L[k]/L[L.length-1]);kt.push(t/tot)}if(k<P.length-1){kp.push(L[k]/L[L.length-1]);kt.push(t/tot);t+=dwell}}
+  const path='M'+P.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
+  const basket=`<g transform="translate(7 -16)"><path d="M-6 0h12l-2 7h-8z" fill="#B88B5E" stroke="#7E5A30" stroke-width=".8"/><circle cx="-3" cy="-1" r="2.4" fill="#E8452E"/><circle cx="1" cy="-2" r="2.4" fill="#F4C542"/><circle cx="4" cy="-1" r="2.2" fill="#E8822A"/></g>`;
+  const worker=`<g><animateMotion dur="${tot.toFixed(1)}s" repeatCount="indefinite" calcMode="linear" keyPoints="${kp.map(x=>x.toFixed(4)).join(';')}" keyTimes="${kt.map(x=>Math.min(1,x).toFixed(4)).join(';')}" path="${path}"/>${personSVG('#3E9E6A','#5A3A20','<path d="M-6-34q6-7 12 0z" fill="#E8402E"/><path d="M5-34h4" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>',`<g class="peck">${basket}</g>`)}</g>`;
+  return worker}
+function sellerSVG(){const [sx,sy]=IP(16.45,14.6);
+  return `<g transform="translate(${sx.toFixed(0)} ${sy.toFixed(0)})"><g class="bfbob" style="animation-duration:1.6s">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false)}</g></g>`}
 /* ---------- crops grow, a worker harvests them, the storehouse, the stand and the town ---------- */
 const CROP_INFO={corn:['🌽','ذرة'],strawberry:['🍓','فراولة'],wheat:['🌾','قمح'],carrot:['🥕','جزر'],sunflower:['🌻','دوار الشمس'],blueberry:['🫐','توت'],cabbage:['🥬','ملفوف'],tomato:['🍅','طماطم'],pumpkin:['🎃','قرع'],lavender:['💜','خزامى'],grape:['🍇','عنب']};
 const GROW_H=6,WORKER_EVERY=2*3600e3,PRICE_T=2; // a crop sells for 0.2 (kept in tenths)
@@ -1751,7 +1766,10 @@ function runWorker(manual){
     setTimeout(()=>{workerPhase='out';rerenderGarden()},8200),
     setTimeout(()=>{workerPhase=null;rerenderGarden()},12400)];
 }
-function checkWorker(){if(!gardenLoaded||workerPhase||farmerPhase||!gardenCount())return;const g=state.garden;if(Date.now()-(g.workerAt||0)>=WORKER_EVERY)runWorker(false)}
+let lastHarvestToast=0;
+function checkWorker(manual){if(!gardenLoaded||!gardenCount())return;const g=state.garden;if(!manual&&Date.now()-(g.workerAt||0)<15*60e3)return;
+  const got=harvestNow();g.workerAt=Date.now();saveGarden();renderStore();if(got){lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)}
+  if(manual||got&&(!$('gview').hidden||Date.now()-lastHarvestToast>2*HOUR)){lastHarvestToast=Date.now();toast(got?`🧺 العامل قطف ${got} ${got===1?'محصول':'محاصيل'} ووداها المخزن، وزرع مكانها`:'🌱 ما فيه شي ناضج الحين، العامل قاعد يسقي ويرعى الزرع')}}
 setInterval(()=>{checkWorker();townTick()},60000);
 // ---- money and selling ----
 const moneyStr=t=>(t/10).toFixed(1);
@@ -1883,7 +1901,7 @@ function gardenSVG(n,palms,seen,animate,wide){
     <path d="M-19-2C-19-10-8-11 2-10S18-11 19-4C20 2 15 5 8 5H-13C-17 5-19 2-19-2Z" fill="#D9A46F"/><path d="M-16 1C-6 5 8 5 16 1" stroke="#FFFFFF" stroke-width="3" fill="none" opacity=".85"/><path d="M-12-4C-2 0 10 0 17-4" stroke="#8B5A33" stroke-width="1.6" fill="none"/>
     <path d="M13-6C17-12 19-16 21-20" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><path d="M18-23C22-26 28-25 29-21C30-18 27-16 24-16C21-16 18-18 18-23Z" fill="#D9A46F"/><circle cx="22" cy="-21" r="1" fill="#1A1410"/><path d="M21-19l5 1" stroke="#FFFFFF" stroke-width="1"/>
     <path d="M20-24C18-30 17-34 19-37M23-24C22-30 22-34 24-37" stroke="#3A2E26" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M18-24l-4-3" stroke="#C9935E" stroke-width="2.4" stroke-linecap="round"/><path d="M-19-2l-3 4" stroke="#3A2E26" stroke-width="2" stroke-linecap="round"/></g>`;o+=gz(44,522)+gz(250,552)}
-  o+=farmer+workerSVG();
+  o+=farmer;
   // birds fly across the sky (not at night)
   if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><g class="flap"><path d="M0 0C-4-8-10-10-16-8C-11-6-6-3-1 2ZM0 0C4-8 10-10 16-8C11-6 6-3 1 2Z" fill="#3A3A3A"/></g><ellipse cx="0" cy="1" rx="4.6" ry="2.2" fill="#2E2E2E"/><circle cx="4.6" cy="0" r="1.8" fill="#2E2E2E"/><path d="M6.2 0l2.4.6-2.4.6z" fill="#E0A030"/><path d="M-4.4 1l-3 1.6 3 .4z" fill="#2E2E2E"/></g></g></g>`;
     o+=bird(150,34,1,4)+bird(175,40,.8,18)+bird(135,46,.7,30)+(has(80)?bird(190,38,.9,10):'');}
@@ -2013,10 +2031,10 @@ function renderStore(){const el=$('g-store');if(!el)return;const g=state.garden,
   el.innerHTML=`<div class="st-h"><b>🏚️ المخزن ونقطة البيع</b><span class="money">💰 ${moneyStr(g.moneyT||0)} فلوس</span></div>
     <div class="crops">${tot?Object.keys(st).filter(k=>st[k]>0).map(k=>`<span class="crop">${CROP_INFO[k][0]} ${CROP_INFO[k][1]} <b>${st[k]}</b><button type="button" data-sell="${k}">بيع</button></span>`).join(''):'<span class="row">المخزن فاضي. العامل يقطف المحاصيل الجاهزة ويجيبها هنا.</span>'}</div>
     ${tot?`<div class="row"><span>كل محصول بـ 0.2 فلوس</span><button type="button" data-sell="*">بيع الكل (+${moneyStr(tot*PRICE_T)} فلوس)</button></div>`:''}
-    <div class="row"><span>👷 عامل الزراعة يجي كل ساعتين يقطف الجاهز ويزرع مكانه · ${ripe} جاهز للقطف · ${growing} قاعد يكبر · الزيارة الجاية ${next<=0?'الحين':hh?`بعد ${hh} ساعة و${mm} دقيقة`:`بعد ${mm} دقيقة`}</span><button type="button" class="ghost" id="g-worker-b">نادِ العامل</button></div>
+    <div class="row"><span>👷 عامل الزراعة موجود دائمًا: يرعى الزرع ويقطف الناضج ويوديه المخزن ويزرع مكانه · ${ripe} ناضج · ${growing} قاعد يكبر · 🧑‍🌾 والبيّاع واقف في نقطة البيع</span><button type="button" class="ghost" id="g-worker-b">اقطف الناضج الحين</button></div>
     <div class="row"><span>🏘️ ${townName(b)} · ${b} ${b<=10?'مباني':'مبنى'} · قيد البناء ${Math.round((xp-Math.floor(xp))*100)}%${shops.length?` · المحلات: ${shops.join('، ')}`:''} · أهلها يشترون من نقطة البيع كل نص ساعة</span><button type="button" class="ghost" id="g-town2">شوف المدينة</button></div>`;
   el.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{const k=x.dataset.sell;sellCrops(k==='*'?null:k,k==='*'?1e9:st[k]||0,'me');lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)});
-  $('g-worker-b').onclick=()=>runWorker(true);$('g-town2').onclick=showTown}
+  $('g-worker-b').onclick=()=>checkWorker(true);$('g-town2').onclick=showTown}
 function showTown(){if(gardenZoom){GV.z=.5;GV.cx=560;GV.cy=520;gardenZoom.apply()}}
 $('g-town').onclick=showTown;
 // the farm alone, full screen
