@@ -1525,7 +1525,6 @@ function gardenSVG(n,palms,seen,animate,wide){
   o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
   }
   o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
-  o+=wide?`<rect x="-2000" y="200" width="5000" height="1400" fill="url(#gxTGrass)" opacity=".85"/>`:`<path d="M0 222C120 196 230 200 330 212S560 186 700 198 900 214 1000 204V560H0z" fill="url(#gxTGrass)" opacity=".85"/>`;
   o+=`<rect x="-2000" y="250" width="5000" height="60" fill="${c.b}" opacity=".12"/>`;
   {const r=rnd(61);let fr='';for(let x=-10;x<1010;x+=5+r()*4){const y=255+Math.sin(x/170)*4-((x>500&&x<540)?2:0),h=4+r()*6;fr+=`M${x.toFixed(0)} ${(y+4).toFixed(0)}l${(r()*2-1).toFixed(1)} ${(-h).toFixed(1)}l${(1.5+r()).toFixed(1)} ${h.toFixed(1)}`}o+=`<path d="${fr}" fill="${mixHex(c.g1,'#000000',.08)}" opacity=".9"/>`}
   o+=wide?`<rect x="-2000" y="262" width="5000" height="1400" fill="url(#gxGrass)"/>`:`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gxGrass)"/>`;
@@ -1652,9 +1651,7 @@ function gardenSVG(n,palms,seen,animate,wide){
     o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="url(#gxLight)" pointer-events="none"/>`;
     if(low>.6)o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="#FF9A4A" opacity="${((low-.6)*.25).toFixed(2)}" pointer-events="none"/>`}
   if(!wide){o+=`<defs><radialGradient id="gxVig" cx=".5" cy=".55" r=".75"><stop offset=".65" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="${night?.35:.16}"/></radialGradient></defs><rect width="1000" height="560" fill="url(#gxVig)" pointer-events="none"/>`;
-    // close-up grass and leaves along the bottom edge frame the scene
-    const r=rnd(88);let fg='';for(let x=-20;x<1030;x+=14+r()*10){const h=18+r()*26,c2=r()<.5?'#2E7E52':'#3E9E6A';fg+=`<path d="M${x.toFixed(0)} 566C${(x+2).toFixed(0)} ${(566-h*.6).toFixed(0)} ${(x+6).toFixed(0)} ${(566-h).toFixed(0)} ${(x+10+r()*6).toFixed(0)} ${(566-h-4).toFixed(0)}C${(x+8).toFixed(0)} ${(566-h*.5).toFixed(0)} ${(x+10).toFixed(0)} 560 ${(x+12).toFixed(0)} 566Z" fill="${c2}"/>`}
-    o+=`<g class="fgsway" opacity="${night?.7:.92}">${fg}</g>`}
+}
   // soft, fading shadows instead of flat ellipses
   o=o.replace(/fill="#0B3B2E" opacity="\.1\d"/g,'fill="url(#gxSoft)"').replace(/fill="#0B3B2E" opacity="\.\d+"/g,'fill="url(#gxSoft)"');
   return o+'</svg>';
