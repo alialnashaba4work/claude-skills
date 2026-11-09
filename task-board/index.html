@@ -385,7 +385,7 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
-.hello.max{position:fixed!important;inset:0;z-index:70;border-radius:0;height:auto!important;min-height:0;margin:0}
+.hello.max{position:fixed!important;inset:0;z-index:70;border-radius:0;height:auto!important;min-height:0;margin:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .hello.max>*:not(.sky-deco):not(.zoom):not(.ff-exit){display:none!important}
 .hello .ff-exit{display:none}
 .hello.max .ff-exit{display:block;position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:3;border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
@@ -2136,6 +2136,7 @@ function openFull(){const h=$('hello');if(!$('gview').hidden){const c=$('g-close
   try{const p=h.requestFullscreen&&h.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}
   requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
 function closeFull(){const h=$('hello');h.classList.remove('max');document.documentElement.classList.remove('farm-max');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
+document.addEventListener('gesturestart',e=>{if($('hello').classList.contains('max'))e.preventDefault()});
 try{new ResizeObserver(()=>bannerZoom&&bannerZoom.apply()).observe($('hello'))}catch(e){}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('hello').classList.contains('max'))closeFull();else bannerZoom&&bannerZoom.apply()});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('hello').classList.contains('max')){closeFull();e.stopPropagation()}},true);
@@ -2260,7 +2261,7 @@ try{const v=JSON.parse(localStorage.getItem('tb-view2')||'null');if(v&&v.z){BV.z
 const GV={z:1,cx:500,cy:280,min:.45,max:4};                    // garden window view
 function bannerDims(S){const el=$('hello'),r=el&&el.getBoundingClientRect(),ar=r&&r.width?r.height/r.width:.34,W=1000/S.z,H=W*ar;if(S.cx==null){S.cx=500;const cy=S.z>1?330:(innerWidth<=620?300:290);S.cy=Math.min(cy-H/2,560-H*0.55)+H/2}return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
 function sceneDims(S){const W=1000/S.z,H=560/S.z;return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
-function makeZoomer(host,S,dims,save,lim,svgHost=host){
+function makeZoomer(host,S,dims,save,lim,svgHost=host,touchOk=()=>false){
   const svgOf=()=>svgHost.querySelector(':scope > svg');
   const clamp=()=>{S.cx=Math.max(lim[0],Math.min(lim[1],S.cx));S.cy=Math.max(lim[2],Math.min(lim[3],S.cy))};
   const apply=()=>{const svg=svgOf();if(!svg)return;const d=dims(S);svg.setAttribute('viewBox',`${d.vx.toFixed(1)} ${d.vy.toFixed(1)} ${d.W.toFixed(1)} ${d.H.toFixed(1)}`)};
@@ -2269,9 +2270,23 @@ function makeZoomer(host,S,dims,save,lim,svgHost=host){
   const skip=t=>t.closest&&t.closest('button,input,a,.zoom,.streak,.snd-panel,.wx-pill,.resize-h,.plus');
   host.addEventListener('wheel',e=>{if(skip(e.target))return;const P=toScene(e.clientX,e.clientY);if(!P)return;e.preventDefault();zoomAt(P,Math.exp(-e.deltaY*(e.deltaMode?0.05:0.0018)))},{passive:false});
   let drag=null,moved=false;
-  host.addEventListener('pointerdown',e=>{if(e.button!==0||skip(e.target)||e.pointerType==='touch')return;const svg=svgOf();if(!svg)return;drag={x:e.clientX,y:e.clientY,cx:S.cx,cy:S.cy,k:1/svg.getScreenCTM().a};moved=false});
-  addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!moved&&Math.hypot(dx,dy)<5)return;moved=true;host.classList.add('panning');S.cx=drag.cx-dx*drag.k;S.cy=drag.cy-dy*drag.k;clamp();apply()});
-  addEventListener('pointerup',()=>{if(!drag)return;drag=null;host.classList.remove('panning');if(moved)save()});
+  // fingers (iPad/phone, full screen): one finger drags, two fingers pinch to zoom
+  const touches=new Map();let pinch=null;
+  const startDrag=(x,y)=>{const svg=svgOf();if(!svg)return;drag={x,y,cx:S.cx,cy:S.cy,k:1/svg.getScreenCTM().a}};
+  host.addEventListener('pointerdown',e=>{if(skip(e.target))return;
+    if(e.pointerType==='touch'){if(!touchOk())return;touches.set(e.pointerId,[e.clientX,e.clientY]);
+      if(touches.size===2){const [a,b]=[...touches.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),m:[(a[0]+b[0])/2,(a[1]+b[1])/2]};drag=null;moved=true}
+      else if(touches.size===1){startDrag(e.clientX,e.clientY);moved=false}return}
+    if(e.button!==0)return;startDrag(e.clientX,e.clientY);moved=false});
+  addEventListener('pointermove',e=>{
+    if(e.pointerType==='touch'&&touches.has(e.pointerId)){touches.set(e.pointerId,[e.clientX,e.clientY]);
+      if(pinch&&touches.size>=2){const [a,b]=[...touches.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]),m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+        const svg=svgOf();if(svg){const k=1/svg.getScreenCTM().a;S.cx-=(m[0]-pinch.m[0])*k;S.cy-=(m[1]-pinch.m[1])*k;clamp();const P=toScene(m[0],m[1]);if(P&&pinch.d>0)zoomAt(P,d/pinch.d);else apply()}
+        pinch={d,m};return}}
+    if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;host.classList.add('panning');S.cx=drag.cx-dx*drag.k;S.cy=drag.cy-dy*drag.k;clamp();apply()});
+  const up=e=>{if(e.pointerType==='touch'&&touches.has(e.pointerId)){touches.delete(e.pointerId);if(touches.size<2&&pinch){pinch=null;save();if(touches.size===1){const [p]=[...touches.values()];startDrag(p[0],p[1])}return}}
+    if(!drag)return;drag=null;host.classList.remove('panning');if(moved)save()};
+  addEventListener('pointerup',up);addEventListener('pointercancel',up);
   host.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
   return {apply,zoomBy:f=>{const d=dims(S);zoomAt([S.cx,S.cy],f)},reset:()=>{S.z=1;S.cx=500;S.cy=280;apply()}};
 }
@@ -2317,7 +2332,7 @@ function renderSky(){
     // bring the sun, clouds and moon down into the banner's sky
 ;
   $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g>${inner}</g></svg>`;
-  if(!bannerZoom)bannerZoom=makeZoomer($('hello'),BV,bannerDims,saveBV,[-300,1300,-40,640],$('sky-deco'));
+  if(!bannerZoom)bannerZoom=makeZoomer($('hello'),BV,bannerDims,saveBV,[-300,1300,-40,640],$('sky-deco'),()=>$('hello').classList.contains('max'));
   bannerZoom.apply();
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
