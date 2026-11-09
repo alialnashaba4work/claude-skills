@@ -1257,7 +1257,7 @@ const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
-function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew,cropT:g.cropT||[],store:g.store||{},moneyT:g.moneyT||0,workerAt:g.workerAt||0,town:g.town||null,boost:g.boost||{}};
+function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew,cropT:g.cropT||[],store:g.store||{},moneyT:g.moneyT||0,workerAt:g.workerAt||0,town:g.town||null,boost:g.boost||{},display:g.display||{}};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
 function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?plantWeight(t):1;const g=state.garden;g.count=g.noFallback?(g.count||0)+w:Math.max((g.count||0)+w,doneWeight());saveGarden();return g.count}
@@ -1785,22 +1785,29 @@ function runWorker(manual){
   workerPhase='in';rerenderGarden();if(manual)toast('👷 عامل الزراعة جاي يشيك على الزرع');
   workerTimers=[
     setTimeout(()=>{workerPhase='work';const got=harvestNow();state.garden.workerAt=Date.now();saveGarden();rerenderGarden();renderStore();
-      toast(got?`🧺 العامل قطف ${got} ${got===1?'محصول':'محاصيل'} ووداها المخزن، وزرع مكانها من جديد`:'🌱 العامل سقى الزرع ورتّبه، ما فيه شي جاهز للقطف الحين')},4200),
+      toast(got?`🧺 العامل قطف ${got} ${cropWord(got)} ووداها المخزن، وزرع مكانها من جديد`:'🌱 العامل سقى الزرع ورتّبه، ما فيه شي جاهز للقطف الحين')},4200),
     setTimeout(()=>{workerPhase='out';rerenderGarden()},8200),
     setTimeout(()=>{workerPhase=null;rerenderGarden()},12400)];
 }
 let lastHarvestToast=0;
 function checkWorker(manual){if(!gardenLoaded||!gardenCount())return;const g=state.garden;if(!manual&&Date.now()-(g.workerAt||0)<(boostOn('juice')?5:15)*60e3)return;
   const got=harvestNow();g.workerAt=Date.now();saveGarden();renderStore();if(got){lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)}
-  if(manual||got&&(!$('gview').hidden||Date.now()-lastHarvestToast>2*HOUR)){lastHarvestToast=Date.now();toast(got?`🧺 العامل قطف ${got} ${got===1?'محصول':'محاصيل'} ووداها المخزن، وزرع مكانها`:'🌱 ما فيه شي ناضج الحين، العامل قاعد يسقي ويرعى الزرع')}}
+  if(manual||got&&(!$('gview').hidden||Date.now()-lastHarvestToast>2*HOUR)){lastHarvestToast=Date.now();toast(got?`🧺 العامل قطف ${got} ${cropWord(got)} ووداها المخزن، وزرع مكانها`:'🌱 ما فيه شي ناضج الحين، العامل قاعد يسقي ويرعى الزرع')}}
 setInterval(()=>{checkWorker();townTick()},60000);
 // ---- money and selling ----
 const moneyStr=t=>(t/10).toFixed(1);
 function storeTotal(){return Object.values(state.garden.store||{}).reduce((a,b)=>a+b,0)}
-function sellCrops(kind,qty,who){const g=state.garden,st=g.store||(g.store={});let sold=0;
+const cropWord=n=>n===1?'محصول':n===2?'محصولين':n<=10?'محاصيل':'محصول';
+function displayTotal(){return Object.values(state.garden.display||{}).reduce((a,b)=>a+b,0)}
+// "sell" puts produce on the stand; Abu Hassan sells it to customers as they turn up
+function putOnDisplay(kind){const g=state.garden,st=g.store||(g.store={}),dp=g.display||(g.display={});let n=0;
+  for(const k of kind?[kind]:Object.keys(st)){const q=st[k]||0;if(!q)continue;dp[k]=(dp[k]||0)+q;delete st[k];n+=q}
+  if(!n)return 0;saveGarden();renderStore();lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false);
+  toast(`🧺 حطّيت ${n} ${cropWord(n)} على البسطة، وأبو حسن يبيعها للزباين أول ما يجون`);return n}
+function sellCrops(kind,qty,who){const g=state.garden,st=g.display||(g.display={});let sold=0;
   const take=k=>{const q=Math.min(st[k]||0,qty-sold);st[k]=(st[k]||0)-q;if(!st[k])delete st[k];sold+=q};
   if(kind)take(kind);else for(const k of Object.keys(st).sort((a,b)=>st[b]-st[a])){if(sold>=qty)break;take(k)}
-  if(!sold)return 0;g.moneyT=(g.moneyT||0)+sold*PRICE_T;const tw=townState();tw.sold+=sold;saveGarden();renderStore();if(!$('gview').hidden)renderMarket();if(who!=='town'){toast(`💰 بعت ${sold} ${sold===1?'محصول':'محاصيل'} بـ ${moneyStr(sold*PRICE_T)} فلوس`)}return sold}
+  if(!sold)return 0;g.moneyT=(g.moneyT||0)+sold*PRICE_T;const tw=townState();tw.sold+=sold;saveGarden();renderStore();if(!$('gview').hidden)renderMarket();if(who!=='town'){toast(`💰 بعت ${sold} ${cropWord(sold)} بـ ${moneyStr(sold*PRICE_T)} فلوس`)}return sold}
 // ---- the town ----
 function townState(){const g=state.garden;if(!g.town||typeof g.town!=='object')g.town={start:Date.now(),sold:0,built:0,buyAt:Date.now()};return g.town}
 const SHOPS={2:['بقالة','#2E8B57'],5:['مخبز','#C2410C'],8:['مقهى','#7A4A2A'],11:['مسجد','mosque'],14:['صيدلية','#2E86C1'],17:['مطعم','#B03A2E'],20:['مدرسة','school'],23:['محل ورد','#D45D7E'],27:['سوق الخضار','#3E9E6A'],31:['مستوصف','#2E86C1'],35:['مكتبة','#6C4FA0'],40:['محطة وقود','#E0A030'],45:['فندق','#34495E'],50:['حديقة عامة','park'],56:['مول','#8E44AD'],63:['برج','tower']};
@@ -1818,10 +1825,10 @@ function townTick(){if(!gardenLoaded)return;const t=townState(),b=townBuilt();le
   // townspeople come to the stand and buy what's in the storehouse
   // customers turn up at random: each minute there's a small chance one comes and buys a few things
   {const mins=Math.min(720,Math.floor((Date.now()-(t.buyAt||Date.now()))/60e3));if(mins>0){t.buyAt=(t.buyAt||Date.now())+mins*60e3;changed=true;
-    const chance=Math.min(.25,(.035+b*.0025)*(boostOn('baskets')?1.6:1));let got=0,people=0,last='';
-    for(let m=0;m<mins&&storeTotal();m++){if(Math.random()>=chance)continue;const st=state.garden.store||{},ks=Object.keys(st).filter(k=>st[k]>0);if(!ks.length)break;
+    const chance=Math.min(.3,(.08+b*.004)*(boostOn('baskets')?1.6:1));let got=0,people=0,last='';
+    for(let m=0;m<mins&&displayTotal();m++){if(Math.random()>=chance)continue;const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0);if(!ks.length)break;
       const k=ks[Math.floor(Math.random()*ks.length)],q=1+Math.floor(Math.random()*(2+Math.floor(b/10)+(boostOn('baskets')?1:0)));const n2=sellCrops(k,q,'town');if(n2){got+=n2;people++;last=`${n2} ${CROP_INFO[k][1]}`}}
-    if(got)toast(people===1?`🛒 زبون من ${townName(b)} اشترى ${last} (+${moneyStr(got*PRICE_T)} فلوس)`:`🛒 ${people} زباين اشتروا ${got} ${got===1?'محصول':'محاصيل'} (+${moneyStr(got*PRICE_T)} فلوس)`)}}
+    if(got)toast(people===1?`🛒 زبون من ${townName(b)} اشترى ${last} (+${moneyStr(got*PRICE_T)} فلوس)`:`🛒 ${people} زباين اشتروا ${got} ${cropWord(got)} (+${moneyStr(got*PRICE_T)} فلوس)`)}}
   if(changed){saveGarden();renderStore();lastPeriod=null;renderSky()}}
 function townSVG(add,night){
   const t=townState(),b=townBuilt(),xp=townXP(),prog=Math.max(0,Math.min(1,xp-Math.floor(xp))),paved=b>=16,r=rnd(91);
@@ -1870,7 +1877,7 @@ function townSVG(add,night){
   if(b>=26){for(let q=0;q<Math.min(10,Math.floor(b/5));q++){const [A,B]=routes[(q*3+1)%routes.length],[ax,ay]=IP(A[0]+.25,A[1]+.25),[bx2,by2]=IP(B[0]+.25,B[1]+.25),d=(14+r()*12).toFixed(0),cc=['#C0392B','#3F8FC2','#F4F1E8','#2A2A2A','#E0A030'][q%5];
     add(Math.max(ay,by2),`<g><animateMotion dur="${d}s" begin="-${(r()*30).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}L${ax.toFixed(0)} ${ay.toFixed(0)}"/><ellipse cy="2" rx="12" ry="4" fill="#0B3B2E" opacity=".25"/><path d="M-12-4l12-6 12 6-12 6z" fill="${cc}"/><path d="M-12-4v4l12 6v-4zM12-4v4L0 6v-4z" fill="${mixHex(cc,'#000000',.25)}"/><path d="M-5-7l5-2.5 5 2.5-5 2.5z" fill="#BFE6F0"/></g>`)}}
   // buyers walk up to the stand when there's something to sell
-  if(storeTotal()){const [ax,ay]=IP(18.6,13.3),[sx,sy]=IP(17.3,13.3);for(let q=0;q<Math.min(3,1+Math.floor(b/10));q++){const d=(16+q*5),c1=CL[(q+2)%CL.length];
+  if(displayTotal()){const [ax,ay]=IP(18.6,13.3),[sx,sy]=IP(17.3,13.3);for(let q=0;q<Math.min(3,1+Math.floor(b/10));q++){const d=(16+q*5),c1=CL[(q+2)%CL.length];
     add(ay-2,`<g><animateMotion dur="${d}s" begin="-${q*5}s" repeatCount="indefinite" keyPoints="0;1;1;0" keyTimes="0;.4;.6;1" calcMode="linear" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${sx.toFixed(0)} ${sy.toFixed(0)}"/><g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><path d="M-2-12v11M2-12v11" stroke="#3A2E26" stroke-width="2.6"/><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M6-20h6l-1 8h-4z" fill="#B88B5E"/></g></g>`)}}
   return ground}
 // storehouse and the little stand, inside the front of the farm
@@ -1881,7 +1888,7 @@ function storeSVG(add,night){
   const [lx,ly]=IP(13.85,15.9,40);ex+=`<g transform="translate(${lx.toFixed(0)} ${ly.toFixed(0)})"><rect x="-20" y="-8" width="40" height="12" rx="2" fill="#383838"/>${label(0,1.5,'المخزن',false,'font-size="8" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')}</g>`;
   const [hx,hy]=IP(15.3,15.9);add(hy,`<g class="hit" data-act="store"><title>المخزن</title>${isoHouse(12.6,14,15.3,15.9,34,22,P,night,ex)}</g>`);
   // the stand: a counter with an awning and baskets of what's in store
-  const st=state.garden.store||{},kinds=Object.keys(st).filter(k=>st[k]>0).slice(0,4);
+  const st=state.garden.display||{},kinds=Object.keys(st).filter(k=>st[k]>0).slice(0,4);
   let s=isoBox(15.9,12.6,16.7,14.2,12,'#A47E58','#8B6440','#C29A70');
   const COL={corn:'#F4C542',strawberry:'#E23B3B',wheat:'#F0C75A',carrot:'#F08A2E',sunflower:'#F7C531',blueberry:'#4A63B8',cabbage:'#8FCB6A',tomato:'#E8452E',pumpkin:'#E8822A',lavender:'#9C7AD6',grape:'#7B4FA0'};
   kinds.forEach((k,q)=>{const [x,y]=IP(16.3,12.85+q*.38,12);s+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-6-1h12l-2 5h-8z" fill="#8B6440"/>${[[-3,-3],[0,-4],[3,-3],[-1.5,-6],[1.5,-6]].map(([a,c])=>`<circle cx="${a}" cy="${c}" r="2.2" fill="${COL[k]}"/>`).join('')}</g>`});
@@ -2052,15 +2059,16 @@ function gardenPlay(root){
 }
 gardenPlay($('sky-deco'));gardenPlay($('g-scene'));
 $('g-farmer-b').onclick=()=>runFarmer(true);
-function renderStore(){const el=$('g-store');if(!el)return;const g=state.garden,st=g.store||{},tot=storeTotal(),b=townBuilt(),xp=townXP(),shops=openShops(b);
+function renderStore(){const el=$('g-store');if(!el)return;const g=state.garden,st=g.store||{},tot=storeTotal(),dp=g.display||{},dtot=displayTotal(),b=townBuilt(),xp=townXP(),shops=openShops(b);
   const next=Math.max(0,WORKER_EVERY-(Date.now()-(g.workerAt||0))),hh=Math.floor(next/HOUR),mm=Math.ceil((next%HOUR)/60e3);
   const cs=cropSlots(gardenCount()),T=g.cropT||[];let ripe=0,growing=0;for(const c of cs){cropStage(T[c.j])===3?ripe++:growing++}
   el.innerHTML=`<div class="st-h"><b>🏚️ المخزن ونقطة البيع</b><span class="money">💰 ${moneyStr(g.moneyT||0)} فلوس</span></div>
-    <div class="crops">${tot?Object.keys(st).filter(k=>st[k]>0).map(k=>`<span class="crop">${CROP_INFO[k][0]} ${CROP_INFO[k][1]} <b>${st[k]}</b><button type="button" data-sell="${k}">بيع</button></span>`).join(''):'<span class="row">المخزن فاضي. العامل يقطف المحاصيل الجاهزة ويجيبها هنا.</span>'}</div>
-    ${tot?`<div class="row"><span>كل محصول بـ 0.2 فلوس</span><button type="button" data-sell="*">بيع الكل (+${moneyStr(tot*PRICE_T)} فلوس)</button></div>`:''}
+    <div class="crops">${tot?Object.keys(st).filter(k=>st[k]>0).map(k=>`<span class="crop">${CROP_INFO[k][0]} ${CROP_INFO[k][1]} <b>${st[k]}</b><button type="button" data-sell="${k}">اعرض للبيع</button></span>`).join(''):'<span class="row">المخزن فاضي. العامل يقطف المحاصيل الجاهزة ويجيبها هنا.</span>'}</div>
+    ${tot?`<div class="row"><span>اللي تعرضه يروح البسطة، والزباين يشترونه بـ 0.2 للحبة</span><button type="button" data-sell="*">اعرض الكل للبيع</button></div>`:''}
+    <div class="row"><span>🧺 على البسطة: ${dtot?Object.keys(dp).filter(k=>dp[k]>0).map(k=>`${CROP_INFO[k][0]} ${dp[k]}`).join(' · ')+` · أبو حسن يبيعها للزباين أول ما يجون`:'ما فيه شي معروض'}</span></div>
     <div class="row"><span>👷 عامل الزراعة موجود دائمًا: يرعى الزرع ويقطف الناضج ويوديه المخزن ويزرع مكانه · ${ripe} ناضج · ${growing} قاعد يكبر · 🧑‍🌾 والبيّاع واقف في نقطة البيع</span><button type="button" class="ghost" id="g-worker-b">اقطف الناضج الحين</button></div>
     <div class="row"><span>🏘️ ${townName(b)} · ${b} ${b<=10?'مباني':'مبنى'} · قيد البناء ${Math.round((xp-Math.floor(xp))*100)}%${shops.length?` · المحلات: ${shops.join('، ')}`:''} · أهلها يجون نقطة البيع بأوقات عشوائية · اضغط على البقالة تشتري منها</span><button type="button" class="ghost" id="g-town2">شوف المدينة</button></div>`;
-  el.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{const k=x.dataset.sell;sellCrops(k==='*'?null:k,k==='*'?1e9:st[k]||0,'me');lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)});
+  el.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{const k=x.dataset.sell;putOnDisplay(k==='*'?null:k)});
   $('g-worker-b').onclick=()=>checkWorker(true);$('g-town2').onclick=showTown}
 function closeInfo(){$('info-pop')&&$('info-pop').remove();$('info-scrim')&&$('info-scrim').remove()}
 function infoPop(html){closeInfo();const sc=document.createElement('div');sc.id='info-scrim';sc.onclick=closeInfo;const p=document.createElement('div');p.id='info-pop';p.className='info-pop';p.dir='rtl';p.setAttribute('role','dialog');
@@ -2068,10 +2076,10 @@ function infoPop(html){closeInfo();const sc=document.createElement('div');sc.id=
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('info-pop')){closeInfo();e.stopPropagation()}},true);
 const fmtLeft=ms=>{const t=Math.ceil(ms/60e3),h=Math.floor(t/60),m=t%60,H=h===1?'ساعة':h===2?'ساعتين':h<=10?`${h} ساعات`:`${h} ساعة`,M=m===1?'دقيقة':m===2?'دقيقتين':m<=10?`${m} دقايق`:`${m} دقيقة`;return h?(m?`${H} و${M}`:H):M};
 function openStorePop(){const st=state.garden.store||{},ks=Object.keys(st).filter(k=>st[k]>0),tot=storeTotal();
-  const p=infoPop(`<h3>🏚️ المخزن</h3><div class="sub">اللي قطفه العامل وجابه هنا · المجموع ${tot} ${tot===1?'محصول':'محاصيل'}</div>
+  const p=infoPop(`<h3>🏚️ المخزن</h3><div class="sub">اللي قطفه العامل وجابه هنا · المجموع ${tot} ${cropWord(tot)}</div>
     ${ks.length?`<div class="grid">${ks.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${st[k]}</b></div>`).join('')}</div>`:'<div class="sub">المخزن فاضي الحين. أول ما ينضج شي العامل يقطفه ويجيبه.</div>'}
-    <div class="foot"><span>💰 عندك ${moneyStr(state.garden.moneyT||0)} فلوس</span>${tot?`<button type="button" data-all>بيع الكل (+${moneyStr(tot*PRICE_T)})</button>`:''}</div>`);
-  const a=p.querySelector('[data-all]');if(a)a.onclick=()=>{sellCrops(null,1e9,'me');openStorePop();lastPeriod=null;renderSky()}}
+    <div class="foot"><span>💰 عندك ${moneyStr(state.garden.moneyT||0)} فلوس</span>${tot?`<button type="button" data-all>اعرض الكل للبيع</button>`:''}</div>`);
+  const a=p.querySelector('[data-all]');if(a)a.onclick=()=>{putOnDisplay(null);openStorePop()}}
 function openWorkerPop(){const cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.length),G=(boostOn('fert')?4:GROW_H)*HOUR,now=Date.now(),by={};
   for(const c of cs){const o=by[c.kind]||(by[c.kind]={n:0,ripe:0,next:Infinity,sum:0});o.n++;const t=T[c.j],age=t?now-t:G;if(age>=G){o.ripe++;o.sum+=1}else{o.next=Math.min(o.next,G-age);o.sum+=age/G}}
   const ks=Object.keys(by),allRipe=ks.reduce((a,k)=>a+by[k].ripe,0),soon=Math.min(...ks.map(k=>by[k].next)),every=(boostOn('juice')?5:15)*60e3,nextPick=Math.max(0,every-(now-(state.garden.workerAt||0)));
@@ -2080,12 +2088,13 @@ function openWorkerPop(){const cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.
     ${ks.length?`<div class="grid">${ks.map(k=>{const o=by[k],pct=Math.round(o.sum/o.n*100);return `<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${o.n}</b><span>${o.ripe?`<span class="on">${o.ripe} ناضج</span>`:''}${o.ripe&&o.n>o.ripe?' · ':''}${o.n>o.ripe?`${o.n-o.ripe} يكبر`:''}</span><span style="width:100%;height:6px;border-radius:9px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:#0EA89C"></i></span><span>${o.n>o.ripe?`الحصاد الجاي بعد ${fmtLeft(o.next)}`:'كله ناضج، ينقطف الحين'}</span></div>`}).join('')}</div>`:'<div class="sub">ما فيه محاصيل مزروعة للحين. خلّص مهام وتنزرع في الأحواض.</div>'}
     <div class="foot"><span>${allRipe?`🧺 ${allRipe} ناضج ينقطف ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'}`:soon<Infinity?`🌱 أقرب حصاد بعد ${fmtLeft(soon)}`:''}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${allRipe?'<button type="button" data-pick>اقطف الناضج الحين</button>':''}</div>`);
   const b=p.querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openWorkerPop()}}
-function openStandPop(){const st=state.garden.store||{},ks=Object.keys(st).filter(k=>st[k]>0),b=townBuilt();
+function openStandPop(){const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0),b=townBuilt(),inStore=state.garden.store||{},sk=Object.keys(inStore).filter(k=>inStore[k]>0);
   const sellerArt=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false).replace('scale(.6)','scale(1)')}</svg>`;
-  const p=infoPop(`<h3>🧺 نقطة البيع</h3><div class="seller">${sellerArt}<div><b>أبو حسن، البيّاع</b><div class="sub" style="margin:2px 0 0">${ks.length?'"حيّاك، تفضل شوف المعروض اليوم"':'"البسطة فاضية، ننتظر الحصاد الجاي"'}</div></div></div>
-    ${ks.length?`<div class="grid">${ks.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<span>${st[k]} معروض · 0.2 للحبة</span><button type="button" data-sell="${k}">بيع الكل (+${moneyStr(st[k]*PRICE_T)})</button></div>`).join('')}</div>`:''}
+  const p=infoPop(`<h3>🧺 نقطة البيع</h3><div class="seller">${sellerArt}<div><b>أبو حسن، البيّاع</b><div class="sub" style="margin:2px 0 0">${ks.length?'"حيّاك، تفضل شوف المعروض اليوم"':'"البسطة فاضية، اعرض لي شي من المخزن وأبيعه"'}</div></div></div>
+    ${ks.length?`<div class="grid">${ks.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${st[k]}</b><span>معروض · 0.2 للحبة</span></div>`).join('')}</div>`:''}
+    ${sk.length?`<div class="sub" style="margin-top:12px">في المخزن وتقدر تعرضه:</div><div class="grid">${sk.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]} · ${inStore[k]}<button type="button" data-sell="${k}">اعرضه</button></div>`).join('')}</div>`:''}
     <div class="foot"><span>🛒 زباين ${townName(b)} يجون بأوقات عشوائية${boostOn('baskets')?' · <span class="on">🧺 سلال العرض شغالة</span>':''}</span><span>💰 ${moneyStr(state.garden.moneyT||0)} فلوس</span></div>`);
-  p.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{const k=x.dataset.sell;sellCrops(k,(state.garden.store||{})[k]||0,'me');openStandPop();lastPeriod=null;renderSky()})}
+  p.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{putOnDisplay(x.dataset.sell);openStandPop()})}
 function openShopPop(name){if(name!=='بقالة'){infoPop(`<h3>🏪 ${name}</h3><div class="sub">هذا المحل جديد في ${townName(townBuilt())}، أهلها قاعدين يجهزونه. البقالة مفتوحة وتقدر تشتري منها.</div>`);return}
   const g=state.garden,m=(g.moneyT||0)/10;
   const p=infoPop(`<h3>🏪 البقالة</h3><div class="sub">أغراض تساعد مزرعتك · تدفع من فلوس البيع · عندك 💰 ${moneyStr(g.moneyT||0)} فلوس</div>
