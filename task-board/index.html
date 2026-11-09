@@ -1257,7 +1257,7 @@ const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
-function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew,cropT:g.cropT||[],store:g.store||{},moneyT:g.moneyT||0,workerAt:g.workerAt||0,town:g.town||null,boost:g.boost||{},display:g.display||{}};
+function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew,cropT:g.cropT||[],store:g.store||{},moneyT:g.moneyT||0,workerAt:g.workerAt||0,town:g.town||null,boost:g.boost||{},display:g.display||{},treeT:g.treeT||{}};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
 function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?plantWeight(t):1;const g=state.garden;g.count=g.noFallback?(g.count||0)+w:Math.max((g.count||0)+w,doneWeight());saveGarden();return g.count}
@@ -1404,7 +1404,8 @@ function plantSVG(i,p){
   const sh=kind==='big'?28:kind==='palm'?16:kind==='tree'?13:kind==='bush'?17:kind==='pine'?15:kind==='rock'?14:kind==='shrub'?12:0;
   const shadow=sh?`<ellipse cy="1" rx="${sh}" ry="${(sh/4.5).toFixed(1)}" fill="#0B3B2E" opacity=".15"/>`:'';
   const haze=!p.s&&p.y<330?` opacity="${(0.72+(p.y-285)/45*0.28).toFixed(2)}"`:'';
-  if(p.s&&(kind==='big'||kind==='tree')){const fc=['#E8402E','#F59A23','#F2D13A','#E8402E'][i%4],F=kind==='big'?[[-22,-52],[16,-48],[-6,-70],[10,-80],[24,-62],[-14,-82],[2,-58],[-26,-64]]:[[-9,-28],[7,-30],[-2,-40],[9,-38],[-6,-44]];g+=F.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${kind==='big'?3.4:2.6}" fill="${fc}" stroke="#00000033" stroke-width=".6"/><circle cx="${x-1}" cy="${y-1}" r="1" fill="#fff" opacity=".6"/>`).join('')}
+  if(p.s&&kind==='palm'&&p.ripe===false)g=g.replace('fill="#B5512A"','fill="#9CBF5A"');
+  if(p.s&&(kind==='big'||kind==='tree')){const fc=p.ripe===false?'#9CCB6A':['#E8402E','#F59A23','#F2D13A','#E8402E'][i%4],F=kind==='big'?[[-22,-52],[16,-48],[-6,-70],[10,-80],[24,-62],[-14,-82],[2,-58],[-26,-64]]:[[-9,-28],[7,-30],[-2,-40],[9,-38],[-6,-44]];g+=F.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${kind==='big'?3.4:2.6}" fill="${fc}" stroke="#00000033" stroke-width=".6"/><circle cx="${x-1}" cy="${y-1}" r="1" fill="#fff" opacity=".6"/>`).join('')}
   return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"${haze}>${shadow}<g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
@@ -1715,7 +1716,7 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
       if(has(25)&&u>5.6&&u<11.4&&v>0&&v<4.6)return true;if(has(80)&&u>0&&u<4.2&&v>.8&&v<5.4)return true;if(has(10)&&u>1&&u<3&&v>10.4&&v<12.4)return true;if(has(40)&&u>2&&u<9.4&&v>11.4&&v<16)return true;
       if(has(100)&&u>13.5&&v>2&&v<9)return true;if(has(80)&&u>13.5&&v>5&&v<11)return true;if(has(80)&&u<4.6&&v>.6&&v<6.2&&u>-.1)return true;const [x,y]=IP(u,v);if(Object.keys(DECOR_POS).some(id=>owned(id)&&!(state.garden.hidden||{})[id]&&Math.abs(DECOR_POS[id][0]-x)<44&&Math.abs(DECOR_POS[id][1]-y)<30))return true;return x<12||x>988||y<172||y>556};
     const E=slotsE.filter(([u,v])=>!blocked(u,v)).map(([u,v])=>{const [x,y]=IP(u,v);return {x,y,out:u<0||v<0}});const behindL=[];
-    tall.forEach((i,k)=>{const q=E[k%Math.max(1,E.length)];if(!q)return;const extra=Math.floor(k/Math.max(1,E.length));const p={x:q.x+extra*9,y:q.y+extra*5,v:((i*7919)%100)/100,s:isTall(plantKind(i))?.78:.95};
+    tall.forEach((i,k)=>{const q=E[k%Math.max(1,E.length)];if(!q)return;const extra=Math.floor(k/Math.max(1,E.length));const p={x:q.x+extra*9,y:q.y+extra*5,v:((i*7919)%100)/100,s:isTall(plantKind(i))?.78:.95,ripe:treeRipe(i)};
       let s=plantSVG(i,p);if(animate&&i>=seen)s=`<g class="new" style="animation-delay:${(i-seen)*120}ms">${s}</g>`;if(q.out)behindL.push([p.y,s]);else add(p.y,s)});
     behindL.sort((a,b)=>a[0]-b[0]);behind=behindL.map(a=>a[1]).join('')}
   // golden palms from the streak
@@ -1740,10 +1741,18 @@ function farmHandsSVG(cropCount){
 function sellerSVG(){const [sx,sy]=IP(16.45,14.6);
   return `<g transform="translate(${sx.toFixed(0)} ${sy.toFixed(0)})"><g class="bfbob" style="animation-duration:1.6s">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false)}</g></g>`}
 /* ---------- crops grow, a worker harvests them, the storehouse, the stand and the town ---------- */
-const CROP_INFO={corn:['🌽','ذرة'],strawberry:['🍓','فراولة'],wheat:['🌾','قمح'],carrot:['🥕','جزر'],sunflower:['🌻','دوار الشمس'],blueberry:['🫐','توت'],cabbage:['🥬','ملفوف'],tomato:['🍅','طماطم'],pumpkin:['🎃','قرع'],lavender:['💜','خزامى'],grape:['🍇','عنب']};
+const CROP_INFO={apple:['🍎','تفاح'],orange:['🍊','برتقال'],lemon:['🍋','ليمون'],dates:['🌴','رطب'],pine:['🌰','صنوبر'],corn:['🌽','ذرة'],strawberry:['🍓','فراولة'],wheat:['🌾','قمح'],carrot:['🥕','جزر'],sunflower:['🌻','دوار الشمس'],blueberry:['🫐','توت'],cabbage:['🥬','ملفوف'],tomato:['🍅','طماطم'],pumpkin:['🎃','قرع'],lavender:['💜','خزامى'],grape:['🍇','عنب']};
 const GROW_H=6,WORKER_EVERY=2*3600e3,PRICE_T=2; // a crop sells for 0.2 (kept in tenths)
 const HOUR=3600e3;
 const boostOn=k=>((state.garden.boost||{})[k]||0)>Date.now();
+// trees and palms from your tasks bear fruit too: ripe every 8 hours (5 with fertiliser)
+const TREE_H=8;
+function fruitOf(i){const k=plantKind(i);return k==='palm'?'dates':k==='pine'?'pine':(k==='big'||k==='tree')?['apple','orange','lemon','apple'][i%4]:null}
+const fruitYield=i=>{const k=plantKind(i);return k==='big'?4:k==='palm'?3:2};
+function treeSlots(n){const out=[];const total=Math.min(n,260);for(let i=0;i<total;i++){const f=isTall(plantKind(i))&&fruitOf(i);if(f)out.push({i,kind:f})}return out}
+function treeAge(i){const t=(state.garden.treeT||{})[i];return t?Date.now()-t:Infinity}
+const treeGrow=()=>(boostOn('fert')?5:TREE_H)*HOUR;
+function treeRipe(i){return treeAge(i)>=treeGrow()}
 function cropStage(t){if(!t)return 3;const a=(Date.now()-t)/HOUR,G=boostOn('fert')?4:GROW_H;return a<.5?0:a<G/3?1:a<G?2:3}
 const GROCERY=[
   {id:'fert',icon:'🧪',name:'سماد عضوي',price:8,desc:'المحاصيل تنضج في 4 ساعات بدل 6، لمدة يوم كامل'},
@@ -1779,7 +1788,8 @@ function workerSVG(){
   return `${sp}<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><g class="farmer-${workerPhase}">${body}</g></g>`;
 }
 function harvestNow(){const g=state.garden,cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.length);let got=0;const st=g.store||(g.store={});
-  const per=boostOn('seeds')?2:1;for(const c of cs){if(cropStage(T[c.j])===3){st[c.kind]=(st[c.kind]||0)+per;T[c.j]=Date.now();got+=per}}return got}
+  const per=boostOn('seeds')?2:1;for(const c of cs){if(cropStage(T[c.j])===3){st[c.kind]=(st[c.kind]||0)+per;T[c.j]=Date.now();got+=per}}
+  const TT=g.treeT||(g.treeT={});for(const t of treeSlots(gardenCount())){if(treeRipe(t.i)){const q=fruitYield(t.i)*per;st[t.kind]=(st[t.kind]||0)+q;TT[t.i]=Date.now();got+=q}}return got}
 function runWorker(manual){
   if(workerPhase||farmerPhase)return;workerTimers.forEach(clearTimeout);
   workerPhase='in';rerenderGarden();if(manual)toast('👷 عامل الزراعة جاي يشيك على الزرع');
@@ -1890,7 +1900,7 @@ function storeSVG(add,night){
   // the stand: a counter with an awning and baskets of what's in store
   const st=state.garden.display||{},kinds=Object.keys(st).filter(k=>st[k]>0).slice(0,4);
   let s=isoBox(15.9,12.6,16.7,14.2,12,'#A47E58','#8B6440','#C29A70');
-  const COL={corn:'#F4C542',strawberry:'#E23B3B',wheat:'#F0C75A',carrot:'#F08A2E',sunflower:'#F7C531',blueberry:'#4A63B8',cabbage:'#8FCB6A',tomato:'#E8452E',pumpkin:'#E8822A',lavender:'#9C7AD6',grape:'#7B4FA0'};
+  const COL={apple:'#E8402E',orange:'#F59A23',lemon:'#F2D13A',dates:'#8B4A1E',pine:'#8B6B4A',corn:'#F4C542',strawberry:'#E23B3B',wheat:'#F0C75A',carrot:'#F08A2E',sunflower:'#F7C531',blueberry:'#4A63B8',cabbage:'#8FCB6A',tomato:'#E8452E',pumpkin:'#E8822A',lavender:'#9C7AD6',grape:'#7B4FA0'};
   kinds.forEach((k,q)=>{const [x,y]=IP(16.3,12.85+q*.38,12);s+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-6-1h12l-2 5h-8z" fill="#8B6440"/>${[[-3,-3],[0,-4],[3,-3],[-1.5,-6],[1.5,-6]].map(([a,c])=>`<circle cx="${a}" cy="${c}" r="2.2" fill="${COL[k]}"/>`).join('')}</g>`});
   s+=`<g stroke="#7A5A3C" stroke-width="2.2">${[[15.9,12.6],[16.7,12.6],[16.7,14.2]].map(([a,c])=>`<path d="M${ipt(a,c,0)}L${ipt(a,c,34)}"/>`).join('')}</g>`;
   let aw='';for(let q=0;q<6;q++){const a=12.4+q*.32;aw+=ipoly([[15.7,a,34],[16.95,a,30],[16.95,a+.32,30],[15.7,a+.32,34]],q%2?'#FFFFFF':'#0EA89C')}
@@ -2082,10 +2092,11 @@ function openStorePop(){const st=state.garden.store||{},ks=Object.keys(st).filte
   const a=p.querySelector('[data-all]');if(a)a.onclick=()=>{putOnDisplay(null);openStorePop()}}
 function openWorkerPop(){const cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.length),G=(boostOn('fert')?4:GROW_H)*HOUR,now=Date.now(),by={};
   for(const c of cs){const o=by[c.kind]||(by[c.kind]={n:0,ripe:0,next:Infinity,sum:0});o.n++;const t=T[c.j],age=t?now-t:G;if(age>=G){o.ripe++;o.sum+=1}else{o.next=Math.min(o.next,G-age);o.sum+=age/G}}
+  const TG=treeGrow();for(const c of treeSlots(gardenCount())){const o=by[c.kind]||(by[c.kind]={n:0,ripe:0,next:Infinity,sum:0,tree:true});o.n++;const age=treeAge(c.i);if(age>=TG){o.ripe++;o.sum+=1}else{o.next=Math.min(o.next,TG-age);o.sum+=age/TG}}
   const ks=Object.keys(by),allRipe=ks.reduce((a,k)=>a+by[k].ripe,0),soon=Math.min(...ks.map(k=>by[k].next)),every=(boostOn('juice')?5:15)*60e3,nextPick=Math.max(0,every-(now-(state.garden.workerAt||0)));
   const art=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#3E9E6A','#5A3A20','<path d="M-6-34q6-7 12 0z" fill="#E8402E"/><path d="M5-34h4" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>','<g transform="translate(7 -16)"><path d="M-6 0h12l-2 7h-8z" fill="#B88B5E" stroke="#7E5A30" stroke-width=".8"/><circle cx="-3" cy="-1" r="2.4" fill="#E8452E"/><circle cx="1" cy="-2" r="2.4" fill="#F4C542"/></g>',false).replace('scale(.6)','scale(1)')}</svg>`;
-  const p=infoPop(`<h3>👷 عامل الزراعة</h3><div class="seller">${art}<div><b>حسن</b><div class="sub" style="margin:2px 0 0">"أرعى الزرع وأقطف الناضج كل ${boostOn('juice')?'5 دقايق':'ربع ساعة'} وأوديه المخزن"</div></div></div>
-    ${ks.length?`<div class="grid">${ks.map(k=>{const o=by[k],pct=Math.round(o.sum/o.n*100);return `<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${o.n}</b><span>${o.ripe?`<span class="on">${o.ripe} ناضج</span>`:''}${o.ripe&&o.n>o.ripe?' · ':''}${o.n>o.ripe?`${o.n-o.ripe} يكبر`:''}</span><span style="width:100%;height:6px;border-radius:9px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:#0EA89C"></i></span><span>${o.n>o.ripe?`الحصاد الجاي بعد ${fmtLeft(o.next)}`:'كله ناضج، ينقطف الحين'}</span></div>`}).join('')}</div>`:'<div class="sub">ما فيه محاصيل مزروعة للحين. خلّص مهام وتنزرع في الأحواض.</div>'}
+  const p=infoPop(`<h3>👷 عامل الزراعة</h3><div class="seller">${art}<div><b>حسن</b><div class="sub" style="margin:2px 0 0">"أرعى الزرع والشجر والنخل، وأقطف الناضج كل ${boostOn('juice')?'5 دقايق':'ربع ساعة'} وأوديه المخزن"</div></div></div>
+    ${ks.length?`<div class="grid">${ks.map(k=>{const o=by[k],pct=Math.round(o.sum/o.n*100);return `<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${o.n}${o.tree?` <small style="font-family:inherit;font-weight:500;font-size:11px">${k==='dates'?(o.n===1?'نخلة':'نخلات'):(o.n===1?'شجرة':'شجرات')}</small>`:''}</b><span>${o.ripe?`<span class="on">${o.ripe} ${o.tree?'مثمرة':'ناضج'}</span>`:''}${o.ripe&&o.n>o.ripe?' · ':''}${o.n>o.ripe?`${o.n-o.ripe} يكبر`:''}</span><span style="width:100%;height:6px;border-radius:9px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:#0EA89C"></i></span><span>${o.n>o.ripe?`الحصاد الجاي بعد ${fmtLeft(o.next)}`:'كله ناضج، ينقطف الحين'}</span></div>`}).join('')}</div>`:'<div class="sub">ما فيه محاصيل مزروعة للحين. خلّص مهام وتنزرع في الأحواض.</div>'}
     <div class="foot"><span>${allRipe?`🧺 ${allRipe} ناضج ينقطف ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'}`:soon<Infinity?`🌱 أقرب حصاد بعد ${fmtLeft(soon)}`:''}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${allRipe?'<button type="button" data-pick>اقطف الناضج الحين</button>':''}</div>`);
   const b=p.querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openWorkerPop()}}
 function openStandPop(){const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0),b=townBuilt(),inStore=state.garden.store||{},sk=Object.keys(inStore).filter(k=>inStore[k]>0);
