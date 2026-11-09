@@ -1406,7 +1406,8 @@ function plantSVG(i,p){
   const haze=!p.s&&p.y<330?` opacity="${(0.72+(p.y-285)/45*0.28).toFixed(2)}"`:'';
   if(p.s&&kind==='palm'&&p.ripe===false)g=g.replace('fill="#B5512A"','fill="#9CBF5A"');
   if(p.s&&(kind==='big'||kind==='tree')){const fc=p.ripe===false?'#9CCB6A':['#E8402E','#F59A23','#F2D13A','#E8402E'][i%4],F=kind==='big'?[[-22,-52],[16,-48],[-6,-70],[10,-80],[24,-62],[-14,-82],[2,-58],[-26,-64]]:[[-9,-28],[7,-30],[-2,-40],[9,-38],[-6,-44]];g+=F.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${kind==='big'?3.4:2.6}" fill="${fc}" stroke="#00000033" stroke-width=".6"/><circle cx="${x-1}" cy="${y-1}" r="1" fill="#fff" opacity=".6"/>`).join('')}
-  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"${haze}>${shadow}<g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
+  const tr=p.s&&isTall(kind)&&fruitOf(i)?` data-tree="${i}"`:'';
+  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"${haze}>${shadow}<g class="pl"${tr} style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
 const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
@@ -2065,7 +2066,8 @@ function gardenPlay(root){
     b.classList.add('flee');setTimeout(()=>b.classList.remove('flee'),1800);b.addEventListener('animationend',ev=>{if(ev.target===b)b.classList.remove('flee')},{once:true})});
   root.addEventListener('click',e=>{const pl=e.target.closest&&e.target.closest('.pl');if(!pl)return;e.stopPropagation();
     pl.classList.remove('shake');void pl.getBoundingClientRect();pl.classList.add('shake');setTimeout(()=>pl.classList.remove('shake'),800);pl.addEventListener('animationend',ev=>{if(ev.target===pl)pl.classList.remove('shake')},{once:true});
-    if(sound.on&&sound.ctx)chirp()});
+    if(sound.on&&sound.ctx)chirp();
+    if(pl.dataset.tree!=null)openTreePop(+pl.dataset.tree)});
 }
 gardenPlay($('sky-deco'));gardenPlay($('g-scene'));
 $('g-farmer-b').onclick=()=>runFarmer(true);
@@ -2099,6 +2101,13 @@ function openWorkerPop(){const cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.
     ${ks.length?`<div class="grid">${ks.map(k=>{const o=by[k],pct=Math.round(o.sum/o.n*100);return `<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${o.n}${o.tree?` <small style="font-family:inherit;font-weight:500;font-size:11px">${k==='dates'?(o.n===1?'نخلة':'نخلات'):(o.n===1?'شجرة':'شجرات')}</small>`:''}</b><span>${o.ripe?`<span class="on">${o.ripe} ${o.tree?'مثمرة':'ناضج'}</span>`:''}${o.ripe&&o.n>o.ripe?' · ':''}${o.n>o.ripe?`${o.n-o.ripe} يكبر`:''}</span><span style="width:100%;height:6px;border-radius:9px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:#0EA89C"></i></span><span>${o.n>o.ripe?`الحصاد الجاي بعد ${fmtLeft(o.next)}`:'كله ناضج، ينقطف الحين'}</span></div>`}).join('')}</div>`:'<div class="sub">ما فيه محاصيل مزروعة للحين. خلّص مهام وتنزرع في الأحواض.</div>'}
     <div class="foot"><span>${allRipe?`🧺 ${allRipe} ناضج ينقطف ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'}`:soon<Infinity?`🌱 أقرب حصاد بعد ${fmtLeft(soon)}`:''}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${allRipe?'<button type="button" data-pick>اقطف الناضج الحين</button>':''}</div>`);
   const b=p.querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openWorkerPop()}}
+function openTreePop(i){const f=fruitOf(i);if(!f)return;const k=plantKind(i),age=treeAge(i),G=treeGrow(),ripe=age>=G,pct=ripe?100:Math.round(age/G*100);
+  const what=k==='palm'?'نخلة':k==='pine'?'شجرة صنوبر':k==='big'?`شجرة ${CROP_INFO[f][1]} كبيرة`:`شجرة ${CROP_INFO[f][1]}`;
+  const every=(boostOn('juice')?5:15)*60e3,nextPick=Math.max(0,every-(Date.now()-(state.garden.workerAt||0)));
+  infoPop(`<h3>${CROP_INFO[f][0]} ${what}</h3><div class="sub">زرعتها بمهامك · تعطي ${fruitYield(i)*(boostOn('seeds')?2:1)} ${CROP_INFO[f][1]} كل قطفة · تثمر كل ${boostOn('fert')?'5':'8'} ساعات</div>
+    <div style="height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin:6px 0 10px"><i style="display:block;height:100%;width:${pct}%;background:${ripe?'#E8822A':'#0EA89C'}"></i></div>
+    <div class="foot" style="margin-top:0"><span>${ripe?`<span class="on">مثمرة الحين!</span> حسن بيقطفها ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'} ويوديها المخزن`:`🌱 باقي على الثمر <b>${fmtLeft(G-age)}</b>`}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${ripe?'<button type="button" data-pick>اقطفها الحين</button>':''}</div>`);
+  const b=$('info-pop').querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openTreePop(i)}}
 function openStandPop(){const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0),b=townBuilt(),inStore=state.garden.store||{},sk=Object.keys(inStore).filter(k=>inStore[k]>0);
   const sellerArt=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false).replace('scale(.6)','scale(1)')}</svg>`;
   const p=infoPop(`<h3>🧺 نقطة البيع</h3><div class="seller">${sellerArt}<div><b>أبو حسن، البيّاع</b><div class="sub" style="margin:2px 0 0">${ks.length?'"حيّاك، تفضل شوف المعروض اليوم"':'"البسطة فاضية، اعرض لي شي من المخزن وأبيعه"'}</div></div></div>
