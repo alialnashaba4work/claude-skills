@@ -368,6 +368,7 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
+.hello.panning,.g-scene.panning{cursor:grabbing;user-select:none}
 .hello .resize-h{position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:3;width:90px;height:22px;display:grid;place-items:center;cursor:ns-resize;touch-action:none}
 .resize-h span{width:46px;height:5px;border-radius:5px;background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:width .15s,background .15s}
 .resize-h:hover span,.resize-h.dragging span,.resize-h:focus-visible span{width:64px;background:var(--surface)}
@@ -1814,6 +1815,7 @@ function renderGarden(animate){
   $('g-sub').textContent=n?`زرعت ${n} ${n===1?'زرعة':n===2?'زرعتين':n<=10?'زرعات':'زرعة'} · السهلة تزرع وحدة، المتوسطة اثنتين، والكبيرة ثلاث`:'خلّص أول مهمة وتنزرع أول نبتة';
   const seen=Math.min(state.garden.seen||0,n);
   $('g-scene').innerHTML=gardenSVG(n,palmCount(),seen,animate);
+  if(!gardenZoom)gardenZoom=makeZoomer($('g-scene'),GV,sceneDims,()=>{},[0,1000,0,560]);gardenZoom.apply();
   const prev=[...STRUCTS].reverse().find(x=>x.at<=n);const from=prev?prev.at:0;
   if(next){$('g-bar').style.width=((n-from)/(next.at-from)*100)+'%';const left=next.at-n;$('g-next').innerHTML='';$('g-next').append(`باقي ${left} ${left===1?'مهمة':left===2?'مهمتين':left<=10?'مهام':'مهمة'} ويصير عندك: `);const b=document.createElement('b');b.textContent=structName(next);$('g-next').append(b);if(nextLv&&nextLv.min===next.at)$('g-next').append(` · وتصير ${nextLv.name}`)}
   else{$('g-bar').style.width='100%';$('g-next').textContent='محميتك اكتملت. كل مهمة تخلّصها تزيد فيها زرع.'}
@@ -1950,8 +1952,31 @@ async function toggleSound(){
 // banner zoom: + to get closer to the plant, − to see more of the garden
 const ZOOMS=[0.5,0.7,1,1.4,2,2.8];let zoomI=2;
 try{const z=parseInt(localStorage.getItem('tb-zoom'),10);if(z>=0&&z<ZOOMS.length)zoomI=z}catch(e){}
-function setZoom(d){const nz=Math.max(0,Math.min(ZOOMS.length-1,zoomI+d));if(nz===zoomI)return;zoomI=nz;try{localStorage.setItem('tb-zoom',String(zoomI))}catch(e){}showZoom();renderSky()}
-function showZoom(){$('z-in').disabled=zoomI===ZOOMS.length-1;$('z-out').disabled=zoomI===0}
+/* ---------- zoom with the mouse wheel toward the cursor, drag to look around ---------- */
+const BV={z:ZOOMS[zoomI],cx:null,cy:null,min:.45,max:4};   // banner view
+try{const v=JSON.parse(localStorage.getItem('tb-view')||'null');if(v&&v.z){BV.z=v.z;BV.cx=v.cx;BV.cy=v.cy}}catch(e){}
+const GV={z:1,cx:500,cy:280,min:1,max:4};                    // garden window view
+function bannerDims(S){const W=1000/S.z,H=340/S.z;if(S.cx==null){S.cx=500;const cy=S.z>1?330:(innerWidth<=620?300:290);S.cy=Math.min(cy-H/2,560-H*0.55)+H/2}return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
+function sceneDims(S){const W=1000/S.z,H=560/S.z;return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
+function makeZoomer(host,S,dims,save,lim,svgHost=host){
+  const svgOf=()=>svgHost.querySelector(':scope > svg');
+  const clamp=()=>{S.cx=Math.max(lim[0],Math.min(lim[1],S.cx));S.cy=Math.max(lim[2],Math.min(lim[3],S.cy))};
+  const apply=()=>{const svg=svgOf();if(!svg)return;const d=dims(S);svg.setAttribute('viewBox',`${d.vx.toFixed(1)} ${d.vy.toFixed(1)} ${d.W.toFixed(1)} ${d.H.toFixed(1)}`)};
+  const toScene=(x,y)=>{const svg=svgOf(),m=svg&&svg.getScreenCTM();if(!m)return null;const p=new DOMPoint(x,y).matrixTransform(m.inverse());return [p.x,p.y]};
+  const zoomAt=(P,f)=>{dims(S);const z0=S.z,z1=Math.max(S.min,Math.min(S.max,z0*f));if(Math.abs(z1-z0)<1e-4)return;S.z=z1;S.cx=P[0]+(S.cx-P[0])*z0/z1;S.cy=P[1]+(S.cy-P[1])*z0/z1;clamp();apply();save()};
+  const skip=t=>t.closest&&t.closest('button,input,a,.zoom,.streak,.snd-panel,.wx-pill,.resize-h,.plus');
+  host.addEventListener('wheel',e=>{if(skip(e.target))return;const P=toScene(e.clientX,e.clientY);if(!P)return;e.preventDefault();zoomAt(P,Math.exp(-e.deltaY*(e.deltaMode?0.05:0.0018)))},{passive:false});
+  let drag=null,moved=false;
+  host.addEventListener('pointerdown',e=>{if(e.button!==0||skip(e.target)||e.pointerType==='touch')return;const svg=svgOf();if(!svg)return;drag={x:e.clientX,y:e.clientY,cx:S.cx,cy:S.cy,k:1/svg.getScreenCTM().a};moved=false});
+  addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!moved&&Math.hypot(dx,dy)<5)return;moved=true;host.classList.add('panning');S.cx=drag.cx-dx*drag.k;S.cy=drag.cy-dy*drag.k;clamp();apply()});
+  addEventListener('pointerup',()=>{if(!drag)return;drag=null;host.classList.remove('panning');if(moved)save()});
+  host.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
+  return {apply,zoomBy:f=>{const d=dims(S);zoomAt([S.cx,S.cy],f)},reset:()=>{S.z=1;S.cx=500;S.cy=280;apply()}};
+}
+const saveBV=()=>{try{localStorage.setItem('tb-view',JSON.stringify({z:BV.z,cx:BV.cx,cy:BV.cy}))}catch(e){}showZoom()};
+let bannerZoom=null,gardenZoom=null;
+function setZoom(d){bannerZoom&&bannerZoom.zoomBy(d>0?1.4:1/1.4)}
+function showZoom(){$('z-in').disabled=BV.z>=BV.max-1e-3;$('z-out').disabled=BV.z<=BV.min+1e-3}
 function shootingStar(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   for(const host of [$('hello'),$('gview').hidden?null:$('g-scene')]){if(!host)continue;
@@ -1976,7 +2001,7 @@ function plusBubble(w,d){const el=document.createElement('span');el.className='p
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+farmerPhase+'|'+(state.garden.tidyCount||0)+'|'+weatherNow()+'|'+openCount()+'|'+Math.floor(Date.now()/6e5)+'|'+JSON.stringify(state.garden.picks||{}).length;
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+farmerPhase+'|'+(state.garden.tidyCount||0)+'|'+weatherNow()+'|'+openCount()+'|'+Math.floor(Date.now()/6e5)+'|'+JSON.stringify(state.garden.picks||{}).length;
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
   {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=[dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: الجو في أحسن حالاته':''].filter(Boolean).join(' · ')}
@@ -1989,8 +2014,9 @@ function renderSky(){
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
 ;
-  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,cy=z>1?(innerWidth<=620?330:330):(innerWidth<=620?300:290),vy=Math.min(cy-H/2,560-H*0.55);
-  $('sky-deco').innerHTML=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
+  $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
+  if(!bannerZoom)bannerZoom=makeZoomer($('hello'),BV,bannerDims,saveBV,[-300,1300,-40,640],$('sky-deco'));
+  bannerZoom.apply();
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
