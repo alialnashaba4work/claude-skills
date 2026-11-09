@@ -1566,7 +1566,7 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
     oasis:{wall:'#E9D2A6',wallD:'#CDB07C',base:'#B89B6A',roof:'#B5603A',trim:'#FBF4E6',door:'#2E6E8E',shut:'#B5603A'}}[W]||{};
   let ground='',back='',behind='',spr=[];const add=(y,s)=>spr.push([y,s]);
   // the fenced farm: mowing stripes inside
-  const farmEdge=[[0,0],[16,0],[16,16],[0,16]];
+  const FU=18,FV=19,farmEdge=[[0,0],[FU,0],[FU,FV],[0,FV]];
   ground+=ipoly(farmEdge.map(([u,v])=>[u,v]),mixHex(c.g1,c.g2,.35));
   const onWork=(u,v)=>u>3.8&&u<13.9&&v>3.6&&v<11.6;
   {const r=rnd(5);let bl='',tf='',fl='';
@@ -1606,8 +1606,11 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
   const gateV=[5.9,7.2];
   if(has(5)){let rails='',posts='';const post=(u,v)=>{const [x,y]=IP(u,v);posts+=`<path d="M${x-2.2} ${y}v-17l2.2-2.4 2.2 2.4v17z" fill="#B89571"/><path d="M${x} ${y}v-19.4l2.2 2.4v17z" fill="#8A6845"/>`};
     const rail=(a,b)=>{for(const z of [7,13])rails+=`M${ipt(a[0],a[1],z)}L${ipt(b[0],b[1],z)}`};
-    for(let v=16;v>0;v--){if(has(100)&&v>gateV[0]&&v-1<gateV[1]){post(0,v);continue}post(0,v);rail([0,v],[0,v-1])}
-    for(let u=0;u<=16;u++){post(u,0);if(u<16)rail([u,0],[u+1,0])}
+    for(let v=FV;v>0;v--){if(has(100)&&v>gateV[0]&&v-1<gateV[1]){post(0,v);continue}post(0,v);rail([0,v],[0,v-1])}
+    for(let u=0;u<=FU;u++){post(u,0);if(u<FU)rail([u,0],[u+1,0])}
+    // front fences close the farm; each piece is depth-sorted with everything else
+    const seg=(a,b)=>{let rl='';for(const z of [7,13])rl+=`M${ipt(a[0],a[1],z)}L${ipt(b[0],b[1],z)}`;const [x,y]=IP(b[0],b[1]);add(Math.max(IP(a[0],a[1])[1],y)+.1,`<path d="${rl}" stroke="#7A5A3C" stroke-width="3.2" stroke-linecap="round"/><path d="M${x-2.2} ${y}v-17l2.2-2.4 2.2 2.4v17z" fill="#B89571"/><path d="M${x} ${y}v-19.4l2.2 2.4v17z" fill="#8A6845"/>`)};
+    for(let u=0;u<FU;u++)seg([u,FV],[u+1,FV]);for(let v=0;v<FV;v++)seg([FU,v],[FU,v+1]);
     back+=`<path d="${rails}" stroke="#7A5A3C" stroke-width="3.2" stroke-linecap="round"/><path d="${rails}" stroke="#C29A70" stroke-width="1" opacity=".8" transform="translate(0 -1)"/>${posts}`}
   if(has(100)){const pil=(v)=>isoBox(-.17,v-.17,.17,v+.17,44,'#D8C7A6','#BFA67E','#E6D3AE')+isoBox(-.23,v-.23,.23,v+.23,50,'#CDB58C','#B39A70','#EADAB6',44);
     const [x1,y1]=IP(0,gateV[0],47),[x2,y2]=IP(0,gateV[1],47),mx=(x1+x2)/2,my=(y1+y2)/2;
@@ -1652,10 +1655,10 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
   if(has(40)){const [cx,cy]=IP(5.6,13.6);let rd='';for(let a=190;a<=350;a+=14){const t=a*Math.PI/180,x=cx+Math.cos(t)*120,y=cy+Math.sin(t)*56;rd+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-3 0q-2-10-5-16M0 0v-22M3 0q2-10 5-15" stroke="#4E8F3A" stroke-width="1.8" fill="none" stroke-linecap="round"/>${a%28===0?'<rect x="-1.6" y="-30" width="3.2" height="9" rx="1.6" fill="#7A4A2A"/>':''}</g>`}add(cy-40,rd)}
   // trees and palms around the farm: behind the back fences first, then the side margins
   {const slotsE=[];const r=rnd(13),j=a=>(r()-.5)*a;
-    for(const off of [-.9,-2,-3.1])for(let k=1;k<=15;k++){slotsE.push([k-.3+j(.3),off+j(.2)]);slotsE.push([off+j(.2),k-.1+j(.3)])}
-    for(let v=12.3;v<=16;v+=1.1)for(let u=.7;u<=2.8;u+=1.1)slotsE.push([u+j(.3),v+j(.3)]);
-    for(let u=13.9;u<=15.6;u+=.9)for(let v=5;v<=11;v+=1)slotsE.push([u+j(.2),v+j(.2)]);
-    for(let u=11.2;u<=15.6;u+=1.1)for(let v=.6;v<=3.6;v+=1.1)slotsE.push([u+j(.2),v+j(.2)]);
+    for(const off of [-.9,-2,-3.1])for(let k=1;k<=18;k++){slotsE.push([k-.3+j(.3),off+j(.2)]);slotsE.push([off+j(.2),k-.1+j(.3)])}
+    for(let v=12.3;v<=18.6;v+=1.1)for(let u=.7;u<=2.8;u+=1.1)slotsE.push([u+j(.3),v+j(.3)]);
+    for(let u=13.9;u<=17.6;u+=.9)for(let v=5;v<=11;v+=1)slotsE.push([u+j(.2),v+j(.2)]);
+    for(let u=11.2;u<=17.6;u+=1.1)for(let v=.6;v<=3.6;v+=1.1)slotsE.push([u+j(.2),v+j(.2)]);
     const blocked=(u,v)=>{if(has(100)&&u<0&&u>-1.6&&v>gateV[0]-.8&&v<gateV[1]+.8)return true;if(u<0&&v>5.6&&v<7.6)return true;
       if(has(25)&&u>5.6&&u<11.4&&v>0&&v<4.6)return true;if(has(80)&&u>0&&u<4.2&&v>.8&&v<5.4)return true;if(has(10)&&u>1&&u<3&&v>10.4&&v<12.4)return true;if(has(40)&&u>2&&u<9.4&&v>11.4&&v<16)return true;
       if(has(100)&&u>13.5&&v>2&&v<9)return true;if(has(80)&&u>13.5&&v>5&&v<11)return true;if(has(80)&&u<4.6&&v>.6&&v<6.2&&u>-.1)return true;const [x,y]=IP(u,v);if(Object.keys(DECOR_POS).some(id=>owned(id)&&!(state.garden.hidden||{})[id]&&Math.abs(DECOR_POS[id][0]-x)<44&&Math.abs(DECOR_POS[id][1]-y)<30))return true;return x<12||x>988||y<172||y>556};
