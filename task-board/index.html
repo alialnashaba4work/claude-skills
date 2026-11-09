@@ -1528,10 +1528,34 @@ function isoHouse(u0,v0,u1,v1,h,rh,P,night,extra=''){
   s+=`<path d="M${ipt(u0-o,vm,h+rh)}L${ipt(u1+o,vm,h+rh)}" stroke="${mixHex(P.roof,'#FFFFFF',.25)}" stroke-width="3" stroke-linecap="round"/>`;
   s+=`<path d="M${ipt(u0-o,v1+o,h-4)}L${ipt(u1+o,v1+o,h-4)}" stroke="${P.trim}" stroke-width="2.6"/><path d="M${ipt(u1+o,v1+o,h-4)}L${ipt(u1+o,vm,h+rh)}L${ipt(u1+o,v0-o,h-4)}" stroke="${P.trim}" stroke-width="2.6" fill="none" stroke-linejoin="round"/>`;
   return s+extra}
-const winL=(u,v1,w,z,hh,night,P)=>ipoly([[u-.04,v1,z-3],[u+w+.04,v1,z-3],[u+w+.04,v1,z+hh+3],[u-.04,v1,z+hh+3]],P.trim)+ipoly([[u,v1,z],[u+w,v1,z],[u+w,v1,z+hh],[u,v1,z+hh]],night?'#FFD97A':'url(#gxWin)',night?'class="glow"':'')+`<path d="M${ipt(u+w/2,v1,z)}L${ipt(u+w/2,v1,z+hh)}M${ipt(u,v1,z+hh/2)}L${ipt(u+w,v1,z+hh/2)}" stroke="${P.trim}" stroke-width="1.6"/>`+ipoly([[u-.08,v1,z-5],[u+w+.08,v1,z-5],[u+w+.08,v1,z-2],[u-.08,v1,z-2]],P.shut||P.trim);
-const winR=(u1,v,w,z,hh,night,P)=>ipoly([[u1,v+.04,z-3],[u1,v-w-.04,z-3],[u1,v-w-.04,z+hh+3],[u1,v+.04,z+hh+3]],P.trim)+ipoly([[u1,v,z],[u1,v-w,z],[u1,v-w,z+hh],[u1,v,z+hh]],night?'#FFD97A':'#9FD3E2',night?'class="glow"':'')+`<path d="M${ipt(u1,v-w/2,z)}L${ipt(u1,v-w/2,z+hh)}" stroke="${P.trim}" stroke-width="1.4"/>`;
+const glowAt=(x,y,r)=>{farmLights+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="url(#gxGlow)"/>`;return ''};
+const winL=(u,v1,w,z,hh,night,P)=>(night?glowAt(...IP(u+w/2,v1,z+hh/2),22)+(()=>{const [a,b]=IP(u,v1,z),[c2,d]=IP(u+w,v1,z+hh);farmLights+=`<path d="M${ipt(u,v1,z)}L${ipt(u+w,v1,z)}L${ipt(u+w,v1,z+hh)}L${ipt(u,v1,z+hh)}Z" fill="#FFD97A" opacity=".85"/>`;return ''})():'')+ipoly([[u-.04,v1,z-3],[u+w+.04,v1,z-3],[u+w+.04,v1,z+hh+3],[u-.04,v1,z+hh+3]],P.trim)+ipoly([[u,v1,z],[u+w,v1,z],[u+w,v1,z+hh],[u,v1,z+hh]],night?'#FFD97A':'url(#gxWin)',night?'class="glow"':'')+`<path d="M${ipt(u+w/2,v1,z)}L${ipt(u+w/2,v1,z+hh)}M${ipt(u,v1,z+hh/2)}L${ipt(u+w,v1,z+hh/2)}" stroke="${P.trim}" stroke-width="1.6"/>`+ipoly([[u-.08,v1,z-5],[u+w+.08,v1,z-5],[u+w+.08,v1,z-2],[u-.08,v1,z-2]],P.shut||P.trim);
+const winR=(u1,v,w,z,hh,night,P)=>(night?glowAt(...IP(u1,v-w/2,z+hh/2),22)+(()=>{farmLights+=`<path d="M${ipt(u1,v,z)}L${ipt(u1,v-w,z)}L${ipt(u1,v-w,z+hh)}L${ipt(u1,v,z+hh)}Z" fill="#FFD97A" opacity=".8"/>`;return ''})():'')+ipoly([[u1,v+.04,z-3],[u1,v-w-.04,z-3],[u1,v-w-.04,z+hh+3],[u1,v+.04,z+hh+3]],P.trim)+ipoly([[u1,v,z],[u1,v-w,z],[u1,v-w,z+hh],[u1,v,z+hh]],night?'#FFD97A':'#9FD3E2',night?'class="glow"':'')+`<path d="M${ipt(u1,v-w/2,z)}L${ipt(u1,v-w/2,z+hh)}" stroke="${P.trim}" stroke-width="1.4"/>`;
 const doorL=(u,v1,w,hh,P)=>ipoly([[u-.06,v1,0],[u+w+.06,v1,0],[u+w+.06,v1,hh+3],[u-.06,v1,hh+3]],P.trim)+ipoly([[u,v1,0],[u+w,v1,0],[u+w,v1,hh],[u,v1,hh]],P.door)+ipoly([[u+.06,v1,hh*.55],[u+w/2-.03,v1,hh*.55],[u+w/2-.03,v1,hh*.9],[u+.06,v1,hh*.9]],'#000','opacity=".14"')+ipoly([[u+w/2+.03,v1,hh*.55],[u+w-.06,v1,hh*.55],[u+w-.06,v1,hh*.9],[u+w/2+.03,v1,hh*.9]],'#000','opacity=".14"')+(()=>{const [x,y]=IP(u+w*.82,v1,hh*.45);return `<circle cx="${x}" cy="${y}" r="1.8" fill="#F4D27A"/>`})();
-function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){
+let farmLights='';
+function surroundSVG(W,c,night){
+  let o='';const r=rnd(57),trees=[];
+  if(W==='beach'){ // the sea beyond the back of the farm, waves along the shore
+    o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="url(#gxSea)"/>`+ipoly([[-4.2,-4.2],[60,-4.2],[60,60],[-4.2,60]],'url(#gg)');
+    o+=`<path d="M${ipt(-4.2,60)}L${ipt(-4.2,-4.2)}L${ipt(60,-4.2)}" stroke="#FFFFFF" stroke-width="5" fill="none" opacity=".7" stroke-linejoin="round"/>`;
+    let wv='';for(let i=0;i<40;i++){const u=-14+r()*30,v=-12+r()*7;const [x,y]=r()<.5?IP(u,v):IP(v,u);wv+=`M${x.toFixed(0)} ${y.toFixed(0)}q8-4 16 0q8-4 16 0`}o+=`<path d="${wv}" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" fill="none"/>`;
+    const [bx,by]=IP(-8,-8);o+=`<g transform="translate(${bx} ${by})"><g class="paddle"><path d="M-26 0h52l-8 10h-36z" fill="#8B5A33"/><path d="M0 0V-40" stroke="#5A4636" stroke-width="2.4"/><path d="M1-39L24-4H1Z" fill="#FFFFFF"/><path d="M-1-33L-17-4H-1Z" fill="#F08AA4"/></g></g>`;
+    for(let u=-3.6;u<18;u+=1.6)trees.push([u+(r()-.5)*.4,-3.8+(r()-.5)*.3,'palm'],[-3.8+(r()-.5)*.3,u+(r()-.5)*.4,'palm'])}
+  else{ // a forest all around the farm (pines in the mountains, palms in the oasis)
+    const kind=W==='mountain'?'pine':W==='oasis'?'palm':'round';
+    for(let a=-3.8;a>-12;a-=1.25)for(let b=-12;b<20;b+=1.25){if(W==='oasis'&&r()<.6)continue;trees.push([b+(r()-.5)*.6,a+(r()-.5)*.5,kind]);trees.push([a+(r()-.5)*.5,b+(r()-.5)*.6,kind])}
+    if(W==='oasis'){let dn='';for(let i=0;i<30;i++){const [x,y]=IP(-12+r()*30,-10+r()*6);dn+=`M${x.toFixed(0)} ${y.toFixed(0)}q20-6 40 0`}o+=`<path d="${dn}" stroke="${mixHex(c.g2,'#000000',.15)}" stroke-width="2" fill="none" opacity=".5"/>`}
+    if(W==='mountain'){let rk='';for(let i=0;i<24;i++){const [x,y]=IP(-12+r()*30,-12+r()*30);if(y<175||(x>20&&x<980&&y>190&&y<560&&Math.abs(x-500)/30<(y-196)/15))continue;rk+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-14 0l6-12 10-3 9 8 3 7z" fill="#9AA3A2"/><path d="M2-15l9 8 3 7H2z" fill="#7E8786"/></g>`}o+=rk}}
+  const seen=new Set(),L=[];
+  for(const [u,v,k] of trees){if(u<-1&&v<-1&&u>-3.6&&v>-3.6)continue;const [x,y]=IP(u,v);if(x<-420||x>1420||y<-120||y>620)continue;const key=Math.round(x/14)+','+Math.round(y/8);if(seen.has(key))continue;seen.add(key);L.push([y,x,k])}
+  L.sort((a,b)=>a[0]-b[0]);
+  const dk=night?.55:0,shade=h=>mixHex(h,'#0B1A12',dk*.4);
+  for(const [y,x,k] of L){const sc=.75+((x*7+y*3)%10)/30,X=x.toFixed(0),Y=y.toFixed(0);
+    if(k==='pine')o+=`<g transform="translate(${X} ${Y}) scale(${sc.toFixed(2)})"><ellipse cy="2" rx="16" ry="5" fill="#0B2A20" opacity=".18"/><rect x="-2.5" y="-10" width="5" height="10" fill="#6E4F33"/><path d="M0-58L-18-24H18Z" fill="${shade('#1F6B4F')}"/><path d="M0-46L-20-12H20Z" fill="${shade('#257A5A')}"/><path d="M0-34L-22 0H22Z" fill="${shade('#2E8C66')}"/><path d="M0-58L-6-40H2Z M0-46L-7-28H2Z" fill="#fff" opacity=".12"/></g>`;
+    else if(k==='palm')o+=`<g transform="translate(${X} ${Y}) scale(${sc.toFixed(2)})"><ellipse cy="2" rx="16" ry="5" fill="#0B2A20" opacity=".16"/><path d="M-2 0C0-16 2-30 0-44h5c1 14-1 28 1 44z" fill="#A47E58"/><g transform="translate(2 -44)">${[-160,-20,-125,-55,-95,175,5].map((a,j)=>`<path transform="rotate(${a})" d="M0 0C10-4 22-3 32 4C22 1 10 2 0 0z" fill="${shade(['#0B7D73','#0B7D73','#0EA89C','#0EA89C','#12B5A8','#0B8F84','#0B8F84'][j])}"/>`).join('')}</g></g>`;
+    else{const g1=shade(['#2E8F6A','#33996F','#287F5E'][Math.floor(Math.abs(x+y))%3]),g2=shade('#4DB385');o+=`<g transform="translate(${X} ${Y}) scale(${sc.toFixed(2)})"><ellipse cy="2" rx="22" ry="7" fill="#0B2A20" opacity=".2"/><rect x="-3" y="-16" width="6" height="16" rx="2" fill="#6E4F33"/><circle cx="-10" cy="-26" r="14" fill="${g1}"/><circle cx="10" cy="-26" r="14" fill="${g1}"/><circle cy="-38" r="16" fill="${g1}"/><circle cx="4" cy="-40" r="9" fill="${g2}" opacity=".7"/><circle cx="12" cy="-28" r="6" fill="${g2}" opacity=".5"/></g>`}}
+  return o}
+function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
   const HP={garden:{wall:'#F6EFE2',wallD:'#DCD0BC',base:'#A9A08F',roof:'#6E4A3A',trim:'#FFFFFF',door:'#0E8F84',shut:'#0B6E65'},
     beach:{wall:'#CFEFF2',wallD:'#A9D9DF',base:'#C9B48A',roof:'#D9B26A',trim:'#FFFFFF',door:'#E86A5A',shut:'#5BA9C9'},
     mountain:{wall:'#B07A48',wallD:'#8E5E34',base:'#8D8A84',roof:'#2F5D4A',trim:'#E9DCC6',door:'#5A3A20',shut:'#6B4426'},
@@ -1589,7 +1613,7 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){
     if(!night){const [sx,sy]=IP(cu+.22,cv+.2,h+rh+8);ch+=`<g class="smoke"><circle cx="${sx}" cy="${sy-4}" r="5" fill="#fff" opacity=".45"/><circle cx="${sx+5}" cy="${sy-15}" r="6.5" fill="#fff" opacity=".3"/><circle cx="${sx+12}" cy="${sy-28}" r="8" fill="#fff" opacity=".18"/></g>`}
     // flower boxes under the windows and pots by the door
     const pot=(u,v)=>{const [x,y]=IP(u,v);return `<g transform="translate(${x} ${y})"><path d="M-5 0l1.6-8h6.8l1.6 8z" fill="#B5603A"/><circle cy="-12" r="5" fill="#2A7E58"/><circle cx="-2" cy="-14" r="3" fill="#3EA374"/><circle cx="2" cy="-11" r="1.4" fill="#F08AA4"/></g>`};
-    const [hx,hy]=IP(u1,v1);add(hy,isoHouse(u0,v0,u1,v1,h,rh,Object.assign({gableWin:big},P),night,ex+ch)+pot(dU-.2,v1+.3)+pot(dU+.95,v1+.3)+(()=>{const [lx,ly]=IP(u1+.25,v1+.25);return `<g transform="translate(${lx} ${ly})"><path d="M0 0v-30" stroke="#383838" stroke-width="2.6"/><circle cy="-33" r="4.5" fill="${night?'#FFD97A':'#E9D9B0'}" class="${night?'glow':''}"/></g>`})())}
+    const [hx,hy]=IP(u1,v1);add(hy,isoHouse(u0,v0,u1,v1,h,rh,Object.assign({gableWin:big},P),night,ex+ch)+pot(dU-.2,v1+.3)+pot(dU+.95,v1+.3)+(()=>{const [lx,ly]=IP(u1+.25,v1+.25);if(night)farmLights+=`<circle cx="${lx}" cy="${ly-33}" r="26" fill="url(#gxGlow)"/><circle cx="${lx}" cy="${ly-33}" r="4.5" fill="#FFE9A0"/>`;return `<g transform="translate(${lx} ${ly})"><path d="M0 0v-30" stroke="#383838" stroke-width="2.6"/><circle cy="-33" r="4.5" fill="${night?'#FFD97A':'#E9D9B0'}" class="${night?'glow':''}"/></g>`})())}
   if(has(80)){const P={wall:'#B5423A',wallD:'#93322C',base:'#8D8A84',roof:'#5A4038',trim:'#F4EEE4',door:'#7A2A24'};
     const u0=.9,v0=1.4,u1=3.6,v1=4.2,h=44,rh=30;let ex='';
     ex+=ipoly([[u0+.7,v1,0],[u0+1.9,v1,0],[u0+1.9,v1,30],[u0+.7,v1,30]],P.trim)+ipoly([[u0+.78,v1,0],[u0+1.82,v1,0],[u0+1.82,v1,27],[u0+.78,v1,27]],P.door)+`<path d="M${ipt(u0+.8,v1,1)}L${ipt(u0+1.8,v1,26)}M${ipt(u0+1.8,v1,1)}L${ipt(u0+.8,v1,26)}" stroke="${P.trim}" stroke-width="2"/>`;
@@ -1624,44 +1648,10 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(W==='garden'&&wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
   if(W!=='garden'){const T={beach:{hill:'#7FCBDC',g1:'#F3E2B8',g2:'#E2C690'},mountain:{hill:'#7FA88E',g1:'#9CCB8E',g2:'#6FA56E'},oasis:{hill:'#E3BE84',g1:'#EED9A8',g2:'#D9B678'}}[W];c=Object.assign({},c,Object.fromEntries(Object.entries(T).map(([a,v])=>[a,night?mixHex(v,'#0E1A24',.6):v])))}
   if(dry>0){const d=DESERT[per];c=Object.fromEntries(Object.keys(c).map(k=>[k,mixHex(c[k],d[k],dry)]))}
-  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="160" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
-  o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
-  if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+=moonSVG(wide)}
-  else{const sy=wide?172:80,cy0=wide?150:70;
-    // the sun climbs and sets with the clock; it warms to orange and grows near the horizon
-    const t=dayT(),q=skyArc(t,wide),low=1-Math.sin(Math.PI*t),r0=(wide?26:32)*(1+low*.5);
-    o+=`<circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="${(r0*2.6).toFixed(0)}" fill="url(#gxGlow)"/><circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="${r0.toFixed(0)}" fill="url(#gxSun)"/>`;
-    if(low>.35)o+=`<circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="${r0.toFixed(0)}" fill="#FF8A3D" opacity="${Math.min(.65,(low-.35)*1.1).toFixed(2)}"/>`;
-    o+=cloudSVG(210,cy0,1)+cloudSVG(560,cy0-12,.75)+(wide?'':cloudSVG(380,cy0+40,.5));}
-  o+='<g transform="translate(0 -66)">';
-  // wide mode (banner zoomed out): carry the hills and ground past the scene edges
-  if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
-  if(W==='beach'){ // sea on the horizon, a sailboat drifting across
-    o+=`<rect x="-2000" y="188" width="5000" height="80" fill="url(#gxSea)"/><path d="M-2000 190H3000" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/>`;
-    {const r=rnd(12);let wv='';for(let i=0;i<26;i++){const x=r()*1000,y=200+r()*55;wv+=`<path d="M${x.toFixed(0)} ${y.toFixed(0)}q6-3 12 0q6-3 12 0"/>`}o+=`<g stroke="#fff" stroke-opacity=".55" stroke-width="1.4" fill="none">${wv}</g>`}
-    o+=`<g transform="translate(0 214)"><g class="fly" style="animation-duration:140s;animation-delay:-40s"><path d="M-22 0h44l-7 8h-30z" fill="#8B5A33"/><path d="M0 0V-34" stroke="#5A4636" stroke-width="2"/><path d="M1-33L20-4H1Z" fill="#FFFFFF"/><path d="M-1-28L-15-4H-1Z" fill="#F08AA4"/></g></g>`;
-  }else if(W==='mountain'){ // snowy peaks behind green hills, a line of pines
-    const pk=mixHex(c.b,c.hill,.45),pk2=mixHex(pk,'#000000',.12);
-    o+=`<path d="M-40 236L90 120L170 180L270 90L380 196L470 130L560 200L660 100L770 190L860 128L1040 236Z" fill="${pk}"/><path d="M-40 236L90 120L120 160L200 200L270 90L320 170L380 196Z M560 200L660 100L700 160L770 190Z" fill="${pk2}" opacity=".5"/>`;
-    o+=`<g fill="#FFFFFF" opacity="${night?.6:.95}"><path d="M90 120L72 136L84 134L92 142L100 134L110 138Z"/><path d="M270 90L250 110L262 108L272 118L282 108L292 112Z"/><path d="M660 100L638 122L652 118L662 128L672 118L684 122Z"/><path d="M860 128L842 144L854 142L862 150L870 142L880 146Z"/></g>`;
-    if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/>`;
-    o+=`<path d="M0 235C140 200 260 212 380 226S640 196 780 214 930 232 1000 220V560H0z" fill="${c.hill}"/>`;
-    {const r=rnd(19);let pn='';for(let x=10;x<1000;x+=18+r()*22){const y=226+Math.sin(x/80)*5,h=14+r()*12;pn+=`<path d="M${x.toFixed(0)} ${(y-h).toFixed(0)}l${(h*.35).toFixed(0)} ${h.toFixed(0)}h${(-h*.7).toFixed(0)}z"/>`}o+=`<g fill="${mixHex(c.hill,'#0B3B2E',.45)}" opacity=".75">${pn}</g>`}
-  }else if(W==='oasis'){ // soft sand dunes, distant palms
-    o+=`<path d="M0 214C160 170 300 196 440 206S720 168 860 190 960 206 1000 200V560H0z" fill="${mixHex(c.hill,c.b,.4)}"/>`;
-    {let pm='';for(const [x,y] of [[140,196],[520,200],[600,196],[880,192]])pm+=`<g transform="translate(${x} ${y}) scale(.5)"><path d="M0 0c0-14 2-28 0-40" stroke="${mixHex(c.hill,'#3A2A1A',.5)}" stroke-width="4" fill="none"/><path d="M0-40c-9-6-19-5-26 3M0-40c9-6 19-5 26 3M0-40c-6-9-15-13-22-11M0-40c6-9 15-13 22-11" stroke="${mixHex(c.hill,'#2A4A2A',.5)}" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;o+=pm}
-    if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/>`;
-    o+=`<path d="M0 238C140 206 280 220 400 230S660 204 800 218 940 236 1000 226V560H0z" fill="${c.hill}"/>`;
-  }else{
-  const far=mixHex(c.hill,c.b,.45);
-  o+=`<path d="M0 222C120 196 230 200 330 212S560 186 700 198 900 214 1000 204V560H0z" fill="${far}"/>`;
-  if(wide)o+=`<rect x="-2000" y="210" width="5000" height="20" fill="${far}"/>`;
-  {const r=rnd(9);let tl='';for(let x=10;x<1000;x+=26+r()*30){const y=212+Math.sin(x/90)*6,h=8+r()*10;tl+=`<ellipse cx="${x.toFixed(0)}" cy="${(y-h*.35+6).toFixed(0)}" rx="${(7+r()*7).toFixed(0)}" ry="${(h*.7).toFixed(0)}"/>`}o+=`<g fill="${mixHex(far,c.hill,.6)}" opacity=".7">${tl}</g>`}
-  o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
-  }
-  o+='</g>';
-  // the ground below the horizon, then the farm
-  o+=`<rect x="-2000" y="162" width="5000" height="1600" fill="url(#gg)"/><rect x="-2000" y="160" width="5000" height="14" fill="${c.b}" opacity=".18"/>`;
+  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="600"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
+  // no sky: the land fills the view, like looking down on the farm from above
+  o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="url(#gg)"/>`;
+  o+=(dry>0?'<g filter="url(#gd)">':'')+surroundSVG(W,c,night)+(dry>0?'</g>':'');
   if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=230+r()*300,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
     o+=`<g stroke="#9C6F3C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${Math.min(.7,(dry-.45)*1.4).toFixed(2)}">${cr}</g>`}
   o+=farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms);
@@ -1708,6 +1698,11 @@ function gardenSVG(n,palms,seen,animate,wide){
     o+=`<g stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.5" stroke-linecap="round" opacity=".65"><g class="rainloop"><g>${drops}</g><g transform="translate(187.5 -600)">${drops}</g></g></g>`;
   }
   if(!n)o+='<g transform="translate(500 430) scale(3.2)"><g class="pl"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g></g>';
+  if(night){o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="#0B1733" opacity=".42" pointer-events="none"/>`+farmLights;
+    const r=rnd(71);let ff='';for(let i=0;i<26;i++)ff+=`<circle class="glow" style="animation-delay:-${(r()*3).toFixed(1)}s" cx="${(r()*1000).toFixed(0)}" cy="${(200+r()*350).toFixed(0)}" r="${(1.4+r()*1.2).toFixed(1)}" fill="#F7F3A0"/>`;
+    o+=`<g class="bfly" style="animation-duration:24s">${ff}</g>`}
+  else{ // soft cloud shadows drift across the land
+    for(const [y,d,dl,rx] of [[260,110,20,190],[430,140,80,240],[150,95,55,160]])o+=`<g transform="translate(0 ${y})" pointer-events="none"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><ellipse rx="${rx}" ry="${rx*.42}" fill="url(#gxSoft)" opacity=".38"/></g></g>`}
   if(!night){const t=dayT(),q=skyArc(t,wide),low=1-Math.sin(Math.PI*t);
     o+=`<defs><radialGradient id="gxLight" gradientUnits="userSpaceOnUse" cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="700"><stop offset="0" stop-color="${low>.5?'#FFC27A':'#FFF4D0'}" stop-opacity="${low>.5?.28:.18}"/><stop offset=".6" stop-color="#FFF4D0" stop-opacity="0"/></radialGradient></defs>`;
     o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="url(#gxLight)" pointer-events="none"/>`;
