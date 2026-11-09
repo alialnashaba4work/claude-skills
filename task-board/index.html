@@ -2411,7 +2411,7 @@ if(window.claude&&typeof window.claude.use==='function'){
     db=d;mode='db';$('store-note').textContent='';
     db.collection('tasks').onSnapshot(snap=>{
       // merge, don't replace: a snapshot can lag behind this page's own writes
-      const map=new Map(snap.docs.map(s=>[s.id,Object.assign({id:s.id},s.data())]));
+      const map=new Map(snap.docs.map(s=>[s.id,Object.assign({id:s.id},JSON.parse(JSON.stringify(s.data()||{})))]));
       for(const t of state.tasks){
         const inc=map.get(t.id);
         const keepLocal=inFlight.has(t.id)||(t.id===state.openId&&(draftDirty||saveTimer))||(inc&&(t.updatedAt||0)>(inc.updatedAt||0));
@@ -2420,10 +2420,11 @@ if(window.claude&&typeof window.claude.use==='function'){
       for(const id of deletedIds)map.delete(id);
       state.tasks=[...map.values()];render();
     },()=>{toast('انقطع الاتصال بقاعدة البيانات');});
-    db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.garden=Object.assign({count:0,seen:0},d||{});if(!gardenLoaded){gardenLoaded=true;setTimeout(checkFarmer,1500);setTimeout(()=>{checkWorker();townTick()},5000)}renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
-    db.doc('meta/badges').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.badges=d&&d.weeks&&typeof d.weeks==='object'?d.weeks:{};renderMedals()},()=>{});
-    db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&snap.data();state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
-    db.collection('clients').onSnapshot(snap=>{const inc=snap.docs.map(s=>Object.assign({id:s.id},s.data()));const ids=new Set(inc.map(c=>c.id));
+    db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();// the database hands over read-only objects: work on a plain copy so harvests, sales and the town can change it
+      state.garden=JSON.parse(JSON.stringify(Object.assign({count:0,seen:0},d||{})));if(!gardenLoaded){gardenLoaded=true;setTimeout(checkFarmer,1500);setTimeout(()=>{checkWorker();townTick()},5000)}renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
+    db.doc('meta/badges').onSnapshot(snap=>{const d=snap.exists&&JSON.parse(JSON.stringify(snap.data()||{}));state.badges=d&&d.weeks&&typeof d.weeks==='object'?d.weeks:{};renderMedals()},()=>{});
+    db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&JSON.parse(JSON.stringify(snap.data()||{}));state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
+    db.collection('clients').onSnapshot(snap=>{const inc=snap.docs.map(s=>Object.assign({id:s.id},JSON.parse(JSON.stringify(s.data()||{}))));const ids=new Set(inc.map(c=>c.id));
       // keep clients added in the last few seconds that the snapshot has not caught up with
       state.clients=inc.concat(state.clients.filter(c=>!ids.has(c.id)&&c.createdAt&&Date.now()-c.createdAt<15000));render();if(state.openId)renderClients()},()=>{});
   }).catch(useLocal);
