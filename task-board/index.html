@@ -1473,7 +1473,7 @@ function itemArt(id,l,night){
   case 'windmill':return `${SH(16)}<path d="M-12 0L-7-56H7L12 0Z" fill="#F3EDE3" stroke="#D9CDB8" stroke-width="1.4"/><rect x="-4" y="-16" width="8" height="16" rx="3" fill="#8B6B4A"/><path d="M-9-62h18l-9-9z" fill="#C2410C"/><g transform="translate(0 -58)"><g class="blades"><path d="M0 0L-4-38H4ZM0 0L38-4V4ZM0 0L4 38H-4ZM0 0L-38 4V-4Z" fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"/><circle r="3.4" fill="#5A4636"/></g></g>`;
   case 'goldtree':return `${SH(26)}<path d="M-4 0c1-12 0-22 1-34h6c1 12 0 22 1 34z" fill="url(#gxTrunk)"/><circle cx="-15" cy="-42" r="15" fill="#6E9A2E"/><circle cx="15" cy="-42" r="15" fill="#6E9A2E"/><circle cy="-56" r="18" fill="#86B23A"/><circle cy="-40" r="14" fill="#7AA834"/><g class="glow" fill="#FFD84A" stroke="#E0A030" stroke-width=".8"><ellipse cx="-14" cy="-46" rx="3.6" ry="2.8"/><ellipse cx="8" cy="-58" rx="3.6" ry="2.8"/><ellipse cx="16" cy="-40" rx="3.6" ry="2.8"/><ellipse cx="-4" cy="-36" rx="3.6" ry="2.8"/><ellipse cx="-6" cy="-64" rx="3.2" ry="2.6"/></g><path d="M-20-62l2 2M22-56l2-2M0-78v3" stroke="#FFE27A" stroke-width="1.6" stroke-linecap="round"/>`;
   }return ''}
-const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[134,418],fountain:[312,366],flowercart:[830,529],archway:[371,326],birdhouse:[292,404],peacock:[958,484],sprinkler:[500,394],hive:[172,546],greenhouse:[842,398],basket:[792,374],bell:[58,444],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
+const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[134,418],fountain:[312,366],flowercart:[830,529],archway:[371,326],birdhouse:[292,404],peacock:[910,484],sprinkler:[500,394],hive:[172,546],greenhouse:[842,398],basket:[792,374],bell:[58,444],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
 const DECOR_RES=Object.values(DECOR_POS).map(([x,y])=>({x:x-34,y:y-56,w:68,h:62}));
 function decorSVG(night,has,wide){
   const show=id=>owned(id)&&!(state.garden.hidden||{})[id];let o='';
@@ -1517,9 +1517,11 @@ function isoBox(u0,v0,u1,v1,h,cl,cr,ct,z0=0){return ipoly([[u0,v1,z0],[u1,v1,z0]
 // a gabled building: ridge runs along u; door and windows on the front-left wall
 function isoHouse(u0,v0,u1,v1,h,rh,P,night,extra=''){
   const vm=(v0+v1)/2,o=.28;let s='';
-  s+=ipoly([[u0+.3,v1+.1,0],[u1+.9,v1+.1,0],[u1+.9,v0+.4,0],[u0+.3,v0+.4,0]],'#0B2A20','opacity=".16"'); // shadow
+  // grounded: a soft shadow hugging the footprint and a dark contact line where the walls meet the grass
+  s+=ipoly([[u0-.15,v1+.45,0],[u1+.45,v1+.45,0],[u1+.45,v0-.1,0],[u0-.15,v0-.1,0]],'#0B2A20','opacity=".14"')+ipoly([[u0-.05,v1+.2,0],[u1+.2,v1+.2,0],[u1+.2,v0,0],[u0-.05,v0,0]],'#0B2A20','opacity=".18"');
   s+=isoBox(u0,v0,u1,v1,h,P.wall,P.wallD);
   s+=isoBox(u0,v0,u1,v1,7,P.base,mixHex(P.base,'#000000',.2));
+  s+=`<path d="M${ipt(u0,v1)}L${ipt(u1,v1)}L${ipt(u1,v0)}" stroke="#1A120C" stroke-width="2.4" fill="none" opacity=".45" stroke-linejoin="round"/>`;
   // walls: soft top shade, corner trims
   s+=ipoly([[u0,v1,h-10],[u1,v1,h-10],[u1,v1,h],[u0,v1,h]],'#000','opacity=".08"')+ipoly([[u1,v1,0],[u1,v1,h],[u1-.06,v1,h],[u1-.06,v1,0]],P.trim);
   // gable end on the right wall
@@ -1566,7 +1568,7 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
     oasis:{wall:'#E9D2A6',wallD:'#CDB07C',base:'#B89B6A',roof:'#B5603A',trim:'#FBF4E6',door:'#2E6E8E',shut:'#B5603A'}}[W]||{};
   let ground='',back='',behind='',spr=[];const add=(y,s)=>spr.push([y,s]);
   // the fenced farm: mowing stripes inside
-  const FU=18,FV=19,farmEdge=[[0,0],[FU,0],[FU,FV],[0,FV]];
+  const FU=17,FV=17,farmEdge=[[0,0],[FU,0],[FU,FV],[0,FV]];
   ground+=ipoly(farmEdge.map(([u,v])=>[u,v]),mixHex(c.g1,c.g2,.35));
   const onWork=(u,v)=>u>3.8&&u<13.9&&v>3.6&&v<11.6;
   {const r=rnd(5);let bl='',tf='',fl='';
@@ -1680,6 +1682,8 @@ function gardenSVG(n,palms,seen,animate,wide){
   if(dry>0){const d=DESERT[per];c=Object.fromEntries(Object.keys(c).map(k=>[k,mixHex(c[k],d[k],dry)]))}
   const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="600"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
   // no sky: the land fills the view, like looking down on the farm from above
+  // the whole farm, fence to fence, fits the scene
+  o+='<g transform="translate(35 -113) scale(.93)">';
   o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="url(#gg)"/>`;
   o+=(dry>0?'<g filter="url(#gd)">':'')+surroundSVG(W,c,night)+(dry>0?'</g>':'');
   if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=230+r()*300,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
@@ -1737,6 +1741,7 @@ function gardenSVG(n,palms,seen,animate,wide){
     o+=`<defs><radialGradient id="gxLight" gradientUnits="userSpaceOnUse" cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="700"><stop offset="0" stop-color="${low>.5?'#FFC27A':'#FFF4D0'}" stop-opacity="${low>.5?.28:.18}"/><stop offset=".6" stop-color="#FFF4D0" stop-opacity="0"/></radialGradient></defs>`;
     o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="url(#gxLight)" pointer-events="none"/>`;
     if(low>.6)o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="#FF9A4A" opacity="${((low-.6)*.25).toFixed(2)}" pointer-events="none"/>`}
+  o+='</g>';
   if(!wide){o+=`<defs><radialGradient id="gxVig" cx=".5" cy=".55" r=".75"><stop offset=".65" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="${night?.35:.16}"/></radialGradient></defs><rect width="1000" height="560" fill="url(#gxVig)" pointer-events="none"/>`;
 }
   // soft, fading shadows instead of flat ellipses
@@ -1984,7 +1989,7 @@ function renderSky(){
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
 ;
-  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,cy=z>1?(innerWidth<=620?340:350):(innerWidth<=620?330:315),vy=Math.min(cy-H/2,560-H*0.55);
+  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,cy=z>1?(innerWidth<=620?330:330):(innerWidth<=620?300:290),vy=Math.min(cy-H/2,560-H*0.55);
   $('sky-deco').innerHTML=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
