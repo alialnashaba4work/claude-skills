@@ -385,6 +385,11 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
+.hello.max{position:fixed!important;inset:0;z-index:70;border-radius:0;height:auto!important;min-height:0;margin:0}
+.hello.max>*:not(.sky-deco):not(.zoom):not(.ff-exit){display:none!important}
+.hello .ff-exit{display:none}
+.hello.max .ff-exit{display:block;position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:3;border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
+html.farm-max,html.farm-max body{overflow:hidden}
 .hello.panning,.g-scene.panning{cursor:grabbing;user-select:none}
 .hello .resize-h{position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:3;width:90px;height:22px;display:grid;place-items:center;cursor:ns-resize;touch-action:none}
 .resize-h span{width:46px;height:5px;border-radius:5px;background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:width .15s,background .15s}
@@ -1712,7 +1717,7 @@ function cropStage(t){if(!t)return 3;const a=(Date.now()-t)/HOUR;return a<.5?0:a
 // which plantings are crops in beds (index i, bed slot j, kind)
 function cropSlots(n){const out=[];let j=0;const total=Math.min(n,260);for(let i=0;i<total;i++){if(isTall(plantKind(i)))continue;if(j>=BEDS.length*BED.per)break;out.push({i,j,kind:CROPS[Math.floor(j/BED.per)%CROPS.length]});j++}return out}
 let cropSaveT=null;
-function ensureCropTimes(count){const g=state.garden;let ch=false;if(!Array.isArray(g.cropT)){g.cropT=Array(count).fill(0);ch=true}while(g.cropT.length<count){g.cropT.push(Date.now());ch=true}
+function ensureCropTimes(count){const g=state.garden;let ch=false;if(!Array.isArray(g.cropT)||(!g.cropT.length&&count)){g.cropT=Array(count).fill(0);ch=true}while(g.cropT.length<count){g.cropT.push(Date.now());ch=true}
   if(ch){clearTimeout(cropSaveT);cropSaveT=setTimeout(saveGarden,800)}return g.cropT}
 const UNRIPE={'#F4C542':'#B8D86A','#E23B3B':'#B9D98A','#E8452E':'#9CCB6A','#E8822A':'#9CBF5A','#F29A3E':'#B2D06E','#4A63B8':'#A9C98A','#7B4FA0':'#A8C77A','#F0C75A':'#A9CF6A','#C9952E':'#7FA84A','#F7C531':'#9CCB5A','#9C7AD6':'#8FB86A','#C4A5F0':'#A9CC88','#F08A2E':'#7A5A3A'};
 function cropStageArt(k,st){
@@ -2020,13 +2025,16 @@ let fullZoom=null;const FV={z:1,cx:500,cy:280,min:.45,max:4};
 function uniqIds(svg,p){const ids=new Set();svg.replace(/\sid="([^"]+)"/g,(m,id)=>{ids.add(id);return m});if(!ids.size)return svg;
   const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),re=new RegExp(`(id="|url\\(#|href="#)(${[...ids].map(esc).join('|')})(?=[")])`,'g');return svg.replace(re,(m,a,id)=>a+p+id)}
 function renderFull(){const host=document.querySelector('#farm-full .g-scene');if(!host)return;host.innerHTML=uniqIds(gardenSVG(gardenCount(),palmCount(),gardenCount(),false),'ff-').replace('<svg ','<svg preserveAspectRatio="xMidYMid slice" ');if(!fullZoom)fullZoom=makeZoomer(host,FV,sceneDims,()=>{},[-400,1400,-200,1000]);fullZoom.apply()}
-function openFull(){let el=$('farm-full');if(!el){el=document.createElement('div');el.id='farm-full';el.className='farm-full';el.setAttribute('role','dialog');el.setAttribute('aria-label','المزرعة');el.dir='rtl';
-    el.innerHTML='<div class="g-scene"></div><button type="button" class="ff-close">✕ خروج</button><div class="ff-zoom"><button type="button" class="ff-btn" data-z="1.4">＋</button><button type="button" class="ff-btn" data-z="0.714">－</button><button type="button" class="ff-btn" data-town>🏘️ المدينة</button></div>';
-    document.body.append(el);el.querySelector(':scope > .ff-close').onclick=closeFull;el.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>fullZoom&&fullZoom.zoomBy(+b.dataset.z));el.querySelector('[data-town]').onclick=()=>{FV.z=.5;FV.cx=560;FV.cy=520;fullZoom&&fullZoom.apply()}}
-  el.hidden=false;renderFull();try{const p=el.requestFullscreen&&el.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}}
-function closeFull(){const el=$('farm-full');if(el)el.hidden=true;try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
-document.addEventListener('fullscreenchange',()=>{const el=$('farm-full');if(el&&!el.hidden&&!document.fullscreenElement)el.hidden=true});
-addEventListener('keydown',e=>{if(e.key==='Escape'){const el=$('farm-full');if(el&&!el.hidden){closeFull();e.stopPropagation()}}},true);
+// full screen: the banner itself grows to fill the screen (same scene, so it always renders)
+function openFull(){const h=$('hello');if(!$('gview').hidden){const c=$('g-close');c&&c.click()}
+  if(!h.querySelector('.ff-exit')){const b=document.createElement('button');b.type='button';b.className='ff-exit';b.textContent='✕ خروج';b.onclick=closeFull;h.append(b)}
+  h.classList.add('max');document.documentElement.classList.add('farm-max');
+  try{const p=h.requestFullscreen&&h.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}
+  requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
+function closeFull(){const h=$('hello');h.classList.remove('max');document.documentElement.classList.remove('farm-max');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
+try{new ResizeObserver(()=>bannerZoom&&bannerZoom.apply()).observe($('hello'))}catch(e){}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('hello').classList.contains('max'))closeFull();else bannerZoom&&bannerZoom.apply()});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('hello').classList.contains('max')){closeFull();e.stopPropagation()}},true);
 $('g-full').onclick=openFull;$('z-full').onclick=openFull;
 $('g-close').onclick=closeGarden;$('g-scrim').onclick=closeGarden;
 
@@ -2146,7 +2154,7 @@ try{const z=parseInt(localStorage.getItem('tb-zoom'),10);if(z>=0&&z<ZOOMS.length
 const BV={z:ZOOMS[zoomI],cx:null,cy:null,min:.45,max:4};   // banner view
 try{const v=JSON.parse(localStorage.getItem('tb-view2')||'null');if(v&&v.z){BV.z=v.z;BV.cx=v.cx;BV.cy=v.cy}}catch(e){}
 const GV={z:1,cx:500,cy:280,min:.45,max:4};                    // garden window view
-function bannerDims(S){const W=1000/S.z,H=340/S.z;if(S.cx==null){S.cx=500;const cy=S.z>1?330:(innerWidth<=620?300:290);S.cy=Math.min(cy-H/2,560-H*0.55)+H/2}return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
+function bannerDims(S){const el=$('hello'),r=el&&el.getBoundingClientRect(),ar=r&&r.width?r.height/r.width:.34,W=1000/S.z,H=W*ar;if(S.cx==null){S.cx=500;const cy=S.z>1?330:(innerWidth<=620?300:290);S.cy=Math.min(cy-H/2,560-H*0.55)+H/2}return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
 function sceneDims(S){const W=1000/S.z,H=560/S.z;return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
 function makeZoomer(host,S,dims,save,lim,svgHost=host){
   const svgOf=()=>svgHost.querySelector(':scope > svg');
@@ -2204,7 +2212,7 @@ function renderSky(){
   const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>'))
     // bring the sun, clouds and moon down into the banner's sky
 ;
-  $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g>${inner}</g></svg>`;
+  $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g>${inner}</g></svg>`;
   if(!bannerZoom)bannerZoom=makeZoomer($('hello'),BV,bannerDims,saveBV,[-300,1300,-40,640],$('sky-deco'));
   bannerZoom.apply();
 }
