@@ -386,7 +386,13 @@ button{cursor:pointer}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
 .hello.max{position:fixed!important;inset:0;z-index:70;border-radius:0;height:auto!important;min-height:0;margin:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.hello.max>*:not(.sky-deco):not(.zoom):not(.ff-exit){display:none!important}
+.hello.max>*:not(.sky-deco):not(.zoom):not(.ff-exit):not(.ff-bar):not(#info-pop):not(#info-scrim):not(#toast){display:none!important}
+.hello .ff-bar{display:none}
+.hello.max .ff-bar{display:flex;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:3;gap:6px;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 24px);padding:6px;border-radius:999px;background:color-mix(in srgb,var(--surface) 60%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.hello.max .ff-bar button{border:0;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;background:var(--surface);color:var(--ink);cursor:pointer}
+.hello.max .ff-bar .money{font-family:Montserrat,sans-serif;font-weight:700;color:#0E8F84;padding:7px 10px;font-size:13px}
+.hello.max>#toast{position:fixed;z-index:80;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.hello>#info-pop{position:fixed;z-index:75}.hello>#info-scrim{position:fixed;z-index:74}
 .hello .ff-exit{display:none}
 .hello.max .ff-exit{display:block;position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:3;border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
 html.farm-max,html.farm-max body{overflow:hidden}
@@ -2071,7 +2077,7 @@ function gardenPlay(root){
 }
 gardenPlay($('sky-deco'));gardenPlay($('g-scene'));
 $('g-farmer-b').onclick=()=>runFarmer(true);
-function renderStore(){const el=$('g-store');if(!el)return;const g=state.garden,st=g.store||{},tot=storeTotal(),dp=g.display||{},dtot=displayTotal(),b=townBuilt(),xp=townXP(),shops=openShops(b);
+function renderStore(){if($('ff-money'))$('ff-money').textContent=`💰 ${moneyStr(state.garden.moneyT||0)}`;const el=$('g-store');if(!el)return;const g=state.garden,st=g.store||{},tot=storeTotal(),dp=g.display||{},dtot=displayTotal(),b=townBuilt(),xp=townXP(),shops=openShops(b);
   const next=Math.max(0,WORKER_EVERY-(Date.now()-(g.workerAt||0))),hh=Math.floor(next/HOUR),mm=Math.ceil((next%HOUR)/60e3);
   const cs=cropSlots(gardenCount()),T=g.cropT||[];let ripe=0,growing=0;for(const c of cs){cropStage(T[c.j])===3?ripe++:growing++}
   el.innerHTML=`<div class="st-h"><b>🏚️ المخزن ونقطة البيع</b><span class="money">💰 ${moneyStr(g.moneyT||0)} فلوس</span></div>
@@ -2082,7 +2088,8 @@ function renderStore(){const el=$('g-store');if(!el)return;const g=state.garden,
     <div class="row"><span>🏘️ ${townName(b)} · ${b} ${b<=10?'مباني':'مبنى'} · قيد البناء ${Math.round((xp-Math.floor(xp))*100)}%${shops.length?` · المحلات: ${shops.join('، ')}`:''} · أهلها يجون نقطة البيع بأوقات عشوائية · اضغط على البقالة تشتري منها</span><button type="button" class="ghost" id="g-town2">شوف المدينة</button></div>`;
   el.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{const k=x.dataset.sell;putOnDisplay(k==='*'?null:k)});
   $('g-worker-b').onclick=()=>checkWorker(true);$('g-town2').onclick=showTown}
-function closeInfo(){$('info-pop')&&$('info-pop').remove();$('info-scrim')&&$('info-scrim').remove()}
+let infoClosedAt=0;
+function closeInfo(){if($('info-pop'))infoClosedAt=Date.now();$('info-pop')&&$('info-pop').remove();$('info-scrim')&&$('info-scrim').remove()}
 function infoPop(html){closeInfo();const sc=document.createElement('div');sc.id='info-scrim';sc.onclick=closeInfo;const p=document.createElement('div');p.id='info-pop';p.className='info-pop';p.dir='rtl';p.setAttribute('role','dialog');
   p.innerHTML='<button type="button" class="x" aria-label="إغلاق">✕</button>'+html;p.querySelector('.x').onclick=closeInfo;(document.querySelector('.hello.max')||document.body).append(sc,p);return p}
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('info-pop')){closeInfo();e.stopPropagation()}},true);
@@ -2132,14 +2139,22 @@ function renderFull(){const host=document.querySelector('#farm-full .g-scene');i
 // full screen: the banner itself grows to fill the screen (same scene, so it always renders)
 function openFull(){const h=$('hello');if(!$('gview').hidden){const c=$('g-close');c&&c.click()}
   if(!h.querySelector('.ff-exit')){const b=document.createElement('button');b.type='button';b.className='ff-exit';b.textContent='✕ خروج';b.onclick=closeFull;h.append(b)}
+  // a bar of farm actions, so everything works without leaving full screen
+  if(!h.querySelector('.ff-bar')){const bar=document.createElement('div');bar.className='ff-bar';bar.dir='rtl';
+    bar.innerHTML='<span class="money" id="ff-money"></span><button type="button" data-a="store">🏚️ المخزن</button><button type="button" data-a="stand">🧺 نقطة البيع</button><button type="button" data-a="worker">👷 حسن</button><button type="button" data-a="shop">🏪 البقالة</button><button type="button" data-a="town">🏘️ المدينة</button><button type="button" data-a="garden">🌱 الحديقة والسوق</button>';
+    bar.onclick=e=>{const a=e.target.closest('button')?.dataset.a;if(!a)return;e.stopPropagation();
+      if(a==='store')openStorePop();else if(a==='stand')openStandPop();else if(a==='worker')openWorkerPop();else if(a==='shop')openShopPop('بقالة');
+      else if(a==='town'){BV.z=.5;BV.cx=540;BV.cy=520;bannerZoom&&bannerZoom.apply();saveBV()}else if(a==='garden'){closeFull();$('garden-btn').click()}};
+    h.append(bar)}
+  $('ff-money').textContent=`💰 ${moneyStr(state.garden.moneyT||0)}`;h.append($('toast'));
   h.classList.add('max');document.documentElement.classList.add('farm-max');
   try{const p=h.requestFullscreen&&h.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}
   requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
-function closeFull(){const h=$('hello');h.classList.remove('max');document.documentElement.classList.remove('farm-max');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
+function closeFull(){const h=$('hello');h.classList.remove('max');document.body.append($('toast'));closeInfo();document.documentElement.classList.remove('farm-max');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
 document.addEventListener('gesturestart',e=>{if($('hello').classList.contains('max'))e.preventDefault()});
 try{new ResizeObserver(()=>bannerZoom&&bannerZoom.apply()).observe($('hello'))}catch(e){}
-document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('hello').classList.contains('max'))closeFull();else bannerZoom&&bannerZoom.apply()});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&$('hello').classList.contains('max')){closeFull();e.stopPropagation()}},true);
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('hello').classList.contains('max')){if($('info-pop')||Date.now()-infoClosedAt<400)closeInfo();else closeFull()}else bannerZoom&&bannerZoom.apply()});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('hello').classList.contains('max')&&!$('info-pop')&&Date.now()-infoClosedAt>200){closeFull();e.stopPropagation()}},true);
 $('g-full').onclick=openFull;$('z-full').onclick=openFull;
 $('g-close').onclick=closeGarden;$('g-scrim').onclick=closeGarden;
 
