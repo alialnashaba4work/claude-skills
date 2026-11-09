@@ -404,7 +404,8 @@ body.resizing{cursor:ns-resize;user-select:none}
 .shoot{position:absolute;z-index:2;width:140px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 70%,#FFF4C2);transform:rotate(18deg);pointer-events:none;animation:shoot 1.3s ease-out forwards;filter:drop-shadow(0 0 4px #fff)}
 @keyframes shoot{0%{opacity:0;translate:0 0}12%{opacity:1}100%{opacity:0;translate:360px 120px}}
 /* plant picker */
-.hit{cursor:pointer}.sky-deco .hit{pointer-events:auto}
+.hit{cursor:pointer}
+.zzz{animation:zzz 3s ease-in-out infinite}@keyframes zzz{0%{opacity:0;transform:translateY(6px)}30%,70%{opacity:.95}100%{opacity:0;transform:translateY(-10px)}}.sky-deco .hit{pointer-events:auto}
 .hit:hover{filter:brightness(1.08)}
 #info-scrim{position:fixed;inset:0;background:rgba(30,30,30,.35);z-index:74}
 .info-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:75;background:var(--surface);color:var(--ink);border-radius:24px;padding:18px 20px;box-shadow:0 24px 70px rgba(20,20,20,.3);width:min(440px,calc(100% - 32px));max-height:calc(100% - 48px);overflow:auto;animation:pop .22s ease-out}
@@ -1728,13 +1729,14 @@ function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
     behindL.sort((a,b)=>a[0]-b[0]);behind=behindL.map(a=>a[1]).join('')}
   // golden palms from the streak
   {const sp=[[930,420],[70,430],[960,470],[40,470]];for(let i=0;i<Math.min(palms,sp.length);i++){const [x,y]=sp[i];add(y,`<g transform="translate(${x} ${y}) scale(1.3)"><path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#F4B740" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/></g></g>`)}}
+  if(n>0&&has(25)&&asleep()){const [zx,zy]=IP(8.4,2.3,has(60)?110:80);add(999,zzz(zx,zy))}
   if(n>0){storeSVG(add,night);add(IP(16.45,14.6)[1],sellerSVG());add(IP(12.6,14)[1]-.5,farmHandsSVG(crops.length));ground+=townSVG(add,night)}
   spr.sort((a,b)=>a[0]-b[0]);
   const fo=dry>0?'<g filter="url(#gd)">':'',fc=dry>0?'</g>':'';let o=ground+fo+behind+fc+back+fo+spr.map(a=>a[1]).join('')+fc;
   return o}
 // people the size of the townsfolk: a farm hand who never stops (bed to bed, then the harvest to the storehouse) and a seller at the stand
 function personSVG(c1,c2,hat,extra='',walk=true){return `<g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><g class="${walk?'fwalk ':''}fleg"><path d="M-2-12v11" stroke="#2E3A4A" stroke-width="2.6"/></g><g class="${walk?'fwalk ':''}fleg2"><path d="M2-12v11" stroke="#2E3A4A" stroke-width="2.6"/></g><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M-5-33q5-6 10 0" fill="${c2}"/>${hat}${extra}</g>`}
-function farmHandsSVG(cropCount){
+function farmHandsSVG(cropCount){if(asleep())return '';
   const beds=Math.max(1,Math.min(BEDS.length,Math.ceil(cropCount/BED.per)));
   // route: storehouse door, then beside each bed in use, then back with the basket
   const pts=[[15.65,15.3],[15.65,12.2]];for(let b=0;b<Math.min(beds,6);b++){const [u0,v0]=BEDS[b];pts.push([u0+BED.S*.5,v0+BED.S+.25])}pts.push([15.65,12.2],[15.65,15.3]);
@@ -1745,7 +1747,7 @@ function farmHandsSVG(cropCount){
   const basket=`<g transform="translate(7 -16)"><path d="M-6 0h12l-2 7h-8z" fill="#B88B5E" stroke="#7E5A30" stroke-width=".8"/><circle cx="-3" cy="-1" r="2.4" fill="#E8452E"/><circle cx="1" cy="-2" r="2.4" fill="#F4C542"/><circle cx="4" cy="-1" r="2.2" fill="#E8822A"/></g>`;
   const worker=`<g class="hit" data-act="worker"><title>عامل الزراعة</title><animateMotion dur="${tot.toFixed(1)}s" repeatCount="indefinite" calcMode="linear" keyPoints="${kp.map(x=>x.toFixed(4)).join(';')}" keyTimes="${kt.map(x=>Math.min(1,x).toFixed(4)).join(';')}" path="${path}"/>${personSVG('#3E9E6A','#5A3A20','<path d="M-6-34q6-7 12 0z" fill="#E8402E"/><path d="M5-34h4" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>',`<g class="peck">${basket}</g>`)}<circle cy="-12" r="16" fill="transparent"/></g>`;
   return worker}
-function sellerSVG(){const [sx,sy]=IP(16.45,14.6);
+function sellerSVG(){if(asleep())return '';const [sx,sy]=IP(16.45,14.6);
   return `<g transform="translate(${sx.toFixed(0)} ${sy.toFixed(0)})"><g class="bfbob" style="animation-duration:1.6s">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false)}</g></g>`}
 /* ---------- crops grow, a worker harvests them, the storehouse, the stand and the town ---------- */
 const CROP_INFO={apple:['🍎','تفاح'],orange:['🍊','برتقال'],lemon:['🍋','ليمون'],dates:['🌴','رطب'],pine:['🌰','صنوبر'],corn:['🌽','ذرة'],strawberry:['🍓','فراولة'],wheat:['🌾','قمح'],carrot:['🥕','جزر'],sunflower:['🌻','دوار الشمس'],blueberry:['🫐','توت'],cabbage:['🥬','ملفوف'],tomato:['🍅','طماطم'],pumpkin:['🎃','قرع'],lavender:['💜','خزامى'],grape:['🍇','عنب']};
@@ -1807,7 +1809,7 @@ function runWorker(manual){
     setTimeout(()=>{workerPhase=null;rerenderGarden()},12400)];
 }
 let lastHarvestToast=0;
-function checkWorker(manual){if(!gardenLoaded||!gardenCount())return;const g=state.garden;if(!manual&&Date.now()-(g.workerAt||0)<(boostOn('juice')?5:15)*60e3)return;
+function checkWorker(manual){if(!gardenLoaded||!gardenCount())return;if(asleep()){if(manual)toast('😴 حسن نايم، يصحى الساعة 6 الصبح ويقطف كل الناضج');return}const g=state.garden;if(!manual&&Date.now()-(g.workerAt||0)<(boostOn('juice')?5:15)*60e3)return;
   const got=harvestNow();g.workerAt=Date.now();saveGarden();renderStore();if(got){lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)}
   if(manual||got&&(!$('gview').hidden||Date.now()-lastHarvestToast>2*HOUR)){lastHarvestToast=Date.now();toast(got?`🧺 العامل قطف ${got} ${cropWord(got)} ووداها المخزن، وزرع مكانها`:'🌱 ما فيه شي ناضج الحين، العامل قاعد يسقي ويرعى الزرع')}}
 setInterval(()=>{checkWorker();townTick()},60000);
@@ -1833,8 +1835,13 @@ const TOWN_LOTS=(()=>{const L=[];const rows=[20.2,21.9,24.9,26.6];
   for(const a of rows)for(const b of rows)if(a<=b){L.push([a,b]);if(a!==b)L.push([b,a])}
   const seen=new Set();return L.filter(([u,v])=>{const k=u.toFixed(1)+','+v.toFixed(1);if(seen.has(k))return false;seen.add(k);return true}).sort((p,q)=>Math.hypot(p[0]-19.5,p[1]-19.5)-Math.hypot(q[0]-19.5,q[1]-19.5))})();
 const TOWN_ROADS=[18.9,23.4,28.1];
-function townXP(){const t=townState();return (Date.now()-t.start)/HOUR/4+t.sold/3}
-function townBuilt(){return Math.min(TOWN_LOTS.length,3+Math.floor(townXP()))}
+// everyone sleeps from midnight to 6 am: no building, harvesting or selling
+const WAKE_H=6;const zzz=(x,y)=>`<g class="zzz" transform="translate(${x.toFixed(0)} ${y.toFixed(0)})" pointer-events="none"><text font-size="11" font-weight="700" fill="#EAF2FF" font-family="Montserrat,sans-serif">z</text><text x="7" y="-9" font-size="14" font-weight="700" fill="#EAF2FF" font-family="Montserrat,sans-serif">Z</text></g>`;const asleep=(d=new Date())=>d.getHours()<WAKE_H;
+function awakeHours(from,to){if(to<=from)return 0;let h=(to-from)/HOUR;const d=new Date(from);d.setHours(0,0,0,0);
+  for(let t=d.getTime();t<to;t+=24*HOUR){const a=Math.max(from,t),b=Math.min(to,t+WAKE_H*HOUR);if(b>a)h-=(b-a)/HOUR}return Math.max(0,h)}
+// building is a little slower now: about one new building every 6 waking hours, plus one for every 5 crops sold
+function townXP(){const t=townState();return awakeHours(t.start,Date.now())/6+t.sold/5}
+function townBuilt(){return Math.min(TOWN_LOTS.length,Math.max(townState().built||0,3+Math.floor(townXP())))}
 function townName(b){return b<6?'قرية صغيرة':b<14?'قرية':b<26?'بلدة':b<40?'مدينة صغيرة':b<60?'مدينة':'مدينة كبيرة'}
 function openShops(b){return Object.entries(SHOPS).filter(([k])=>+k<b).map(([,v])=>v[0])}
 function townTick(){if(!gardenLoaded)return;const t=townState(),b=townBuilt();let changed=false;
@@ -1843,10 +1850,28 @@ function townTick(){if(!gardenLoaded)return;const t=townState(),b=townBuilt();le
   // customers turn up at random: each minute there's a small chance one comes and buys a few things
   {const mins=Math.min(720,Math.floor((Date.now()-(t.buyAt||Date.now()))/60e3));if(mins>0){t.buyAt=(t.buyAt||Date.now())+mins*60e3;changed=true;
     const chance=Math.min(.3,(.08+b*.004)*(boostOn('baskets')?1.6:1));let got=0,people=0,last='';
-    for(let m=0;m<mins&&displayTotal();m++){if(Math.random()>=chance)continue;const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0);if(!ks.length)break;
+    const t0=t.buyAt-mins*60e3;for(let m=0;m<mins&&displayTotal();m++){if(new Date(t0+m*60e3).getHours()<WAKE_H)continue;if(Math.random()>=chance)continue;const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0);if(!ks.length)break;
       const k=ks[Math.floor(Math.random()*ks.length)],q=1+Math.floor(Math.random()*(2+Math.floor(b/10)+(boostOn('baskets')?1:0)));const n2=sellCrops(k,q,'town');if(n2){got+=n2;people++;last=`${n2} ${CROP_INFO[k][1]}`}}
     if(got)toast(people===1?`🛒 زبون من ${townName(b)} اشترى ${last} (+${moneyStr(got*PRICE_T)} فلوس)`:`🛒 ${people} زباين اشتروا ${got} ${cropWord(got)} (+${moneyStr(got*PRICE_T)} فلوس)`)}}
   if(changed){saveGarden();renderStore();lastPeriod=null;renderSky()}}
+// a small car drawn in the same angled view: body, cabin with windows, wheels, lights
+function carSVG(alongU,col){
+  const P=(a,b,z)=>{const u=alongU?a:b,v=alongU?b:a;return `${((u-v)*30).toFixed(1)} ${((u+v)*15-z).toFixed(1)}`};
+  const poly=(pts,f,ex='')=>`<path d="M${pts.map(p=>P(...p)).join('L')}Z" fill="${f}" ${ex}/>`;
+  const L=.48,W=.22,dk=mixHex(col,'#000000',.28),dk2=mixHex(col,'#000000',.42),lt=mixHex(col,'#FFFFFF',.25),OL='stroke="#1A1410" stroke-opacity=".35" stroke-width=".6" stroke-linejoin="round"';
+  // the two faces we see depend on direction: +a end (front) and +b side
+  const box=(a0,b0,a1,b1,z0,z1,cf,cs,ct)=>poly([[a1,b0,z0],[a1,b1,z0],[a1,b1,z1],[a1,b0,z1]],cf,OL)+poly([[a0,b1,z0],[a1,b1,z0],[a1,b1,z1],[a0,b1,z1]],cs,OL)+poly([[a0,b0,z1],[a1,b0,z1],[a1,b1,z1],[a0,b1,z1]],ct,OL);
+  const wheel=(a,b)=>{const [x,y]=P(a,b,3).split(' ').map(Number);return `<ellipse cx="${x}" cy="${y}" rx="3.2" ry="3.6" fill="#1E1E1E"/><ellipse cx="${x}" cy="${y}" rx="1.4" ry="1.6" fill="#9A9A9A"/>`};
+  let s=`<ellipse cy="2" rx="17" ry="6" fill="#0B2A20" opacity=".25"/>`;
+  s+=wheel(-L*.6,-W)+wheel(L*.6,-W);
+  s+=box(-L,-W,L,W,3,9,dk,dk2,col);
+  s+=box(-L*.45,-W*.85,L*.35,W*.85,9,15,lt,lt,col);
+  s+=poly([[L*.35,-W*.75,10],[L*.35,W*.75,10],[L*.35,W*.75,14],[L*.35,-W*.75,14]],'#BFE6F0',OL)+poly([[-L*.38,W*.85,10],[L*.28,W*.85,10],[L*.28,W*.85,14],[-L*.38,W*.85,14]],'#A9D6E6',OL);
+  s+=poly([[-L*.06,W*.86,10],[-L*.02,W*.86,10],[-L*.02,W*.86,14],[-L*.06,W*.86,14]],lt);
+  s+=wheel(-L*.6,W)+wheel(L*.6,W);
+  const [h1x,h1y]=P(L,-W*.6,6).split(' ').map(Number),[h2x,h2y]=P(L,W*.6,6).split(' ').map(Number);
+  s+=`<circle cx="${h1x}" cy="${h1y}" r="1.4" fill="#FFF4C2"/><circle cx="${h2x}" cy="${h2y}" r="1.4" fill="#FFF4C2"/>`;
+  return s}
 function townSVG(add,night){
   const t=townState(),b=townBuilt(),xp=townXP(),prog=Math.max(0,Math.min(1,xp-Math.floor(xp))),paved=b>=16,r=rnd(91);
   let ground='';
@@ -1869,7 +1894,7 @@ function townSVG(add,night){
       s+=`<g stroke="#C9A24A" stroke-width="1.6">${[[u0,v1],[u1,v1],[u1,v0]].map(([a,c])=>`<path d="M${ipt(a,c,4)}L${ipt(a,c,4+hh)}"/>`).join('')}<path d="M${ipt(u0,v1,4+hh*.5)}L${ipt(u1,v1,4+hh*.5)}L${ipt(u1,v0,4+hh*.5)}M${ipt(u0,v1,4+hh)}L${ipt(u1,v1,4+hh)}L${ipt(u1,v0,4+hh)}"/></g>`;
       s+=isoBox(u0+.1,v0+.1,u1-.1,v1-.1,4+hh*.7,'#D8CDB8','#BDB09A','#E6DCC8',4);
       if(b>=8){const [cx,cy]=IP(u0+.2,v0+.2);s+=`<g transform="translate(${cx.toFixed(0)} ${cy.toFixed(0)})"><path d="M0 0V-96" stroke="#E0A030" stroke-width="3"/><path d="M-8-92H48" stroke="#E0A030" stroke-width="3"/><path d="M40-92v20" stroke="#555" stroke-width="1"/><rect x="36" y="-72" width="8" height="6" fill="#8B6B4A"/><path d="M0-96L-8-92M0-96L48-92" stroke="#C98A20" stroke-width="1"/></g>`}
-      const [wx,wy]=IP(u1+.3,v1-.2);s+=`<g transform="translate(${wx.toFixed(0)} ${wy.toFixed(0)}) scale(.55)"><g class="peck"><rect x="-5" y="-30" width="10" height="16" rx="3" fill="#E8822A"/><circle cy="-36" r="5" fill="#C98E62"/><path d="M-6-40q6-6 12 0z" fill="#F4C542"/><path d="M-3-14v12M3-14v12" stroke="#2E5A80" stroke-width="3.4"/></g></g>`;
+      const [wx,wy]=IP(u1+.3,v1-.2);if(!asleep())s+=`<g transform="translate(${wx.toFixed(0)} ${wy.toFixed(0)}) scale(.55)"><g class="peck"><rect x="-5" y="-30" width="10" height="16" rx="3" fill="#E8822A"/><circle cy="-36" r="5" fill="#C98E62"/><path d="M-6-40q6-6 12 0z" fill="#F4C542"/><path d="M-3-14v12M3-14v12" stroke="#2E5A80" stroke-width="3.4"/></g></g>`;
       add(by,s);return}
     if(k>b)return;
     const shop=SHOPS[k],floors=1+(age>18?1:0)+(age>36?1:0)+(age>54?1:0);let s='';
@@ -1885,18 +1910,21 @@ function townSVG(add,night){
     else{const P={wall:PAL[k%PAL.length],wallD:mixHex(PAL[k%PAL.length],'#000000',.13),base:'#A9A08F',roof:ROOF[(k*5)%ROOF.length],trim:'#FFFFFF',door:'#7A5A3A',shut:'#5A7A8E'};
       if(floors>=3){const H=17*floors+6;s+=isoBox(u0,v0,u1,v1,H,P.wall,P.wallD,'#D9D2C6')+winGrid(u0,v0,u1,v1,H,floors)+ipoly([[u0+.55,v1,0],[u0+.85,v1,0],[u0+.85,v1,12],[u0+.55,v1,12]],P.door)}
       else{const h=floors===2?34:20;s+=isoHouse(u0+.05,v0+.05,u1-.05,v1-.05,h,14,P,night,winL(u0+.25,v1-.05,.35,h*.35,h*.35,night,P)+doorL(u0+.8,v1-.05,.3,h*.55,P)+(floors===2?winL(u0+.25,v1-.05,.35,h*.72,h*.2,night,P):''))}}
+    if(asleep()&&!shop&&k%2===0){const [zx,zy]=IP(u,v,floors>=3?17*floors+20:floors===2?62:46);s+=zzz(zx,zy)}
     add(by,shop?`<g class="hit" data-act="shop" data-shop="${shop[0]}"><title>${shop[0]}</title>${s}</g>`:s)});
   // people walk along the roads; cars once the town is a city
-  const walkers=Math.min(40,3+b);const routes=[];for(const R of TOWN_ROADS){if(R>far+.5)continue;routes.push([[R-.5,18.5-ext+.5],[R-.5,far-.3]],[[18.5-ext+.5,R-.5],[far-.3,R-.5]])}
+  // people and cars move on the road layer, under the buildings, so houses in front hide them
+  let mv='';const walkers=asleep()?0:Math.min(40,3+b);const routes=[];for(const R of TOWN_ROADS){if(R>far+.5)continue;routes.push([[R-.5,18.5-ext+.5],[R-.5,far-.3]],[[18.5-ext+.5,R-.5],[far-.3,R-.5]])}
   const CL=['#FFFFFF','#2A2A2A','#E8822A','#3F8FC2','#C0392B','#8E44AD','#3E9E6A','#F4C542'];
   for(let q=0;q<walkers&&routes.length;q++){const [A,B]=routes[q%routes.length],[ax,ay]=IP(A[0],A[1]),[bx2,by2]=IP(B[0],B[1]),d=(30+r()*40).toFixed(0),c1=CL[q%CL.length],c2=CL[(q*3+1)%CL.length];
-    add(Math.max(ay,by2)-1,`<g><animateMotion dur="${d}s" begin="-${(r()*60).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}L${ax.toFixed(0)} ${ay.toFixed(0)}"/><g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><g class="fwalk fleg"><path d="M-2-12v11" stroke="#3A2E26" stroke-width="2.6"/></g><g class="fwalk fleg2"><path d="M2-12v11" stroke="#3A2E26" stroke-width="2.6"/></g><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M-5-33q5-6 10 0" fill="${c2}"/></g></g>`)}
-  if(b>=26){for(let q=0;q<Math.min(10,Math.floor(b/5));q++){const [A,B]=routes[(q*3+1)%routes.length],[ax,ay]=IP(A[0]+.25,A[1]+.25),[bx2,by2]=IP(B[0]+.25,B[1]+.25),d=(14+r()*12).toFixed(0),cc=['#C0392B','#3F8FC2','#F4F1E8','#2A2A2A','#E0A030'][q%5];
-    add(Math.max(ay,by2),`<g><animateMotion dur="${d}s" begin="-${(r()*30).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}L${ax.toFixed(0)} ${ay.toFixed(0)}"/><ellipse cy="2" rx="12" ry="4" fill="#0B3B2E" opacity=".25"/><path d="M-12-4l12-6 12 6-12 6z" fill="${cc}"/><path d="M-12-4v4l12 6v-4zM12-4v4L0 6v-4z" fill="${mixHex(cc,'#000000',.25)}"/><path d="M-5-7l5-2.5 5 2.5-5 2.5z" fill="#BFE6F0"/></g>`)}}
+    mv+=(`<g><animateMotion dur="${d}s" begin="-${(r()*60).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}L${ax.toFixed(0)} ${ay.toFixed(0)}"/><g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><g class="fwalk fleg"><path d="M-2-12v11" stroke="#3A2E26" stroke-width="2.6"/></g><g class="fwalk fleg2"><path d="M2-12v11" stroke="#3A2E26" stroke-width="2.6"/></g><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M-5-33q5-6 10 0" fill="${c2}"/></g></g>`)}
+  if(b>=26&&!asleep()){for(let q=0;q<Math.min(10,Math.floor(b/5));q++){const ri=(q*3+1)%routes.length,[A0,B0]=routes[ri],back=q%2,[A,B]=back?[B0,A0]:[A0,B0],lane=back?-.18:.18,alongU=A[0]!==B[0];
+    const off=alongU?[0,lane+.25]:[lane+.25,0],[ax,ay]=IP(A[0]+off[0],A[1]+off[1]),[bx2,by2]=IP(B[0]+off[0],B[1]+off[1]),d=(18+r()*14).toFixed(0),cc=['#C0392B','#3F8FC2','#F4F1E8','#2A2A2A','#E0A030','#2E8B57'][q%6];
+    mv+=(`<g pointer-events="none"><animateMotion dur="${d}s" begin="-${(r()*30).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}"/>${carSVG(alongU,cc)}</g>`)}}
   // buyers walk up to the stand when there's something to sell
-  if(displayTotal()){const [ax,ay]=IP(18.6,13.3),[sx,sy]=IP(17.3,13.3);for(let q=0;q<Math.min(3,1+Math.floor(b/10));q++){const d=(16+q*5),c1=CL[(q+2)%CL.length];
+  if(displayTotal()&&!asleep()){const [ax,ay]=IP(18.6,13.3),[sx,sy]=IP(17.3,13.3);for(let q=0;q<Math.min(3,1+Math.floor(b/10));q++){const d=(16+q*5),c1=CL[(q+2)%CL.length];
     add(ay-2,`<g><animateMotion dur="${d}s" begin="-${q*5}s" repeatCount="indefinite" keyPoints="0;1;1;0" keyTimes="0;.4;.6;1" calcMode="linear" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${sx.toFixed(0)} ${sy.toFixed(0)}"/><g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><path d="M-2-12v11M2-12v11" stroke="#3A2E26" stroke-width="2.6"/><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M6-20h6l-1 8h-4z" fill="#B88B5E"/></g></g>`)}}
-  return ground}
+  return ground+mv}
 // storehouse and the little stand, inside the front of the farm
 function storeSVG(add,night){
   const P={wall:'#B88B5E',wallD:'#9A6E44',base:'#8D8577',roof:'#7A3A2E',trim:'#F4EEE4',door:'#6B4426'};
@@ -2104,7 +2132,7 @@ function openWorkerPop(){const cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.
   const TG=treeGrow();for(const c of treeSlots(gardenCount())){const o=by[c.kind]||(by[c.kind]={n:0,ripe:0,next:Infinity,sum:0,tree:true});o.n++;const age=treeAge(c.i);if(age>=TG){o.ripe++;o.sum+=1}else{o.next=Math.min(o.next,TG-age);o.sum+=age/TG}}
   const ks=Object.keys(by),allRipe=ks.reduce((a,k)=>a+by[k].ripe,0),soon=Math.min(...ks.map(k=>by[k].next)),every=(boostOn('juice')?5:15)*60e3,nextPick=Math.max(0,every-(now-(state.garden.workerAt||0)));
   const art=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#3E9E6A','#5A3A20','<path d="M-6-34q6-7 12 0z" fill="#E8402E"/><path d="M5-34h4" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>','<g transform="translate(7 -16)"><path d="M-6 0h12l-2 7h-8z" fill="#B88B5E" stroke="#7E5A30" stroke-width=".8"/><circle cx="-3" cy="-1" r="2.4" fill="#E8452E"/><circle cx="1" cy="-2" r="2.4" fill="#F4C542"/></g>',false).replace('scale(.6)','scale(1)')}</svg>`;
-  const p=infoPop(`<h3>👷 عامل الزراعة</h3><div class="seller">${art}<div><b>حسن</b><div class="sub" style="margin:2px 0 0">"أرعى الزرع والشجر والنخل، وأقطف الناضج كل ${boostOn('juice')?'5 دقايق':'ربع ساعة'} وأوديه المخزن"</div></div></div>
+  const p=infoPop(`<h3>👷 عامل الزراعة</h3><div class="seller">${art}<div><b>حسن</b><div class="sub" style="margin:2px 0 0">${asleep()?'"😴 نايم الحين، أصحى الساعة 6 الصبح وأقطف كل الناضج"':`"أرعى الزرع والشجر والنخل، وأقطف الناضج كل ${boostOn('juice')?'5 دقايق':'ربع ساعة'} وأوديه المخزن"`}</div></div></div>
     ${ks.length?`<div class="grid">${ks.map(k=>{const o=by[k],pct=Math.round(o.sum/o.n*100);return `<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${o.n}${o.tree?` <small style="font-family:inherit;font-weight:500;font-size:11px">${k==='dates'?(o.n===1?'نخلة':'نخلات'):(o.n===1?'شجرة':'شجرات')}</small>`:''}</b><span>${o.ripe?`<span class="on">${o.ripe} ${o.tree?'مثمرة':'ناضج'}</span>`:''}${o.ripe&&o.n>o.ripe?' · ':''}${o.n>o.ripe?`${o.n-o.ripe} يكبر`:''}</span><span style="width:100%;height:6px;border-radius:9px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:#0EA89C"></i></span><span>${o.n>o.ripe?`الحصاد الجاي بعد ${fmtLeft(o.next)}`:'كله ناضج، ينقطف الحين'}</span></div>`}).join('')}</div>`:'<div class="sub">ما فيه محاصيل مزروعة للحين. خلّص مهام وتنزرع في الأحواض.</div>'}
     <div class="foot"><span>${allRipe?`🧺 ${allRipe} ناضج ينقطف ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'}`:soon<Infinity?`🌱 أقرب حصاد بعد ${fmtLeft(soon)}`:''}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${allRipe?'<button type="button" data-pick>اقطف الناضج الحين</button>':''}</div>`);
   const b=p.querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openWorkerPop()}}
@@ -2117,7 +2145,7 @@ function openTreePop(i){const f=fruitOf(i);if(!f)return;const k=plantKind(i),age
   const b=$('info-pop').querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openTreePop(i)}}
 function openStandPop(){const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0),b=townBuilt(),inStore=state.garden.store||{},sk=Object.keys(inStore).filter(k=>inStore[k]>0);
   const sellerArt=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false).replace('scale(.6)','scale(1)')}</svg>`;
-  const p=infoPop(`<h3>🧺 نقطة البيع</h3><div class="seller">${sellerArt}<div><b>أبو حسن، البيّاع</b><div class="sub" style="margin:2px 0 0">${ks.length?'"حيّاك، تفضل شوف المعروض اليوم"':'"البسطة فاضية، اعرض لي شي من المخزن وأبيعه"'}</div></div></div>
+  const p=infoPop(`<h3>🧺 نقطة البيع</h3><div class="seller">${sellerArt}<div><b>أبو حسن، البيّاع</b><div class="sub" style="margin:2px 0 0">${asleep()?'"😴 البسطة مسكّرة، نايم وأفتح الساعة 6 الصبح"':ks.length?'"حيّاك، تفضل شوف المعروض اليوم"':'"البسطة فاضية، اعرض لي شي من المخزن وأبيعه"'}</div></div></div>
     ${ks.length?`<div class="grid">${ks.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${st[k]}</b><span>معروض · 0.2 للحبة</span></div>`).join('')}</div>`:''}
     ${sk.length?`<div class="sub" style="margin-top:12px">في المخزن وتقدر تعرضه:</div><div class="grid">${sk.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]} · ${inStore[k]}<button type="button" data-sell="${k}">اعرضه</button></div>`).join('')}</div>`:''}
     <div class="foot"><span>🛒 زباين ${townName(b)} يجون بأوقات عشوائية${boostOn('baskets')?' · <span class="on">🧺 سلال العرض شغالة</span>':''}</span><span>💰 ${moneyStr(state.garden.moneyT||0)} فلوس</span></div>`);
