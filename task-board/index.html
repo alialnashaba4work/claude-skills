@@ -284,7 +284,7 @@ button{cursor:pointer}
 .g-scene svg{display:block;width:100%;height:auto;border-radius:20px}
 .g-scene-wrap{position:relative}
 .g-scene-tools{position:absolute;bottom:10px;left:10px;display:flex;gap:6px;z-index:2}
-.g-scene-tools button,.farm-full .ff-close{border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
+.g-scene-tools button,.farm-full .ff-close,.farm-full .ff-btn{border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
 .farm-full{position:fixed;inset:0;z-index:70;background:#1E3A2A}
 .farm-full .g-scene{position:absolute;inset:0}
 .farm-full .g-scene svg{width:100%;height:100%;border-radius:0}
@@ -415,7 +415,10 @@ body.resizing{cursor:ns-resize;user-select:none}
 .g-worlds button.new{border-color:#0EA89C;color:#0EA89C;font-weight:600}
 .g-worlds button.locked{opacity:.55;cursor:default}
 .mkt{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
-.mkt-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mkt-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mkt-h .bal{display:flex;gap:6px;background:none;padding:0}
+.mkt-h .pay{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;cursor:pointer}
+.mkt-h .pay[aria-pressed="true"]{background:#0EA89C;border-color:#0EA89C;color:#fff}
 .mkt-h b{font-family:var(--f-display);font-size:18px;font-weight:600}
 .mkt-h .bal{font-family:var(--f-display);font-weight:600;font-size:16px;background:linear-gradient(135deg,#F7D88A,#E8B54A);color:#5A3A10;border-radius:999px;padding:5px 14px;font-variant-numeric:tabular-nums}
 .mkt-act{display:flex;gap:8px;flex-wrap:wrap}.mkt-act:empty{display:none}
@@ -1205,8 +1208,14 @@ function rareToday(){const pool=ITEMS.filter(x=>x.rare).map(x=>x.id),h=hashStr(t
 function dealToday(){const can=ITEMS.filter(x=>!x.rare&&lvlOf(x.id)<x.prices.length);if(!can.length)return null;return can[hashStr(todayKey()+'d')%can.length].id}
 function priceOf(id){const it=ITEM[id],l=lvlOf(id);if(l>=it.prices.length)return null;const base=it.prices[l];return id===dealToday()?Math.round(base*.7):base}
 function buyable(id){const it=ITEM[id];if(it.rare&&!owned(id)&&!rareToday().includes(id))return 'مو متوفر اليوم';if(it.req&&!it.req())return it.reqText;return ''}
-function buy(id){const it=ITEM[id],pr=priceOf(id);if(pr==null||buyable(id))return;if(datesBal()<pr){toast(`تحتاج ${pr-datesBal()} تمرة زيادة`);return}
-  const l=lvlOf(id);addDates(-pr,`${l?'طوّرت':'اشتريت'} ${it.name}${l?' للمستوى '+(l+1):''}`);state.garden.inv=Object.assign({},state.garden.inv||{},{[id]:l+1});
+// pay with dates (from finishing tasks) or money (from selling crops): 1 date = 1 money
+let payWith='dates';try{if(localStorage.getItem('tb-pay')==='money')payWith='money'}catch(e){}
+const payBal=()=>payWith==='money'?(state.garden.moneyT||0)/10:datesBal();
+const payIcon=()=>payWith==='money'?'💰':'🌴';
+function buy(id){const it=ITEM[id],pr=priceOf(id);if(pr==null||buyable(id))return;
+  if(payBal()<pr){const need=pr-payBal();toast(payWith==='money'?`تحتاج ${need.toFixed(1)} فلوس زيادة · بيع محاصيل من المخزن`:`تحتاج ${need} تمرة زيادة`);return}
+  const l=lvlOf(id),why=`${l?'طوّرت':'اشتريت'} ${it.name}${l?' للمستوى '+(l+1):''}`;
+  if(payWith==='money'){state.garden.moneyT=(state.garden.moneyT||0)-pr*10;state.garden.log=[{t:Date.now(),d:0,why:why+` بـ ${pr} فلوس`}].concat(state.garden.log||[]).slice(0,40)}else addDates(-pr,why);state.garden.inv=Object.assign({},state.garden.inv||{},{[id]:l+1});
   if(id==='hive'&&!state.garden.hiveAt)state.garden.hiveAt=Date.now();
   saveGarden();confetti();toast(l?`طوّرت ${it.name} 🎉`:`${it.name} صار في حديقتك 🎉`);lastPeriod=null;renderSky();renderGarden(false)}
 // tool effects
@@ -1493,7 +1502,7 @@ function itemArt(id,l,night){
   case 'windmill':return `${SH(16)}<path d="M-12 0L-7-56H7L12 0Z" fill="#F3EDE3" stroke="#D9CDB8" stroke-width="1.4"/><rect x="-4" y="-16" width="8" height="16" rx="3" fill="#8B6B4A"/><path d="M-9-62h18l-9-9z" fill="#C2410C"/><g transform="translate(0 -58)"><g class="blades"><path d="M0 0L-4-38H4ZM0 0L38-4V4ZM0 0L4 38H-4ZM0 0L-38 4V-4Z" fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"/><circle r="3.4" fill="#5A4636"/></g></g>`;
   case 'goldtree':return `${SH(26)}<path d="M-4 0c1-12 0-22 1-34h6c1 12 0 22 1 34z" fill="url(#gxTrunk)"/><circle cx="-15" cy="-42" r="15" fill="#6E9A2E"/><circle cx="15" cy="-42" r="15" fill="#6E9A2E"/><circle cy="-56" r="18" fill="#86B23A"/><circle cy="-40" r="14" fill="#7AA834"/><g class="glow" fill="#FFD84A" stroke="#E0A030" stroke-width=".8"><ellipse cx="-14" cy="-46" rx="3.6" ry="2.8"/><ellipse cx="8" cy="-58" rx="3.6" ry="2.8"/><ellipse cx="16" cy="-40" rx="3.6" ry="2.8"/><ellipse cx="-4" cy="-36" rx="3.6" ry="2.8"/><ellipse cx="-6" cy="-64" rx="3.2" ry="2.6"/></g><path d="M-20-62l2 2M22-56l2-2M0-78v3" stroke="#FFE27A" stroke-width="1.6" stroke-linecap="round"/>`;
   }return ''}
-const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[134,418],fountain:[312,366],flowercart:[830,529],archway:[371,326],birdhouse:[292,404],peacock:[910,484],sprinkler:[500,394],hive:[172,546],greenhouse:[842,398],basket:[792,374],bell:[58,444],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
+const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[150,436],fountain:[312,366],flowercart:[830,529],archway:[371,326],birdhouse:[292,404],peacock:[910,484],sprinkler:[500,394],hive:[172,546],greenhouse:[842,398],basket:[792,374],bell:[58,444],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
 const DECOR_RES=Object.values(DECOR_POS).map(([x,y])=>({x:x-34,y:y-56,w:68,h:62}));
 function decorSVG(night,has,wide){
   const show=id=>owned(id)&&!(state.garden.hidden||{})[id];let o='';
@@ -1745,7 +1754,7 @@ function storeTotal(){return Object.values(state.garden.store||{}).reduce((a,b)=
 function sellCrops(kind,qty,who){const g=state.garden,st=g.store||(g.store={});let sold=0;
   const take=k=>{const q=Math.min(st[k]||0,qty-sold);st[k]=(st[k]||0)-q;if(!st[k])delete st[k];sold+=q};
   if(kind)take(kind);else for(const k of Object.keys(st).sort((a,b)=>st[b]-st[a])){if(sold>=qty)break;take(k)}
-  if(!sold)return 0;g.moneyT=(g.moneyT||0)+sold*PRICE_T;const tw=townState();tw.sold+=sold;saveGarden();renderStore();if(who!=='town'){toast(`💰 بعت ${sold} ${sold===1?'محصول':'محاصيل'} بـ ${moneyStr(sold*PRICE_T)} فلوس`)}return sold}
+  if(!sold)return 0;g.moneyT=(g.moneyT||0)+sold*PRICE_T;const tw=townState();tw.sold+=sold;saveGarden();renderStore();if(!$('gview').hidden)renderMarket();if(who!=='town'){toast(`💰 بعت ${sold} ${sold===1?'محصول':'محاصيل'} بـ ${moneyStr(sold*PRICE_T)} فلوس`)}return sold}
 // ---- the town ----
 function townState(){const g=state.garden;if(!g.town||typeof g.town!=='object')g.town={start:Date.now(),sold:0,built:0,buyAt:Date.now()};return g.town}
 const SHOPS={2:['بقالة','#2E8B57'],5:['مخبز','#C2410C'],8:['مقهى','#7A4A2A'],11:['مسجد','mosque'],14:['صيدلية','#2E86C1'],17:['مطعم','#B03A2E'],20:['مدرسة','school'],23:['محل ورد','#D45D7E'],27:['سوق الخضار','#3E9E6A'],31:['مستوصف','#2E86C1'],35:['مكتبة','#6C4FA0'],40:['محطة وقود','#E0A030'],45:['فندق','#34495E'],50:['حديقة عامة','park'],56:['مول','#8E44AD'],63:['برج','tower']};
@@ -1921,7 +1930,7 @@ function renderWorlds(){
 }
 function itemIcon(id,l){return `<svg viewBox="-46 -72 92 82" aria-hidden="true"><defs>${gardenDefs(skyFor('day'),false)}</defs>${id==='lanterns'?lanternArt(false):itemArt(id,Math.max(1,l),false)}</svg>`}
 function renderMarket(){
-  const g=state.garden,bal=datesBal();$('mkt-bal').textContent=`🌴 ${bal}`;
+  const g=state.garden,bal=payBal();$('mkt-bal').innerHTML='';{const m=$('mkt-bal');for(const [k,t] of [['dates',`🌴 ${datesBal()} تمر`],['money',`💰 ${moneyStr(g.moneyT||0)} فلوس`]]){const b=document.createElement('button');b.type='button';b.className='pay';b.textContent=t;b.setAttribute('aria-pressed',String(payWith===k));b.title='ادفع بـ'+(k==='money'?'الفلوس':'التمر');b.onclick=()=>{payWith=k;try{localStorage.setItem('tb-pay',k)}catch(e){}renderMarket()};m.append(b)}}
   // daily actions
   const act=$('mkt-act');act.replaceChildren();
   const hv=hiveReady();if(hv){const b=document.createElement('button');b.textContent=`🐝 اجمع العسل (+${hv})`;b.onclick=collectHive;act.append(b)}
@@ -1929,7 +1938,7 @@ function renderMarket(){
   // deal of the day + rare items today
   const dl=$('mkt-deal');dl.replaceChildren();const did=dealToday();
   if(did){const it=ITEM[did],d=document.createElement('div');d.className='deal';d.innerHTML=itemIcon(did,lvlOf(did)+1);
-    const tx=document.createElement('div');tx.className='dt';tx.innerHTML=`<b>🔥 عرض اليوم</b>`;tx.append(`${it.name}${lvlOf(did)?' (المستوى '+(lvlOf(did)+1)+')':''} بخصم 30%: 🌴 ${priceOf(did)} بدل ${it.prices[lvlOf(did)]}`);
+    const tx=document.createElement('div');tx.className='dt';tx.innerHTML=`<b>🔥 عرض اليوم</b>`;tx.append(`${it.name}${lvlOf(did)?' (المستوى '+(lvlOf(did)+1)+')':''} بخصم 30%: ${payIcon()} ${priceOf(did)} بدل ${it.prices[lvlOf(did)]}`);
     const b=document.createElement('button');b.textContent=lvlOf(did)?'طوّر':'اشترِ';b.disabled=!!buyable(did);b.onclick=()=>buy(did);d.append(tx,b);dl.append(d)}
   {const [a,b2]=rareToday(),d=document.createElement('div');d.className='deal rare';d.innerHTML=itemIcon(a,1);const tx=document.createElement('div');tx.className='dt';tx.innerHTML='<b>✨ النادر اليوم</b>';tx.append(`${ITEM[a].name} و${ITEM[b2].name}: يتغيرون كل يوم، اشترهم قبل ما يروحون`);d.append(tx);dl.append(d)}
   // tabs
@@ -1956,7 +1965,7 @@ function renderMarket(){
     const btn=document.createElement('button');btn.className='buy';
     if(max){btn.textContent='أعلى مستوى ✓';btn.disabled=true}
     else if(why){btn.textContent=why;btn.disabled=true}
-    else{btn.textContent=`${l?'طوّر':'اشترِ'} · 🌴 ${pr}`;if(bal<pr)btn.classList.add('short');btn.onclick=()=>buy(it.id)}
+    else{btn.textContent=`${l?'طوّر':'اشترِ'} · ${payIcon()} ${pr}`;if(bal<pr)btn.classList.add('short');btn.onclick=()=>buy(it.id)}
     f.append(btn);
     if(it.id===dealToday()&&!max){const o=document.createElement('span');o.className='old';o.textContent=it.prices[l];f.append(o)}
     if(l&&!['sprinkler','hive','greenhouse','basket','bell','palmgrove'].includes(it.id)||(l&&['sprinkler','hive','greenhouse','basket','bell','palmgrove'].includes(it.id))){const h=document.createElement('button');h.className='hide';h.textContent=(g.hidden||{})[it.id]?'إظهار في الحديقة':'إخفاء من الحديقة';h.onclick=()=>toggleHide(it.id);f.append(h)}
@@ -1969,7 +1978,7 @@ function renderGarden(animate){
   {let note=dryNote()||WEATHER_NOTE[weatherNow()];if(periodOf(new Date().getHours())==='night'){const m=moonInfo();let mn='';try{mn=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'long'}).format(new Date())}catch(e){}note=(note?note+' · ':'')+`🌙 القمر الليلة: ${m.name}${mn?' ('+mn+')':''}`}$('g-wx').textContent=note;$('g-wx').hidden=!note}
   $('g-sub').textContent=n?`زرعت ${n} ${n===1?'زرعة':n===2?'زرعتين':n<=10?'زرعات':'زرعة'} · السهلة تزرع وحدة، المتوسطة اثنتين، والكبيرة ثلاث`:'خلّص أول مهمة وتنزرع أول نبتة';
   const seen=Math.min(state.garden.seen||0,n);
-  $('g-scene').innerHTML=gardenSVG(n,palmCount(),seen,animate);
+  $('g-scene').innerHTML=uniqIds(gardenSVG(n,palmCount(),seen,animate),'gw-');
   if(!gardenZoom)gardenZoom=makeZoomer($('g-scene'),GV,sceneDims,()=>{},[-400,1400,-200,1000]);gardenZoom.apply();renderStore();if($('farm-full')&&!$('farm-full').hidden)renderFull();
   const prev=[...STRUCTS].reverse().find(x=>x.at<=n);const from=prev?prev.at:0;
   if(next){$('g-bar').style.width=((n-from)/(next.at-from)*100)+'%';const left=next.at-n;$('g-next').innerHTML='';$('g-next').append(`باقي ${left} ${left===1?'مهمة':left===2?'مهمتين':left<=10?'مهام':'مهمة'} ويصير عندك: `);const b=document.createElement('b');b.textContent=structName(next);$('g-next').append(b);if(nextLv&&nextLv.min===next.at)$('g-next').append(` · وتصير ${nextLv.name}`)}
@@ -2007,9 +2016,12 @@ function showTown(){if(gardenZoom){GV.z=.5;GV.cx=560;GV.cy=520;gardenZoom.apply(
 $('g-town').onclick=showTown;
 // the farm alone, full screen
 let fullZoom=null;const FV={z:1,cx:500,cy:280,min:.45,max:4};
-function renderFull(){const host=document.querySelector('#farm-full .g-scene');if(!host)return;host.innerHTML=gardenSVG(gardenCount(),palmCount(),gardenCount(),false).replace('<svg ','<svg preserveAspectRatio="xMidYMid slice" ');if(!fullZoom)fullZoom=makeZoomer(host,FV,sceneDims,()=>{},[-400,1400,-200,1000]);fullZoom.apply()}
+// give every id in a scene its own prefix so two scenes on the page never borrow each other's gradients
+function uniqIds(svg,p){const ids=new Set();svg.replace(/\sid="([^"]+)"/g,(m,id)=>{ids.add(id);return m});if(!ids.size)return svg;
+  const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),re=new RegExp(`(id="|url\\(#|href="#)(${[...ids].map(esc).join('|')})(?=[")])`,'g');return svg.replace(re,(m,a,id)=>a+p+id)}
+function renderFull(){const host=document.querySelector('#farm-full .g-scene');if(!host)return;host.innerHTML=uniqIds(gardenSVG(gardenCount(),palmCount(),gardenCount(),false),'ff-').replace('<svg ','<svg preserveAspectRatio="xMidYMid slice" ');if(!fullZoom)fullZoom=makeZoomer(host,FV,sceneDims,()=>{},[-400,1400,-200,1000]);fullZoom.apply()}
 function openFull(){let el=$('farm-full');if(!el){el=document.createElement('div');el.id='farm-full';el.className='farm-full';el.setAttribute('role','dialog');el.setAttribute('aria-label','المزرعة');el.dir='rtl';
-    el.innerHTML='<div class="g-scene"></div><button type="button" class="ff-close">✕ خروج</button><div class="ff-zoom"><button type="button" class="ff-close" data-z="1.4">＋</button><button type="button" class="ff-close" data-z="0.714">－</button><button type="button" class="ff-close" data-town>🏘️ المدينة</button></div>';
+    el.innerHTML='<div class="g-scene"></div><button type="button" class="ff-close">✕ خروج</button><div class="ff-zoom"><button type="button" class="ff-btn" data-z="1.4">＋</button><button type="button" class="ff-btn" data-z="0.714">－</button><button type="button" class="ff-btn" data-town>🏘️ المدينة</button></div>';
     document.body.append(el);el.querySelector(':scope > .ff-close').onclick=closeFull;el.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>fullZoom&&fullZoom.zoomBy(+b.dataset.z));el.querySelector('[data-town]').onclick=()=>{FV.z=.5;FV.cx=560;FV.cy=520;fullZoom&&fullZoom.apply()}}
   el.hidden=false;renderFull();try{const p=el.requestFullscreen&&el.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}}
 function closeFull(){const el=$('farm-full');if(el)el.hidden=true;try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
