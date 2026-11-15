@@ -1,3 +1,12 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="config.js"></script>
+</head>
+<body>
 <title>متتبع منتجات شلف</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -783,6 +792,26 @@ section.group{display:flex;flex-direction:column;gap:16px}
   $('add').onclick=function(){openSheet(null);};
 
   var dl=null;
+  // ---- standalone (GitHub Pages) mode: Supabase for shared data, plain browser downloads
+  var SA_CFG=window.SHELF_SUPABASE||null;
+  function standaloneDownloads(){return {save:function(o){return new Promise(function(res){var blob=o.data instanceof Blob?o.data:new Blob([o.data],{type:'application/octet-stream'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=o.filename;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);res({status:'saved'});});}};}
+  function supaDB(cfg){
+    var sb=window.supabase.createClient(cfg.url,cfg.key);
+    function chk(r){if(r&&r.error){var e=new Error(r.error.message);e.code='unavailable';throw e;}return r;}
+    return {collection:function(name){
+      var listeners=[],ch=null;
+      async function load(){var r=chk(await sb.from(name).select('id,data'));var docs=(r.data||[]).map(function(x){return {id:x.id,data:function(){return x.data||{};}};});listeners.forEach(function(l){l({docs:docs});});}
+      function newId(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+      return {
+        onSnapshot:function(cb,err){listeners.push(cb);load().catch(function(e){if(err)err(e);});
+          if(!ch)ch=sb.channel('shelf-'+name).on('postgres_changes',{event:'*',schema:'public',table:name},function(){load().catch(function(){});}).subscribe();
+          var t=setInterval(function(){if(!document.hidden)load().catch(function(){});},30000);return function(){clearInterval(t);};},
+        doc:function(id){id=id||newId();return {id:id,
+          set:async function(d){chk(await sb.from(name).upsert({id:id,data:d,updated_at:new Date().toISOString()}));await load();},
+          update:async function(p){var r=chk(await sb.from(name).select('data').eq('id',id).maybeSingle());var cur=(r.data&&r.data.data)||{};chk(await sb.from(name).upsert({id:id,data:Object.assign({},cur,p),updated_at:new Date().toISOString()}));await load();},
+          delete:async function(){chk(await sb.from(name).delete().eq('id',id));await load();}};}
+      };}};
+  }
   function bkMsg(t){var m=$('bk-msg');m.replaceChildren();if(t)m.textContent=t;}
   $('bk-dl').onclick=function(){
     if(!dl)return;
@@ -823,7 +852,7 @@ section.group{display:flex;flex-direction:column;gap:16px}
     var d=new Date(),name='منتجات شلف '+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.xlsx';
     dl.save({filename:name,data:buf}).then(function(){toast('تم التنزيل');},function(e){if(e&&e.code!=='declined')toast('ما قدرت أنزّل الملف، جرب مرة ثانية.');});
   };
-  (async function(){try{dl=await window.claude?.use?.('downloads');}catch(e){dl=null;}$('xls').hidden=!dl||!window.XLSX;$('pdf').hidden=false;$('bk-dl').hidden=!dl;$('bk-up').hidden=!canWrite;$('bk-sep').hidden=!dl||!canWrite;$('xls').title='ينزّل المنتجات الظاهرة حسب الفلاتر';})();
+  (async function(){try{dl=SA_CFG?standaloneDownloads():await window.claude?.use?.('downloads');}catch(e){dl=null;}$('xls').hidden=!dl||!window.XLSX;$('pdf').hidden=false;$('bk-dl').hidden=!dl;$('bk-up').hidden=!canWrite;$('bk-sep').hidden=!dl||!canWrite;$('xls').title='ينزّل المنتجات الظاهرة حسب الفلاتر';})();
 
   function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
   function pad(n){return String(n).padStart(2,'0');}
@@ -943,11 +972,16 @@ section.group{display:flex;flex-direction:column;gap:16px}
 
   // ---- data
   (async function(){
+    if(SA_CFG){
+      if(!SA_CFG.url||!SA_CFG.key){loaded=true;canWrite=false;items=[];render();$('lede').textContent='المتتبع مو مربوط بقاعدة البيانات بعد. حط رابط Supabase ومفتاحه في ملف config.js (الشرح في README).';return;}
+      try{if(!window.supabase)await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js');db=supaDB(SA_CFG);}catch(e){db=null;}
+    }else{
     try{
       var u=await window.claude?.use?.('user');
       if(u&&u.can){var cw=await u.can('data.write');if(cw===false)canWrite=false;}
       db=await window.claude?.use?.('db');
     }catch(e){db=null;}
+    }
     if(!db){loaded=true;canWrite=false;items=[];render();$('lede').textContent='افتح الصفحة وأنت مسجل دخول عشان تشوف القائمة.';return;}
     col=db.collection('products');
     col.onSnapshot(function(snap){
@@ -958,3 +992,5 @@ section.group{display:flex;flex-direction:column;gap:16px}
   })();
 })();
 </script>
+</body>
+</html>
