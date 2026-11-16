@@ -282,23 +282,6 @@ button{cursor:pointer}
 .g-lvl{font-family:var(--f-display);font-size:26px;font-weight:600;line-height:1.2}
 .g-sub{font-size:13px;color:var(--ink-2)}
 .g-scene svg{display:block;width:100%;height:auto;border-radius:20px}
-.g-scene-wrap{position:relative}
-.g-scene-tools{position:absolute;bottom:10px;left:10px;display:flex;gap:6px;z-index:2}
-.g-scene-tools button,.farm-full .ff-close,.farm-full .ff-btn{border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
-.farm-full{position:fixed;inset:0;z-index:70;background:#1E3A2A}
-.farm-full .g-scene{position:absolute;inset:0}
-.farm-full .g-scene svg{width:100%;height:100%;border-radius:0}
-.farm-full .ff-close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:2}
-.farm-full .ff-zoom{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:2;display:flex;gap:6px}
-.g-store{margin-top:10px;background:var(--surface-2);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;font-size:13px}
-.g-store .st-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.g-store .money{font-family:Montserrat,sans-serif;font-weight:700;color:#0E8F84;background:color-mix(in srgb,#0EA89C 12%,transparent);border-radius:999px;padding:3px 10px}
-.g-store .crops{display:flex;flex-wrap:wrap;gap:6px}
-.g-store .crop{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 10px}
-.g-store .crop b{font-family:Montserrat,sans-serif}
-.g-store button{border:0;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;background:#0EA89C;color:#fff;cursor:pointer}
-.g-store button.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
-.g-store .row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;color:var(--ink-2);font-size:12.5px}
 .g-scene .new{animation:sprout .9s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes sprout{from{transform:scale(0)}to{transform:scale(1)}}
 .g-scene .glow{animation:tw 4s ease-in-out infinite}
@@ -385,18 +368,6 @@ button{cursor:pointer}
 :fullscreen .hello{min-height:340px}
 :-webkit-full-screen .hello{min-height:340px}
 :fullscreen,:-webkit-full-screen{background:var(--bg);overflow:auto}
-.hello.max{position:fixed!important;inset:0;z-index:70;border-radius:0;height:auto!important;min-height:0;margin:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.hello.max>*:not(.sky-deco):not(.zoom):not(.ff-exit):not(.ff-bar):not(#info-pop):not(#info-scrim):not(#toast){display:none!important}
-.hello .ff-bar{display:none}
-.hello.max .ff-bar{display:flex;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:3;gap:6px;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 24px);padding:6px;border-radius:999px;background:color-mix(in srgb,var(--surface) 60%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
-.hello.max .ff-bar button{border:0;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;background:var(--surface);color:var(--ink);cursor:pointer}
-.hello.max .ff-bar .money{font-family:Montserrat,sans-serif;font-weight:700;color:#0E8F84;padding:7px 10px;font-size:13px}
-.hello.max>#toast{position:fixed;z-index:80;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-.hello>#info-pop{position:fixed;z-index:75}.hello>#info-scrim{position:fixed;z-index:74}
-.hello .ff-exit{display:none}
-.hello.max .ff-exit{display:block;position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:3;border:1px solid color-mix(in srgb,var(--line) 60%,transparent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,var(--surface) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);cursor:pointer}
-html.farm-max,html.farm-max body{overflow:hidden}
-.hello.panning,.g-scene.panning{cursor:grabbing;user-select:none}
 .hello .resize-h{position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:3;width:90px;height:22px;display:grid;place-items:center;cursor:ns-resize;touch-action:none}
 .resize-h span{width:46px;height:5px;border-radius:5px;background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:width .15s,background .15s}
 .resize-h:hover span,.resize-h.dragging span,.resize-h:focus-visible span{width:64px;background:var(--surface)}
@@ -404,22 +375,6 @@ body.resizing{cursor:ns-resize;user-select:none}
 .shoot{position:absolute;z-index:2;width:140px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 70%,#FFF4C2);transform:rotate(18deg);pointer-events:none;animation:shoot 1.3s ease-out forwards;filter:drop-shadow(0 0 4px #fff)}
 @keyframes shoot{0%{opacity:0;translate:0 0}12%{opacity:1}100%{opacity:0;translate:360px 120px}}
 /* plant picker */
-.hit{cursor:pointer}
-.zzz{animation:zzz 3s ease-in-out infinite}@keyframes zzz{0%{opacity:0;transform:translateY(6px)}30%,70%{opacity:.95}100%{opacity:0;transform:translateY(-10px)}}.sky-deco .hit{pointer-events:auto}
-.hit:hover{filter:brightness(1.08)}
-#info-scrim{position:fixed;inset:0;background:rgba(30,30,30,.35);z-index:74}
-.info-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:75;background:var(--surface);color:var(--ink);border-radius:24px;padding:18px 20px;box-shadow:0 24px 70px rgba(20,20,20,.3);width:min(440px,calc(100% - 32px));max-height:calc(100% - 48px);overflow:auto;animation:pop .22s ease-out}
-.info-pop h3{margin:0 0 4px;font-size:18px}.info-pop .sub{color:var(--ink-2);font-size:12.5px;margin-bottom:12px}
-.info-pop .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
-.info-pop .cell{background:var(--surface-2);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;font-size:12.5px}
-.info-pop .cell .em{font-size:26px;line-height:1}.info-pop .cell b{font-family:Montserrat,sans-serif;font-size:16px}
-.info-pop .cell button,.info-pop .foot button{border:0;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;background:#0EA89C;color:#fff;cursor:pointer}
-.info-pop .cell button:disabled{background:var(--line);color:var(--ink-2);cursor:default}
-.info-pop .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
-.info-pop .x{position:absolute;top:12px;left:12px;border:0;background:var(--surface-2);border-radius:999px;width:30px;height:30px;cursor:pointer;color:var(--ink)}
-.info-pop .seller{display:flex;align-items:center;gap:12px;background:var(--surface-2);border-radius:16px;padding:10px 12px;margin-bottom:10px}
-.info-pop .seller svg{width:54px;height:64px;flex:none}
-.info-pop .on{color:#0E8F84;font-weight:600}
 .pick{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:41;background:var(--surface);border-radius:24px;padding:20px 22px;box-shadow:0 24px 70px rgba(20,20,20,.3);width:min(420px,calc(100% - 32px));text-align:center;animation:pop .22s ease-out}
 .pick h3{margin:0 0 4px;font-family:var(--f-display);font-size:19px;font-weight:600}
 .pick p{margin:0 0 14px;color:var(--ink-2);font-size:13px}
@@ -442,10 +397,7 @@ body.resizing{cursor:ns-resize;user-select:none}
 .g-worlds button.new{border-color:#0EA89C;color:#0EA89C;font-weight:600}
 .g-worlds button.locked{opacity:.55;cursor:default}
 .mkt{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
-.mkt-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.mkt-h .bal{display:flex;gap:6px;background:none;padding:0}
-.mkt-h .pay{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;cursor:pointer}
-.mkt-h .pay[aria-pressed="true"]{background:#0EA89C;border-color:#0EA89C;color:#fff}
+.mkt-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .mkt-h b{font-family:var(--f-display);font-size:18px;font-weight:600}
 .mkt-h .bal{font-family:var(--f-display);font-weight:600;font-size:16px;background:linear-gradient(135deg,#F7D88A,#E8B54A);color:#5A3A10;border-radius:999px;padding:5px 14px;font-variant-numeric:tabular-nums}
 .mkt-act{display:flex;gap:8px;flex-wrap:wrap}.mkt-act:empty{display:none}
@@ -490,7 +442,6 @@ body.resizing{cursor:ns-resize;user-select:none}
 .drops{animation:drops 1.4s ease-in infinite}
 @keyframes drops{from{transform:translateY(-4px);opacity:1}to{transform:translateY(8px);opacity:0}}
 .duckbob{animation:bob 2.4s ease-in-out infinite alternate}
-.peck{transform-box:fill-box;transform-origin:30% 90%;animation:peck 2.6s ease-in-out infinite}@keyframes peck{0%,70%,100%{transform:rotate(0)}80%,90%{transform:rotate(18deg)}}
 .paddle{animation:paddle 12s ease-in-out infinite alternate}
 @keyframes paddle{from{transform:translateX(-14px)}to{transform:translateX(14px)}}
 .tail{transform-box:fill-box;transform-origin:100% 100%;animation:tailw 1.8s ease-in-out infinite alternate}
@@ -597,7 +548,6 @@ body.resizing{cursor:ns-resize;user-select:none}
     <div class="zoom" role="group" aria-label="تكبير الحديقة">
       <button id="z-in" aria-label="تكبير" title="تكبير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
       <button id="z-out" aria-label="تصغير" title="تصغير"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3.5 8h9"/></svg></button>
-      <button id="z-full" aria-label="المزرعة شاشة كاملة" title="المزرعة شاشة كاملة"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg></button>
       <button id="snd" aria-pressed="false" aria-label="أصوات الحديقة" title="أصوات الحديقة"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6h2.5l3.5-3v10L5 10H2.5z"/><path class="w" d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4"/><path class="x" d="M11 6l3.5 4M14.5 6L11 10"/></svg></button>
     </div>
     <div class="hello-t">
@@ -689,11 +639,10 @@ body.resizing{cursor:ns-resize;user-select:none}
     <div><div class="g-l">الحديقة</div><div class="g-lvl" id="g-lvl">زرعة صغيرة</div><div class="g-sub" id="g-sub"></div><div class="g-wx" id="g-wx" hidden></div></div>
     <button class="icon-btn" id="g-close" aria-label="إغلاق"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
   </div>
-  <div class="g-scene-wrap"><div class="g-scene" id="g-scene"></div><div class="g-scene-tools"><button type="button" id="g-town" title="شوف المدينة">🏘️ المدينة</button><button type="button" id="g-full" title="المزرعة شاشة كاملة">⛶ شاشة كاملة</button></div></div>
+  <div class="g-scene" id="g-scene"></div>
   <div class="g-prog"><div class="g-bar"><i id="g-bar"></i></div><div class="g-next" id="g-next"></div></div>
   <div class="g-list" id="g-list"></div>
   <div class="g-farmer"><span id="g-farmer-t"></span><button type="button" id="g-farmer-b">👨‍🌾 نادِ الفلاح الحين</button></div>
-  <section class="g-store" id="g-store" aria-label="المخزن ونقطة البيع والمدينة"></section>
   <div class="g-worlds" id="g-worlds"></div>
   <section class="mkt" id="mkt" aria-label="سوق الحديقة">
     <div class="mkt-h"><b>🛒 سوق الحديقة</b><span class="bal" id="mkt-bal"></span></div>
@@ -727,7 +676,7 @@ function localLoad(){try{return JSON.parse(localStorage.getItem('tb-tasks')||'[]
 function localSave(){try{localStorage.setItem('tb-tasks',JSON.stringify(state.tasks))}catch(e){}}
 function useLocal(){
   if(mode==='db')return;
-  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.badges=JSON.parse(localStorage.getItem('tb-badges')||'{}')}catch(e){}try{state.garden=Object.assign({count:0,seen:0},JSON.parse(localStorage.getItem('tb-garden')||'{}'))}catch(e){}gardenLoaded=true;setTimeout(checkFarmer,1500);setTimeout(()=>{checkWorker();townTick()},5000);try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
+  mode='local';state.tasks=localLoad();try{state.days=JSON.parse(localStorage.getItem('tb-days')||'[]')}catch(e){}try{state.badges=JSON.parse(localStorage.getItem('tb-badges')||'{}')}catch(e){}try{state.garden=Object.assign({count:0,seen:0},JSON.parse(localStorage.getItem('tb-garden')||'{}'))}catch(e){}gardenLoaded=true;setTimeout(checkFarmer,1500);try{state.clients=JSON.parse(localStorage.getItem('tb-clients')||'[]')}catch(e){}
   $('store-note').textContent='(يتم الحفظ في هذا المتصفح فقط)';
   render();
 }
@@ -1235,14 +1184,8 @@ function rareToday(){const pool=ITEMS.filter(x=>x.rare).map(x=>x.id),h=hashStr(t
 function dealToday(){const can=ITEMS.filter(x=>!x.rare&&lvlOf(x.id)<x.prices.length);if(!can.length)return null;return can[hashStr(todayKey()+'d')%can.length].id}
 function priceOf(id){const it=ITEM[id],l=lvlOf(id);if(l>=it.prices.length)return null;const base=it.prices[l];return id===dealToday()?Math.round(base*.7):base}
 function buyable(id){const it=ITEM[id];if(it.rare&&!owned(id)&&!rareToday().includes(id))return 'مو متوفر اليوم';if(it.req&&!it.req())return it.reqText;return ''}
-// pay with dates (from finishing tasks) or money (from selling crops): 1 date = 1 money
-let payWith='dates';try{if(localStorage.getItem('tb-pay')==='money')payWith='money'}catch(e){}
-const payBal=()=>payWith==='money'?(state.garden.moneyT||0)/10:datesBal();
-const payIcon=()=>payWith==='money'?'💰':'🌴';
-function buy(id){const it=ITEM[id],pr=priceOf(id);if(pr==null||buyable(id))return;
-  if(payBal()<pr){const need=pr-payBal();toast(payWith==='money'?`تحتاج ${need.toFixed(1)} فلوس زيادة · بيع محاصيل من المخزن`:`تحتاج ${need} تمرة زيادة`);return}
-  const l=lvlOf(id),why=`${l?'طوّرت':'اشتريت'} ${it.name}${l?' للمستوى '+(l+1):''}`;
-  if(payWith==='money'){state.garden.moneyT=(state.garden.moneyT||0)-pr*10;state.garden.log=[{t:Date.now(),d:0,why:why+` بـ ${pr} فلوس`}].concat(state.garden.log||[]).slice(0,40)}else addDates(-pr,why);state.garden.inv=Object.assign({},state.garden.inv||{},{[id]:l+1});
+function buy(id){const it=ITEM[id],pr=priceOf(id);if(pr==null||buyable(id))return;if(datesBal()<pr){toast(`تحتاج ${pr-datesBal()} تمرة زيادة`);return}
+  const l=lvlOf(id);addDates(-pr,`${l?'طوّرت':'اشتريت'} ${it.name}${l?' للمستوى '+(l+1):''}`);state.garden.inv=Object.assign({},state.garden.inv||{},{[id]:l+1});
   if(id==='hive'&&!state.garden.hiveAt)state.garden.hiveAt=Date.now();
   saveGarden();confetti();toast(l?`طوّرت ${it.name} 🎉`:`${it.name} صار في حديقتك 🎉`);lastPeriod=null;renderSky();renderGarden(false)}
 // tool effects
@@ -1264,7 +1207,7 @@ const inGarden=t=>GARDEN_WS.includes(t.workspace||'freelance');
 const doneWeight=()=>state.tasks.filter(t=>t.status==='done'&&inGarden(t)).reduce((a,t)=>a+WEIGHT[sizeOf(t)],0);
 function gardenCount(){return state.garden.noFallback?(state.garden.count||0):Math.max(state.garden.count||0,doneWeight())}
 let gardenQ=Promise.resolve();
-function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew,cropT:g.cropT||[],store:g.store||{},moneyT:g.moneyT||0,workerAt:g.workerAt||0,town:g.town||null,boost:g.boost||{},display:g.display||{},treeT:g.treeT||{}};
+function saveGarden(){const g=state.garden;const body={count:g.count||0,seen:g.seen||0,picks:g.picks||{},dates:datesBal(),inv:g.inv||{},hidden:g.hidden||{},log:g.log||[],sets:g.sets||{},hiveAt:g.hiveAt||0,harvestDay:g.harvestDay||'',tidyCount:g.tidyCount||0,tidyDay:g.tidyDay||'',world:curWorld(),worlds:g.worlds||{},noFallback:!!g.noFallback,unlockedNew:!!g.unlockedNew};
   if(mode==='db')gardenQ=gardenQ.then(()=>db.doc('meta/garden').set(body)).catch(()=>{});
   else try{localStorage.setItem('tb-garden',JSON.stringify(body))}catch(e){}}
 function growGarden(t){if(t&&!inGarden(t))return gardenCount();const w=t?plantWeight(t):1;const g=state.garden;g.count=g.noFallback?(g.count||0)+w:Math.max((g.count||0)+w,doneWeight());saveGarden();return g.count}
@@ -1339,7 +1282,6 @@ let sunSide=1; // +1 light comes from the right, -1 from the left (set per scene
   const pat=(id,url,w,h)=>url?`<pattern id="${id}" patternUnits="userSpaceOnUse" width="${w}" height="${h}"><image href="${url}" width="${w}" height="${h}"/></pattern>`:'';
   const svg=`<svg id="gx-tex" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>${pat('gxTGrass',grass,256,256)}${pat('gxTLeaf',leaf,64,64)}${pat('gxTBark',bark,16,48)}${pat('gxTWater',water,256,128)}${pat('gxTPlaster',plaster,96,96)}
     <radialGradient id="gxWingL" cx="1" cy=".5" r="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".45"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient><radialGradient id="gxWingR" cx="0" cy=".5" r="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".45"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
-    <radialGradient id="gxBlotL"><stop offset="0" stop-color="#FFFFD0" stop-opacity=".22"/><stop offset="1" stop-color="#FFFFD0" stop-opacity="0"/></radialGradient><radialGradient id="gxBlotD"><stop offset="0" stop-color="#1E4A10" stop-opacity=".16"/><stop offset="1" stop-color="#1E4A10" stop-opacity="0"/></radialGradient><linearGradient id="gxRoofSh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/><stop offset="1" stop-color="#000000" stop-opacity=".18"/></linearGradient>
     <radialGradient id="gxSoft"><stop offset="0" stop-color="#0B2A20" stop-opacity=".38"/><stop offset=".6" stop-color="#0B2A20" stop-opacity=".18"/><stop offset="1" stop-color="#0B2A20" stop-opacity="0"/></radialGradient>
     <radialGradient id="gxPuff" cx=".45" cy=".4" r=".6"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".7" stop-color="#F4F8FA" stop-opacity=".95"/><stop offset="1" stop-color="#E6EEF2" stop-opacity="0"/></radialGradient>
     <radialGradient id="gxPuffShade" cx=".5" cy=".75" r=".6"><stop offset="0" stop-color="#9FB3BD" stop-opacity=".45"/><stop offset="1" stop-color="#9FB3BD" stop-opacity="0"/></radialGradient>
@@ -1372,7 +1314,7 @@ function plantKind(i){const pk=(state.garden.picks||{})[i];if(pk==='palm')return
 function plantKindBase(i){
   const k=i%7;return i%25===24?'big':i%10===9?'palm':(k===0||k===4)?'grass':k===2?'bush':k===5?'tree':'flower'}
 function plantSVG(i,p){
-  const s=p.s?p.s.toFixed(2):(0.55+(p.y-285)/258*0.6).toFixed(2);let g;const v=p.v,kind=plantKind(i);
+  const s=(0.55+(p.y-285)/258*0.6).toFixed(2);let g;const v=p.v,kind=plantKind(i);
   if(kind==='big'){ // big shade tree
     {const TR='M-9 0C-6-2-5-5-5-10C-4-22-5-34-4-46h8c1 12 0 24 1 36 0 5 1 8 4 10z';
     g=`<path d="${TR}" fill="url(#gxTrunk)"/><path d="${TR}" fill="url(#gxTBark)"/><path d="M1-46c1 12 0 24 1 36 0 5 1 8 7 10H1z" fill="#3E2A18" opacity=".28"/>
@@ -1410,11 +1352,8 @@ function plantSVG(i,p){
       <g transform="translate(0 -17)">${pet}<circle r="2.4" fill="#F9D36A"/><circle r="1.2" fill="#E0A030"/></g>`}
   const sh=kind==='big'?28:kind==='palm'?16:kind==='tree'?13:kind==='bush'?17:kind==='pine'?15:kind==='rock'?14:kind==='shrub'?12:0;
   const shadow=sh?`<ellipse cy="1" rx="${sh}" ry="${(sh/4.5).toFixed(1)}" fill="#0B3B2E" opacity=".15"/>`:'';
-  const haze=!p.s&&p.y<330?` opacity="${(0.72+(p.y-285)/45*0.28).toFixed(2)}"`:'';
-  if(p.s&&kind==='palm'&&p.ripe===false)g=g.replace('fill="#B5512A"','fill="#9CBF5A"');
-  if(p.s&&(kind==='big'||kind==='tree')){const fc=p.ripe===false?'#9CCB6A':['#E8402E','#F59A23','#F2D13A','#E8402E'][i%4],F=kind==='big'?[[-22,-52],[16,-48],[-6,-70],[10,-80],[24,-62],[-14,-82],[2,-58],[-26,-64]]:[[-9,-28],[7,-30],[-2,-40],[9,-38],[-6,-44]];g+=F.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${kind==='big'?3.4:2.6}" fill="${fc}" stroke="#00000033" stroke-width=".6"/><circle cx="${x-1}" cy="${y-1}" r="1" fill="#fff" opacity=".6"/>`).join('')}
-  const tr=p.s&&isTall(kind)&&fruitOf(i)?` data-tree="${i}"`:'';
-  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"${haze}>${shadow}<g class="pl"${tr} style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
+  const haze=p.y<330?` opacity="${(0.72+(p.y-285)/45*0.28).toFixed(2)}"`:'';
+  return `<g transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${s})"${haze}>${shadow}<g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s">${g}</g></g>`;
 }
 const ageDays=t=>t.createdAt?Math.floor((Date.now()-t.createdAt)/864e5):0;
 const staleTasks=()=>state.tasks.filter(t=>t.status!=='done'&&t.createdAt&&Date.now()-t.createdAt>3*864e5);
@@ -1446,7 +1385,7 @@ function dryFilter(d){const k=d*0.8,sat=1-d*0.55,S=[[.393,.769,.189],[.349,.686,
   return `<filter id="gd"><feColorMatrix type="saturate" values="${sat.toFixed(2)}"/><feColorMatrix type="matrix" values="${m}"/></filter>`}
 function hijri(d=new Date()){try{const pr=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric'}).formatToParts(d);return{m:+pr.find(x=>x.type==='month').value,d:+pr.find(x=>x.type==='day').value}}catch(e){return null}}
 // text that stays readable inside the mirrored banner
-const label=(x,y,txt,wide,attrs)=>`<g transform="translate(${x} ${y})"><text text-anchor="middle" ${attrs}>${txt}</text></g>`;
+const label=(x,y,txt,wide,attrs)=>`<g transform="translate(${x} ${y})${wide?' scale(-1 1)':''}"><text text-anchor="middle" ${attrs}>${txt}</text></g>`;
 /* moon phase from the Hijri day: 1 = new crescent, 14-15 = full */
 function moonInfo(){const h=hijri();const d=h?h.d:15;const f=Math.min(.97,Math.max(.045,d/29.5));
   const name=d<=6?'هلال':d<=8?'تربيع أول':d<=13?'أحدب متزايد':d<=16?'بدر':d<=21?'أحدب متناقص':d<=23?'تربيع ثاني':'هلال متناقص';return{f,d,name}}
@@ -1531,436 +1470,142 @@ function itemArt(id,l,night){
   case 'windmill':return `${SH(16)}<path d="M-12 0L-7-56H7L12 0Z" fill="#F3EDE3" stroke="#D9CDB8" stroke-width="1.4"/><rect x="-4" y="-16" width="8" height="16" rx="3" fill="#8B6B4A"/><path d="M-9-62h18l-9-9z" fill="#C2410C"/><g transform="translate(0 -58)"><g class="blades"><path d="M0 0L-4-38H4ZM0 0L38-4V4ZM0 0L4 38H-4ZM0 0L-38 4V-4Z" fill="#FFFFFF" stroke="#C9C2B4" stroke-width="1"/><circle r="3.4" fill="#5A4636"/></g></g>`;
   case 'goldtree':return `${SH(26)}<path d="M-4 0c1-12 0-22 1-34h6c1 12 0 22 1 34z" fill="url(#gxTrunk)"/><circle cx="-15" cy="-42" r="15" fill="#6E9A2E"/><circle cx="15" cy="-42" r="15" fill="#6E9A2E"/><circle cy="-56" r="18" fill="#86B23A"/><circle cy="-40" r="14" fill="#7AA834"/><g class="glow" fill="#FFD84A" stroke="#E0A030" stroke-width=".8"><ellipse cx="-14" cy="-46" rx="3.6" ry="2.8"/><ellipse cx="8" cy="-58" rx="3.6" ry="2.8"/><ellipse cx="16" cy="-40" rx="3.6" ry="2.8"/><ellipse cx="-4" cy="-36" rx="3.6" ry="2.8"/><ellipse cx="-6" cy="-64" rx="3.2" ry="2.6"/></g><path d="M-20-62l2 2M22-56l2-2M0-78v3" stroke="#FFE27A" stroke-width="1.6" stroke-linecap="round"/>`;
   }return ''}
-const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[150,436],fountain:[312,366],flowercart:[830,529],archway:[371,326],birdhouse:[292,404],peacock:[910,484],sprinkler:[500,394],hive:[172,546],greenhouse:[842,398],basket:[792,374],bell:[58,444],palmgrove:[352,548],windmill:[178,250],goldtree:[612,548]};
+const DECOR_POS={flowerbed:[525,300],umbrella:[95,482],swing:[965,388],fountain:[430,345],flowercart:[660,514],archway:[505,550],birdhouse:[300,302],peacock:[770,460],sprinkler:[620,446],hive:[172,546],greenhouse:[892,302],basket:[792,374],bell:[972,306],palmgrove:[352,548],windmill:[178,250],goldtree:[592,520]};
 const DECOR_RES=Object.values(DECOR_POS).map(([x,y])=>({x:x-34,y:y-56,w:68,h:62}));
 function decorSVG(night,has,wide){
   const show=id=>owned(id)&&!(state.garden.hidden||{})[id];let o='';
   if(show('balloon'))o+=`<g transform="translate(300 ${wide?165:118})">${itemArt('balloon',1,night)}</g>`;
   const P='M505 560C500 480 520 420 560 380S660 330 700 330';
-  if(show('lanterns')&&has(15)){const pts=[[1.2,6.1],[3.2,6.1],[3.8,8.4],[3.8,10.6],[6.1,3.8],[9.2,3.8],[12.2,3.8]].map(([u,v])=>IP(u,v));const n=[0,3,5,7][lvlOf('lanterns')];for(let i=0;i<n;i++)o+=`<g transform="translate(${pts[i][0]} ${pts[i][1]})">${lanternArt(night)}</g>`}
-  if(show('ducks')&&has(40)){const pos=[[230,482],[292,494],[264,468]];for(let i=0;i<lvlOf('ducks');i++)o+=`<g transform="translate(${pos[i][0]} ${pos[i][1]})${i%2?' scale(-1 1)':''}"><g class="paddle" style="animation-delay:-${i*2}s">${itemArt('ducks',1,night)}</g></g>`}
-  if(show('cat')){const at=has(60)?[642,394]:has(25)?[600,368]:[300,520];o+=`<g transform="translate(${at[0]} ${at[1]}) scale(.9)">${itemArt('cat',1,night)}</g>`}
+  if(show('lanterns')&&has(15)){const pts=[[495,520],[540,470],[512,432],[575,400],[548,372],[630,352],[680,320]];const n=[0,3,5,7][lvlOf('lanterns')];for(let i=0;i<n;i++)o+=`<g transform="translate(${pts[i][0]} ${pts[i][1]})">${lanternArt(night)}</g>`}
+  if(show('ducks')&&has(40)){const pos=[[300,464],[362,474],[335,452]];for(let i=0;i<lvlOf('ducks');i++)o+=`<g transform="translate(${pos[i][0]} ${pos[i][1]})${i%2?' scale(-1 1)':''}"><g class="paddle" style="animation-delay:-${i*2}s">${itemArt('ducks',1,night)}</g></g>`}
+  if(show('cat')){const at=has(60)?[732,370]:has(25)?[722,366]:has(15)?[560,446]:[300,520];o+=`<g transform="translate(${at[0]} ${at[1]}) scale(.9)">${itemArt('cat',1,night)}</g>`}
   const items=Object.keys(DECOR_POS).filter(show).sort((a,b)=>DECOR_POS[a][1]-DECOR_POS[b][1]);
   for(const id of items){const [x,y]=DECOR_POS[id];o+=`<g transform="translate(${x} ${y})">${itemArt(id,lvlOf(id),night)}</g>`}
   return o;
 }
-/* ---------- the farm: an angled top-down view (2:1 isometric) ---------- */
-const ISO={x0:500,y0:196,tw:30,th:15};
-const IP=(u,v,z=0)=>[ISO.x0+(u-v)*ISO.tw,ISO.y0+(u+v)*ISO.th-z];
-const ipt=(u,v,z=0)=>{const [x,y]=IP(u,v,z);return x.toFixed(1)+' '+y.toFixed(1)};
-const ipoly=(P,fill,extra='')=>`<path d="M${P.map(p=>ipt(...p)).join('L')}Z" fill="${fill}" ${extra}/>`;
-// crop beds: 12 beds of 16 plants, in a 4 x 3 grid with paths between them
-const BED={S:1.8,U:[4.5,6.8,9.1,11.4],V:[4.5,6.8,9.1],per:16};
-const BEDS=BED.V.flatMap(v=>BED.U.map(u=>[u,v]));
-const CROPS=['corn','strawberry','wheat','carrot','sunflower','blueberry','cabbage','tomato','pumpkin','lavender','grape','wheat'];
-const isTall=k=>['big','tree','palm','pine'].includes(k);
-function cropArt(k){
-  switch(k){
-  case 'corn':return `<path d="M0 0V-22" stroke="#5E8C2E" stroke-width="2.2"/><path d="M0-5c-6-2-9-6-10-11c4 1 8 4 10 8zM0-10c6-2 9-6 10-11c-4 1-8 4-10 8zM0-15c-5-2-7-5-8-9c3 1 6 3 8 6z" fill="#6FAE3A"/><ellipse cx="2.2" cy="-13" rx="2.4" ry="4.8" fill="#F4C542"/><path d="M2.2-17v8" stroke="#E0A030" stroke-width=".6"/><path d="M0-22l-3-5M0-22l3-5M0-22v-5" stroke="#C9A24A" stroke-width="1.1"/>`;
-  case 'wheat':return `<g stroke="#C9952E" stroke-width="1.2" fill="none"><path d="M-3 0q-1-8-3-14M0 0v-17M3 0q1-8 3-14M-1 0q-2-6-1-12"/></g><g fill="#F0C75A" stroke="#C9952E" stroke-width=".4"><ellipse cx="-6" cy="-16" rx="1.7" ry="3.6"/><ellipse cy="-19" rx="1.7" ry="3.8"/><ellipse cx="6" cy="-16" rx="1.7" ry="3.6"/><ellipse cx="-2" cy="-14" rx="1.5" ry="3.2"/></g>`;
-  case 'strawberry':return `<ellipse cy="-4" rx="9" ry="5.5" fill="#2F8A3E"/><ellipse cx="-3" cy="-6" rx="5" ry="3.4" fill="#4FB35A"/><ellipse cx="4" cy="-5" rx="4" ry="3" fill="#43A34E"/><g fill="#E23B3B"><path d="M-5-3a2.2 2.2 0 1 1 4 0l-2 3z"/><path d="M2-4a2.2 2.2 0 1 1 4 0l-2 3z"/><path d="M-2-8a2 2 0 1 1 3.6 0l-1.8 2.6z"/></g><g fill="#FFE08A"><circle cx="-3.4" cy="-3.4" r=".35"/><circle cx="3.6" cy="-4.4" r=".35"/></g>`;
-  case 'carrot':return `<path d="M0-2l-5-10M0-2l-1-13M0-2l4-11M0-2l6-8" stroke="#4FA34A" stroke-width="2" stroke-linecap="round"/><ellipse cy="-1" rx="3.4" ry="2.2" fill="#F08A2E"/><path d="M-2-1.4h4" stroke="#D06A1E" stroke-width=".6"/>`;
-  case 'sunflower':return `<path d="M0 0V-22" stroke="#4F8A2E" stroke-width="2"/><path d="M0-8c-5-1-8-4-8-7c4 0 7 3 8 6zM0-12c5-1 8-4 8-7c-4 0-7 3-8 6z" fill="#5FA03A"/><g transform="translate(0 -24)">${[0,45,90,135,180,225,270,315].map(a=>`<ellipse transform="rotate(${a})" cy="-5" rx="2.2" ry="3.6" fill="#F7C531"/>`).join('')}<circle r="3.6" fill="#7A4A1E"/><circle cx="-1" cy="-1" r="1.2" fill="#9A6A3E"/></g>`;
-  case 'blueberry':return `<ellipse cy="-6" rx="8" ry="7" fill="#2E6E44"/><ellipse cx="-2" cy="-9" rx="5" ry="4" fill="#3F8A55"/><g fill="#4A63B8"><circle cx="-4" cy="-4" r="1.8"/><circle cx="3" cy="-6" r="1.8"/><circle cx="0" cy="-10" r="1.6"/><circle cx="5" cy="-2" r="1.6"/><circle cx="-5" cy="-9" r="1.5"/></g><g fill="#fff" opacity=".5"><circle cx="-4.5" cy="-4.6" r=".5"/><circle cx="2.5" cy="-6.6" r=".5"/></g>`;
-  case 'cabbage':return `<ellipse cy="-5" rx="7.5" ry="6" fill="#6FAE4A"/><path d="M-7-5q7-8 14 0" fill="#8FCB6A"/><ellipse cy="-6" rx="3.6" ry="3" fill="#C2E8A2"/><path d="M-4-3q4-3 8 0" stroke="#5A9A3A" stroke-width=".8" fill="none"/>`;
-  case 'tomato':return `<path d="M3 0V-20" stroke="#A47E58" stroke-width="1.6"/><ellipse cy="-9" rx="7" ry="8" fill="#3E8A3A"/><ellipse cx="-2" cy="-12" rx="4" ry="4" fill="#52A44A"/><g fill="#E8452E"><circle cx="-3" cy="-6" r="2.4"/><circle cx="3" cy="-9" r="2.2"/><circle cx="0" cy="-14" r="2"/></g><g fill="#fff" opacity=".5"><circle cx="-3.8" cy="-6.8" r=".6"/><circle cx="2.4" cy="-9.8" r=".5"/></g>`;
-  case 'pumpkin':return `<path d="M0-9q5-5 9-2" stroke="#4F8A2E" stroke-width="1.4" fill="none"/><ellipse cx="7" cy="-9" rx="3" ry="1.8" fill="#5FA03A"/><ellipse cy="-5" rx="8" ry="5.5" fill="#E8822A"/><ellipse cx="-3" cy="-5" rx="3" ry="5" fill="#F29A3E"/><path d="M-3-10v9M3-10v9" stroke="#C8661A" stroke-width=".8"/><path d="M0-10v-3" stroke="#5A7A2E" stroke-width="2"/>`;
-  case 'lavender':return `<g stroke="#5E8C4A" stroke-width="1.2"><path d="M-4 0l-2-13M0 0v-15M4 0l2-13"/></g><g fill="#9C7AD6"><ellipse cx="-6" cy="-15" rx="1.8" ry="4"/><ellipse cy="-17" rx="1.8" ry="4.4"/><ellipse cx="6" cy="-15" rx="1.8" ry="4"/></g><g fill="#C4A5F0"><circle cx="-6" cy="-17" r=".9"/><circle cy="-19" r=".9"/><circle cx="6" cy="-17" r=".9"/></g>`;
-  case 'grape':return `<path d="M0 0V-22" stroke="#7A5A3C" stroke-width="2.2"/><path d="M-8-20H8" stroke="#7A5A3C" stroke-width="1.6"/><ellipse cy="-17" rx="9" ry="5" fill="#4F9A3E"/><ellipse cx="-3" cy="-19" rx="5" ry="3" fill="#63B04E"/><g fill="#7B4FA0"><circle cx="-4" cy="-12" r="1.7"/><circle cx="-2" cy="-10" r="1.7"/><circle cx="-5" cy="-9" r="1.6"/><circle cx="-3" cy="-7" r="1.5"/><circle cx="4" cy="-12" r="1.7"/><circle cx="5" cy="-9" r="1.6"/><circle cx="3" cy="-9" r="1.6"/></g>`;
-  }return ''}
-function cropSVG(i,x,y,k,st=3){return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><ellipse cy="1" rx="10" ry="3.2" fill="#0B3B2E" opacity=".2"/><g class="pl" style="animation-delay:-${((i*0.73)%5).toFixed(2)}s"><g transform="scale(${[1.1,1.15,1.2,1.4][st]})">${cropStageArt(k,st)}</g>${st===3?'<circle class="glow" cx="6" cy="-22" r="1.6" fill="#FFF7C0"/>':''}</g></g>`}
-// a box seen from the front-left (v=v1 face) and front-right (u=u1 face)
-const OL='stroke="#2A1E16" stroke-opacity=".38" stroke-width=".9" stroke-linejoin="round"';
-function isoBox(u0,v0,u1,v1,h,cl,cr,ct,z0=0){return ipoly([[u0,v1,z0],[u1,v1,z0],[u1,v1,h],[u0,v1,h]],cl,OL)+ipoly([[u1,v1,z0],[u1,v0,z0],[u1,v0,h],[u1,v1,h]],cr,OL)+(ct?ipoly([[u0,v0,h],[u1,v0,h],[u1,v1,h],[u0,v1,h]],ct,OL):'')}
-// a gabled building: ridge runs along u; door and windows on the front-left wall
-function isoHouse(u0,v0,u1,v1,h,rh,P,night,extra=''){
-  const vm=(v0+v1)/2,o=.28;let s='';
-  // grounded: a soft shadow hugging the footprint and a dark contact line where the walls meet the grass
-  s+=ipoly([[u0-.15,v1+.45,0],[u1+.45,v1+.45,0],[u1+.45,v0-.1,0],[u0-.15,v0-.1,0]],'#0B2A20','opacity=".14"')+ipoly([[u0-.05,v1+.2,0],[u1+.2,v1+.2,0],[u1+.2,v0,0],[u0-.05,v0,0]],'#0B2A20','opacity=".18"');
-  s+=isoBox(u0,v0,u1,v1,h,P.wall,P.wallD);
-  s+=isoBox(u0,v0,u1,v1,7,P.base,mixHex(P.base,'#000000',.2));
-  s+=`<path d="M${ipt(u0,v1)}L${ipt(u1,v1)}L${ipt(u1,v0)}" stroke="#1A120C" stroke-width="2.4" fill="none" opacity=".45" stroke-linejoin="round"/>`;
-  // walls: soft top shade, corner trims
-  s+=ipoly([[u0,v1,h-10],[u1,v1,h-10],[u1,v1,h],[u0,v1,h]],'#000','opacity=".08"')+ipoly([[u1,v1,0],[u1,v1,h],[u1-.06,v1,h],[u1-.06,v1,0]],P.trim);
-  // gable end on the right wall
-  s+=ipoly([[u1,v1,h],[u1,v0,h],[u1,vm,h+rh]],P.wallD)+ipoly([[u1,v1,h],[u1,v0,h],[u1,vm,h+rh]],'#000','opacity=".06"');
-  if(P.gableWin)s+=ipoly([[u1,vm+.25,h+rh*.25],[u1,vm-.25,h+rh*.25],[u1,vm-.25,h+rh*.55],[u1,vm+.25,h+rh*.55]],night?'#FFD97A':'#BFE6F0','stroke="#fff" stroke-width="1.6"');
-  // roof: back slope peeks above the ridge, then the front slope with shingle rows
-  s+=ipoly([[u0-o,vm,h+rh],[u1+o,vm,h+rh],[u1+o,v0-o,h-4],[u0-o,v0-o,h-4]],mixHex(P.roof,'#000000',.25),OL);
-  s+=ipoly([[u0-o,v1+o,h-4],[u1+o,v1+o,h-4],[u1+o,vm,h+rh],[u0-o,vm,h+rh]],P.roof,OL)+ipoly([[u0-o,v1+o,h-4],[u1+o,v1+o,h-4],[u1+o,vm,h+rh],[u0-o,vm,h+rh]],'url(#gxRoofSh)');
-  {let L='';const N=7;for(let k=1;k<N;k++){const t=k/N,v=v1+o+(vm-v1-o)*t,z=h-4+(rh+4)*t,t2=(k-1)/N,v2=v1+o+(vm-v1-o)*t2,z2=h-4+(rh+4)*t2;L+=`M${ipt(u0-o,v,z)}L${ipt(u1+o,v,z)}`;for(let u=u0-o+(k%2?.18:.36);u<u1+o-.05;u+=.36)L+=`M${ipt(u,v,z)}L${ipt(u,v2,z2)}`}s+=`<path d="${L}" stroke="${mixHex(P.roof,'#000000',.3)}" stroke-width="1.2" fill="none" opacity=".7"/>`}
-  s+=`<path d="M${ipt(u0-o,vm,h+rh)}L${ipt(u1+o,vm,h+rh)}" stroke="${mixHex(P.roof,'#FFFFFF',.25)}" stroke-width="3" stroke-linecap="round"/>`;
-  s+=`<path d="M${ipt(u0-o,v1+o,h-4)}L${ipt(u1+o,v1+o,h-4)}" stroke="${P.trim}" stroke-width="2.6"/><path d="M${ipt(u1+o,v1+o,h-4)}L${ipt(u1+o,vm,h+rh)}L${ipt(u1+o,v0-o,h-4)}" stroke="${P.trim}" stroke-width="2.6" fill="none" stroke-linejoin="round"/>`;
-  return s+extra}
-const glowAt=(x,y,r)=>{farmLights+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="url(#gxGlow)"/>`;return ''};
-const winL=(u,v1,w,z,hh,night,P)=>(night?glowAt(...IP(u+w/2,v1,z+hh/2),22)+(()=>{const [a,b]=IP(u,v1,z),[c2,d]=IP(u+w,v1,z+hh);farmLights+=`<path d="M${ipt(u,v1,z)}L${ipt(u+w,v1,z)}L${ipt(u+w,v1,z+hh)}L${ipt(u,v1,z+hh)}Z" fill="#FFD97A" opacity=".85"/>`;return ''})():'')+ipoly([[u-.04,v1,z-3],[u+w+.04,v1,z-3],[u+w+.04,v1,z+hh+3],[u-.04,v1,z+hh+3]],P.trim)+ipoly([[u,v1,z],[u+w,v1,z],[u+w,v1,z+hh],[u,v1,z+hh]],night?'#FFD97A':'url(#gxWin)',night?'class="glow"':'')+`<path d="M${ipt(u+w/2,v1,z)}L${ipt(u+w/2,v1,z+hh)}M${ipt(u,v1,z+hh/2)}L${ipt(u+w,v1,z+hh/2)}" stroke="${P.trim}" stroke-width="1.6"/>`+ipoly([[u-.08,v1,z-5],[u+w+.08,v1,z-5],[u+w+.08,v1,z-2],[u-.08,v1,z-2]],P.shut||P.trim);
-const winR=(u1,v,w,z,hh,night,P)=>(night?glowAt(...IP(u1,v-w/2,z+hh/2),22)+(()=>{farmLights+=`<path d="M${ipt(u1,v,z)}L${ipt(u1,v-w,z)}L${ipt(u1,v-w,z+hh)}L${ipt(u1,v,z+hh)}Z" fill="#FFD97A" opacity=".8"/>`;return ''})():'')+ipoly([[u1,v+.04,z-3],[u1,v-w-.04,z-3],[u1,v-w-.04,z+hh+3],[u1,v+.04,z+hh+3]],P.trim)+ipoly([[u1,v,z],[u1,v-w,z],[u1,v-w,z+hh],[u1,v,z+hh]],night?'#FFD97A':'#9FD3E2',night?'class="glow"':'')+`<path d="M${ipt(u1,v-w/2,z)}L${ipt(u1,v-w/2,z+hh)}" stroke="${P.trim}" stroke-width="1.4"/>`;
-const doorL=(u,v1,w,hh,P)=>ipoly([[u-.06,v1,0],[u+w+.06,v1,0],[u+w+.06,v1,hh+3],[u-.06,v1,hh+3]],P.trim)+ipoly([[u,v1,0],[u+w,v1,0],[u+w,v1,hh],[u,v1,hh]],P.door)+ipoly([[u+.06,v1,hh*.55],[u+w/2-.03,v1,hh*.55],[u+w/2-.03,v1,hh*.9],[u+.06,v1,hh*.9]],'#000','opacity=".14"')+ipoly([[u+w/2+.03,v1,hh*.55],[u+w-.06,v1,hh*.55],[u+w-.06,v1,hh*.9],[u+w/2+.03,v1,hh*.9]],'#000','opacity=".14"')+(()=>{const [x,y]=IP(u+w*.82,v1,hh*.45);return `<circle cx="${x}" cy="${y}" r="1.8" fill="#F4D27A"/>`})();
-let farmLights='';
-function surroundSVG(W,c,night){
-  let o='';const r=rnd(57),trees=[];
-  if(W==='beach'){ // the sea beyond the back of the farm, waves along the shore
-    o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="url(#gxSea)"/>`+ipoly([[-4.2,-4.2],[60,-4.2],[60,60],[-4.2,60]],'url(#gg)');
-    o+=`<path d="M${ipt(-4.2,60)}L${ipt(-4.2,-4.2)}L${ipt(60,-4.2)}" stroke="#FFFFFF" stroke-width="5" fill="none" opacity=".7" stroke-linejoin="round"/>`;
-    let wv='';for(let i=0;i<40;i++){const u=-14+r()*30,v=-12+r()*7;const [x,y]=r()<.5?IP(u,v):IP(v,u);wv+=`M${x.toFixed(0)} ${y.toFixed(0)}q8-4 16 0q8-4 16 0`}o+=`<path d="${wv}" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" fill="none"/>`;
-    const [bx,by]=IP(-8,-8);o+=`<g transform="translate(${bx} ${by})"><g class="paddle"><path d="M-26 0h52l-8 10h-36z" fill="#8B5A33"/><path d="M0 0V-40" stroke="#5A4636" stroke-width="2.4"/><path d="M1-39L24-4H1Z" fill="#FFFFFF"/><path d="M-1-33L-17-4H-1Z" fill="#F08AA4"/></g></g>`;
-    for(let u=-3.6;u<18;u+=1.6)trees.push([u+(r()-.5)*.4,-3.8+(r()-.5)*.3,'palm'],[-3.8+(r()-.5)*.3,u+(r()-.5)*.4,'palm'])}
-  else{ // a forest all around the farm (pines in the mountains, palms in the oasis)
-    const kind=W==='mountain'?'pine':W==='oasis'?'palm':'round';
-    for(let a=-3.8;a>-12;a-=1.25)for(let b=-12;b<20;b+=1.25){if(W==='oasis'&&r()<.6)continue;trees.push([b+(r()-.5)*.6,a+(r()-.5)*.5,kind]);trees.push([a+(r()-.5)*.5,b+(r()-.5)*.6,kind])}
-    if(W==='oasis'){let dn='';for(let i=0;i<30;i++){const [x,y]=IP(-12+r()*30,-10+r()*6);dn+=`M${x.toFixed(0)} ${y.toFixed(0)}q20-6 40 0`}o+=`<path d="${dn}" stroke="${mixHex(c.g2,'#000000',.15)}" stroke-width="2" fill="none" opacity=".5"/>`}
-    if(W==='mountain'){let rk='';for(let i=0;i<24;i++){const [x,y]=IP(-12+r()*30,-12+r()*30);if(y<175||(x>20&&x<980&&y>190&&y<560&&Math.abs(x-500)/30<(y-196)/15))continue;rk+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-14 0l6-12 10-3 9 8 3 7z" fill="#9AA3A2"/><path d="M2-15l9 8 3 7H2z" fill="#7E8786"/></g>`}o+=rk}}
-  const seen=new Set(),L=[];
-  for(const [u,v,k] of trees){if(u<-1&&v<-1&&u>-3.6&&v>-3.6)continue;const [x,y]=IP(u,v);if(x<-420||x>1420||y<-120||y>620)continue;const key=Math.round(x/14)+','+Math.round(y/8);if(seen.has(key))continue;seen.add(key);L.push([y,x,k])}
-  L.sort((a,b)=>a[0]-b[0]);
-  const dk=night?.55:0,shade=h=>mixHex(h,'#0B1A12',dk*.4);
-  for(const [y,x,k] of L){const sc=.75+((x*7+y*3)%10)/30,X=x.toFixed(0),Y=y.toFixed(0);
-    if(k==='pine')o+=`<g transform="translate(${X} ${Y}) scale(${sc.toFixed(2)})"><ellipse cy="2" rx="16" ry="5" fill="#0B2A20" opacity=".18"/><rect x="-2.5" y="-10" width="5" height="10" fill="#6E4F33"/><path d="M0-58L-18-24H18Z" fill="${shade('#1F6B4F')}"/><path d="M0-46L-20-12H20Z" fill="${shade('#257A5A')}"/><path d="M0-34L-22 0H22Z" fill="${shade('#2E8C66')}"/><path d="M0-58L-6-40H2Z M0-46L-7-28H2Z" fill="#fff" opacity=".12"/></g>`;
-    else if(k==='palm')o+=`<g transform="translate(${X} ${Y}) scale(${sc.toFixed(2)})"><ellipse cy="2" rx="16" ry="5" fill="#0B2A20" opacity=".16"/><path d="M-2 0C0-16 2-30 0-44h5c1 14-1 28 1 44z" fill="#A47E58"/><g transform="translate(2 -44)">${[-160,-20,-125,-55,-95,175,5].map((a,j)=>`<path transform="rotate(${a})" d="M0 0C10-4 22-3 32 4C22 1 10 2 0 0z" fill="${shade(['#0B7D73','#0B7D73','#0EA89C','#0EA89C','#12B5A8','#0B8F84','#0B8F84'][j])}"/>`).join('')}</g></g>`;
-    else{const g1=shade(['#2E8F6A','#33996F','#287F5E'][Math.floor(Math.abs(x+y))%3]),g2=shade('#4DB385');o+=`<g transform="translate(${X} ${Y}) scale(${sc.toFixed(2)})"><ellipse cy="2" rx="22" ry="7" fill="#0B2A20" opacity=".2"/><rect x="-3" y="-16" width="6" height="16" rx="2" fill="#6E4F33"/><circle cx="-10" cy="-26" r="14" fill="${g1}"/><circle cx="10" cy="-26" r="14" fill="${g1}"/><circle cy="-38" r="16" fill="${g1}"/><circle cx="4" cy="-40" r="9" fill="${g2}" opacity=".7"/><circle cx="12" cy="-28" r="6" fill="${g2}" opacity=".5"/></g>`}}
-  return o}
-function farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms){farmLights='';
-  const HP={garden:{wall:'#F6EFE2',wallD:'#DCD0BC',base:'#A9A08F',roof:'#6E4A3A',trim:'#FFFFFF',door:'#0E8F84',shut:'#0B6E65'},
-    beach:{wall:'#CFEFF2',wallD:'#A9D9DF',base:'#C9B48A',roof:'#D9B26A',trim:'#FFFFFF',door:'#E86A5A',shut:'#5BA9C9'},
-    mountain:{wall:'#B07A48',wallD:'#8E5E34',base:'#8D8A84',roof:'#2F5D4A',trim:'#E9DCC6',door:'#5A3A20',shut:'#6B4426'},
-    oasis:{wall:'#E9D2A6',wallD:'#CDB07C',base:'#B89B6A',roof:'#B5603A',trim:'#FBF4E6',door:'#2E6E8E',shut:'#B5603A'}}[W]||{};
-  let ground='',back='',behind='',spr=[];const add=(y,s)=>spr.push([y,s]);
-  // the fenced farm: mowing stripes inside
-  const FU=17,FV=17,farmEdge=[[0,0],[FU,0],[FU,FV],[0,FV]];
-  ground+=ipoly(farmEdge.map(([u,v])=>[u,v]),mixHex(c.g1,c.g2,.35));
-  const onWork=(u,v)=>u>3.8&&u<13.9&&v>3.6&&v<11.6;
-  {const r=rnd(5);let bl='',tf='',fl='';
-    for(let i=0;i<90;i++){const [x,y]=IP(-8+r()*32,-8+r()*32);if(y<-60||y>640||x<-500||x>1500)continue;const w=50+r()*90;bl+=`<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${w.toFixed(0)}" ry="${(w*.48).toFixed(0)}" fill="url(#${r()<.55?'gxBlotL':'gxBlotD'})"/>`}
-    const dk=mixHex(c.g2,'#1E4A10',.35),lt=mixHex(c.g1,'#FFFFE0',.25);
-    for(let i=0;i<520;i++){const u=-4+r()*22,v=-4+r()*22;if(onWork(u,v)&&has(15))continue;const [x,y]=IP(u,v);if(y<-40||y>600)continue;const X=x.toFixed(0),Y=y.toFixed(0);
-      tf+=`M${X} ${Y}l-3.5-6.5l3 3l.8-8l1.6 8l2.8-4.4l-1.6 7.9z`;if(r()<.16){const fc=['#FFFFFF','#F7D84A','#F29AB8','#B9A0F0'][Math.floor(r()*4)];fl+=`<circle cx="${X}" cy="${y.toFixed(0)-7}" r="1.9" fill="${fc}"/><circle cx="${X}" cy="${y.toFixed(0)-7}" r=".7" fill="#E0A030"/>`}}
-    ground+=bl+`<path d="${tf}" fill="${dk}" opacity=".55"/><path d="${tf}" fill="${lt}" opacity=".35" transform="translate(1 -1)"/>`+fl}
-  // paths of cobblestones between the beds, from the gate to the house
-  const crops=[],tall=[];{const total=Math.min(n,260);for(let i=0;i<total;i++)(isTall(plantKind(i))?tall:crops).push(i)}
-  const bedsOn=Math.min(BEDS.length,Math.max(1,Math.ceil(crops.length/BED.per)+(crops.length%BED.per===0?1:0)));
-  if(has(15)){const strips=[];const row=Math.floor((bedsOn-1)/4),uB=(row?13.2:BED.U[bedsOn-1]+BED.S)+.5,vA=4,uA=4,vB=BED.V[row]+BED.S+.5;
-    strips.push([uA,vA,uB,vA+.5],[uA,vA,uA+.5,vB],[0,6.3,uA,6.8],[7.4,3.8,8.2,vA]);
-    for(const u of [6.3,8.6,10.9,13.2])if(u<uB-.1)strips.push([u,vA,u+.5,vB]);
-    for(const v of [6.3,8.6,10.9])if(v<vB-.1)strips.push([uA,v,uB,v+.5]);
-    const r=rnd(29);let st='',cb='';
-    for(const [a,b,cc,d] of strips){st+=ipoly([[a,b],[cc,b],[cc,d],[a,d]],'#8E8466','opacity=".35"');
-      for(let u=a+.14;u<cc-.05;u+=.27)for(let v=b+.14;v<d-.05;v+=.27){const [x,y]=IP(u+(r()-.5)*.07,v+(r()-.5)*.07),k=Math.floor(r()*4),col=['#C9BFA8','#B8AD95','#D6CDB8','#ABA088'][k],w=5.4+r()*1.8,X=x.toFixed(1),Y=y.toFixed(1);
-        cb+=`<ellipse cx="${X}" cy="${(y+1.6).toFixed(1)}" rx="${w.toFixed(1)}" ry="${(w*.55).toFixed(1)}" fill="#6E6450" opacity=".7"/><ellipse cx="${X}" cy="${Y}" rx="${w.toFixed(1)}" ry="${(w*.52).toFixed(1)}" fill="${col}"/><ellipse cx="${(x-1.2).toFixed(1)}" cy="${(y-1).toFixed(1)}" rx="${(w*.5).toFixed(1)}" ry="${(w*.22).toFixed(1)}" fill="#fff" opacity=".35"/>`}}
-    ground+=st+cb}
-  // crop beds: a wooden frame, dark soil with furrows; the next empty bed is ready and waiting
-  for(let b=0;b<bedsOn;b++){const [u0,v0]=BEDS[b],u1=u0+BED.S,v1=v0+BED.S;
-    ground+=isoBox(u0-.08,v0-.08,u1+.08,v1+.08,5,'#8B6440','#6E4C30','#A67C52')+ipoly([[u0,v0,5],[u1,v0,5],[u1,v1,5],[u0,v1,5]],'#6B4A30');
-    let f='';for(let k=0;k<4;k++){const v=v0+(k+.5)*BED.S/4;f+=`M${ipt(u0+.08,v,5)}L${ipt(u1-.08,v,5)}`}
-    ground+=`<path d="${f}" stroke="#4A3020" stroke-width="10" stroke-linecap="round"/><path d="${f}" stroke="#7E5436" stroke-width="6" stroke-linecap="round" transform="translate(0 -2)"/><path d="${f}" stroke="#9C6E4A" stroke-width="1.6" stroke-linecap="round" opacity=".7" transform="translate(-1 -4)"/>`;
-    {const r=rnd(100+b);let cr='';for(let k=0;k<26;k++){const [x,y]=IP(u0+.1+r()*(BED.S-.2),v0+.1+r()*(BED.S-.2),5);cr+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(.6+r()*.9).toFixed(1)}" fill="${r()<.5?'#3A2416':'#A87A52'}"/>`}ground+=cr}}
-  const CT=ensureCropTimes(Math.min(crops.length,BEDS.length*BED.per));
-  crops.forEach((i,j)=>{const b=Math.floor(j/BED.per);if(b>=BEDS.length){tall.push(i);return}
-    const [u0,v0]=BEDS[b],cell=j%BED.per,a=cell%4,bb=Math.floor(cell/4),[x,y]=IP(u0+(a+.5)*BED.S/4,v0+(bb+.5)*BED.S/4,5);
-    let s=cropSVG(i,x,y,CROPS[b%CROPS.length],cropStage(CT[j]));if(animate&&i>=seen)s=`<g class="new" style="animation-delay:${(i-seen)*120}ms">${s}</g>`;add(y,s)});
-  // pond with a stone rim and lily pads
-  if(has(40)){const [cx,cy]=IP(5.6,13.6);let rim='';for(let a=0;a<360;a+=10){const t=a*Math.PI/180;rim+=`<ellipse cx="${(cx+Math.cos(t)*112).toFixed(0)}" cy="${(cy+Math.sin(t)*52).toFixed(0)}" rx="${8+(a%3)*2}" ry="5" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".7"/>`}
-    const lily=(x,y,r,fl)=>`<path d="M${x} ${y}m${-r} 0a${r} ${r*.5} 0 1 0 ${r*2} 0l${-r} 0z" fill="#4FA36F"/>${fl?`<g transform="translate(${x-2} ${y-3})"><ellipse rx="3" ry="2" fill="#F08AA4"/><ellipse cy="-1.5" rx="1.8" ry="2.2" fill="#FFC6D4"/></g>`:''}`;
-    ground+=`<ellipse cx="${cx}" cy="${cy+4}" rx="118" ry="56" fill="#0B3B2E" opacity=".12"/><ellipse cx="${cx}" cy="${cy}" rx="108" ry="48" fill="url(#gxWater)"/><ellipse cx="${cx}" cy="${cy}" rx="108" ry="48" fill="url(#gxTWater)" class="shimmer"/><ellipse cx="${cx-10}" cy="${cy-12}" rx="80" ry="22" fill="#fff" opacity=".1"/>${rim}
-      <g class="shimmer"><path d="M${cx-60} ${cy}q22-9 44 0M${cx+20} ${cy+16}q22-9 44 0" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/></g>${lily(cx-40,cy+14,11,true)}${lily(cx+44,cy-10,9,false)}${lily(cx+20,cy+24,7,true)}`;
-    if(has(60))add(cy+10,`<g transform="translate(${cx+30} ${cy+4})"><g class="paddle"><path d="M-22-2h44l-6 9h-32z" fill="#8B5A33"/><path d="M-22-2h44" stroke="#A47E58" stroke-width="2"/><path d="M-12-2v-3M12-2v-3" stroke="#5A3E26" stroke-width="2"/><path d="M-8 2l-14 8M8 2l14 8" stroke="#C9A77C" stroke-width="1.6"/></g></g>`)}
-  // fence along the back edges, with a stone gate (the reserve) on the left side
-  const gateV=[5.9,7.2];
-  if(has(5)){let rails='',posts='';const post=(u,v)=>{const [x,y]=IP(u,v);posts+=`<path d="M${x-2.2} ${y}v-17l2.2-2.4 2.2 2.4v17z" fill="#B89571"/><path d="M${x} ${y}v-19.4l2.2 2.4v17z" fill="#8A6845"/>`};
-    const rail=(a,b)=>{for(const z of [7,13])rails+=`M${ipt(a[0],a[1],z)}L${ipt(b[0],b[1],z)}`};
-    for(let v=FV;v>0;v--){if(has(100)&&v>gateV[0]&&v-1<gateV[1]){post(0,v);continue}post(0,v);rail([0,v],[0,v-1])}
-    for(let u=0;u<=FU;u++){post(u,0);if(u<FU)rail([u,0],[u+1,0])}
-    // front fences close the farm; each piece is depth-sorted with everything else
-    const seg=(a,b)=>{let rl='';for(const z of [7,13])rl+=`M${ipt(a[0],a[1],z)}L${ipt(b[0],b[1],z)}`;const [x,y]=IP(b[0],b[1]);add(Math.max(IP(a[0],a[1])[1],y)+.1,`<path d="${rl}" stroke="#7A5A3C" stroke-width="3.2" stroke-linecap="round"/><path d="M${x-2.2} ${y}v-17l2.2-2.4 2.2 2.4v17z" fill="#B89571"/><path d="M${x} ${y}v-19.4l2.2 2.4v17z" fill="#8A6845"/>`)};
-    for(let u=0;u<FU;u++)seg([u,FV],[u+1,FV]);for(let v=0;v<FV;v++)seg([FU,v],[FU,v+1]);
-    back+=`<path d="${rails}" stroke="#7A5A3C" stroke-width="3.2" stroke-linecap="round"/><path d="${rails}" stroke="#C29A70" stroke-width="1" opacity=".8" transform="translate(0 -1)"/>${posts}`}
-  if(has(100)){const pil=(v)=>isoBox(-.17,v-.17,.17,v+.17,44,'#D8C7A6','#BFA67E','#E6D3AE')+isoBox(-.23,v-.23,.23,v+.23,50,'#CDB58C','#B39A70','#EADAB6',44);
-    const [x1,y1]=IP(0,gateV[0],47),[x2,y2]=IP(0,gateV[1],47),mx=(x1+x2)/2,my=(y1+y2)/2;
-    back+=pil(gateV[0])+pil(gateV[1])+`<path d="M${x1} ${y1}Q${mx} ${my-30} ${x2} ${y2}" stroke="#B39A70" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M${x1} ${y1-2}Q${mx} ${my-32} ${x2} ${y2-2}" stroke="#EADAB6" stroke-width="2.4" fill="none"/>`;
-    back+=`<g transform="translate(${mx} ${my-30})"><rect x="-38" y="-14" width="76" height="24" rx="6" fill="#383838"/><rect x="-35" y="-11" width="70" height="18" rx="4" fill="none" stroke="#E8C46A" stroke-width="1"/>${label(0,4,'محمية',wide,'font-size="14" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')}</g>`}
-  // buildings
-  if(has(25)){const big=has(60),P=HP,u0=6.2,v0=.7,u1=big?10.6:9.4,v1=big?3.9:3.4,h=big?58:40,rh=big?34:26;
-    let ex='';const dU=(u0+u1)/2-.35;
-    ex+=winL(u0+.45,v1,.75,h*.38,h*.32,night,P)+winL(u1-1.2,v1,.75,h*.38,h*.32,night,P)+doorL(dU,v1,.7,h*.62,P)+winR(u1,v1-.5,.8,h*.38,h*.32,night,P);
-    {let pk='';for(let u=dU-.5;u<dU+1.2;u+=.17)pk+=`M${ipt(u,v1,4)}L${ipt(u,v1+.7,4)}`;ex=isoBox(dU-.5,v1,dU+1.2,v1+.7,4,'#8B6440','#6E4C30','#B88B5E')+`<path d="${pk}" stroke="#8B6440" stroke-width=".8"/>`+ex}
-    if(big)ex+=ipoly([[dU-.3,v1+.35,0],[dU+1,v1+.35,0],[dU+1,v1,0],[dU-.3,v1,0]],'#CBBCA2')+ipoly([[dU-.45,v1+.6,h*.7],[dU+1.15,v1+.6,h*.7],[dU+1.15,v1,h*.74],[dU-.45,v1,h*.74]],mixHex(P.roof,'#000000',.1))+`<path d="M${ipt(dU-.4,v1+.55,0)}L${ipt(dU-.4,v1+.55,h*.7)}M${ipt(dU+1.1,v1+.55,0)}L${ipt(dU+1.1,v1+.55,h*.7)}" stroke="${P.trim}" stroke-width="2.4"/>`;
-    // chimney with smoke
-    const cu=u1-1,cv=(v0+v1)/2+.25;let ch=isoBox(cu,cv,cu+.45,cv+.4,h+rh+6,'#A8664B','#8E5640','#5A3E30',h+rh*.6);
-    if(!night){const [sx,sy]=IP(cu+.22,cv+.2,h+rh+8);ch+=`<g class="smoke"><circle cx="${sx}" cy="${sy-4}" r="5" fill="#fff" opacity=".45"/><circle cx="${sx+5}" cy="${sy-15}" r="6.5" fill="#fff" opacity=".3"/><circle cx="${sx+12}" cy="${sy-28}" r="8" fill="#fff" opacity=".18"/></g>`}
-    // flower boxes under the windows and pots by the door
-    const pot=(u,v)=>{const [x,y]=IP(u,v);return `<g transform="translate(${x} ${y})"><path d="M-5 0l1.6-8h6.8l1.6 8z" fill="#B5603A"/><circle cy="-12" r="5" fill="#2A7E58"/><circle cx="-2" cy="-14" r="3" fill="#3EA374"/><circle cx="2" cy="-11" r="1.4" fill="#F08AA4"/></g>`};
-    const [hx,hy]=IP(u1,v1);add(hy,isoHouse(u0,v0,u1,v1,h,rh,Object.assign({gableWin:big},P),night,ex+ch)+pot(dU-.2,v1+.3)+pot(dU+.95,v1+.3)+(()=>{const [lx,ly]=IP(u1+.25,v1+.25);if(night)farmLights+=`<circle cx="${lx}" cy="${ly-33}" r="26" fill="url(#gxGlow)"/><circle cx="${lx}" cy="${ly-33}" r="4.5" fill="#FFE9A0"/>`;return `<g transform="translate(${lx} ${ly})"><path d="M0 0v-30" stroke="#383838" stroke-width="2.6"/><circle cy="-33" r="4.5" fill="${night?'#FFD97A':'#E9D9B0'}" class="${night?'glow':''}"/></g>`})())}
-  if(has(80)){const P={wall:'#B5423A',wallD:'#93322C',base:'#8D8A84',roof:'#5A4038',trim:'#F4EEE4',door:'#7A2A24'};
-    const u0=.9,v0=1.4,u1=3.6,v1=4.2,h=44,rh=30;let ex='';
-    ex+=ipoly([[u0+.7,v1,0],[u0+1.9,v1,0],[u0+1.9,v1,30],[u0+.7,v1,30]],P.trim)+ipoly([[u0+.78,v1,0],[u0+1.82,v1,0],[u0+1.82,v1,27],[u0+.78,v1,27]],P.door)+`<path d="M${ipt(u0+.8,v1,1)}L${ipt(u0+1.8,v1,26)}M${ipt(u0+1.8,v1,1)}L${ipt(u0+.8,v1,26)}" stroke="${P.trim}" stroke-width="2"/>`;
-    ex+=ipoly([[u1,v1-.9,h+rh*.2],[u1,v1-1.9,h+rh*.2],[u1,v1-1.9,h+rh*.55],[u1,v1-.9,h+rh*.55]],P.trim)+ipoly([[u1,v1-1,h+rh*.24],[u1,v1-1.8,h+rh*.24],[u1,v1-1.8,h+rh*.5],[u1,v1-1,h+rh*.5]],'#5A2A24');
-    // silo
-    const [sx,sy]=IP(.6,4.8);const silo=`<g transform="translate(${sx} ${sy})"><ellipse cy="2" rx="22" ry="8" fill="#0B3B2E" opacity=".14"/><path d="M-16 0V-70A16 7 0 0 1 16-70V0A16 7 0 0 1-16 0Z" fill="#D9D2C6"/><path d="M0 7V-63A16 7 0 0 0 16-70V0A16 7 0 0 1 0 7Z" fill="#000" opacity=".12"/><path d="M-16-20a16 7 0 0 0 32 0M-16-40a16 7 0 0 0 32 0M-16-60a16 7 0 0 0 32 0" stroke="#B8B0A2" stroke-width="1.4" fill="none"/><path d="M-17-70Q0-98 17-70A17 7 0 0 1-17-70Z" fill="#B5423A"/><path d="M0-91Q8-84 17-70A17 7 0 0 1 0-63Z" fill="#000" opacity=".15"/></g>`;
-    const [bx,by]=IP(u1,v1);add(by,isoHouse(u0,v0,u1,v1,h,rh,P,night,ex));add(sy,silo)}
-  if(has(10)){const [x,y]=IP(2,11.4);add(y,`<g transform="translate(${x} ${y})"><ellipse cy="2" rx="32" ry="10" fill="#0B3B2E" opacity=".14"/><path d="M-26 0V-22A26 10 0 0 1 26-22V0A26 10 0 0 1-26 0Z" fill="#9AA5A3"/><path d="M-26-8a26 10 0 0 0 52 0M-26-15a26 10 0 0 0 52 0" stroke="#7C8785" stroke-width="1" fill="none"/><ellipse cy="-22" rx="26" ry="10" fill="#B9C2C0"/><ellipse cy="-22" rx="20" ry="7" fill="#2F4A55"/><path d="M-20-22V-56M20-22V-56" stroke="#7A5A3C" stroke-width="4.5" stroke-linecap="round"/><path d="M-30-52L0-72L30-52L0-40Z" fill="#6E4A3A"/><path d="M0-72L30-52L0-40Z" fill="#000" opacity=".18"/><path d="M-20-48H20" stroke="#7A5A3C" stroke-width="3"/><path d="M0-48v14" stroke="#C9B48A" stroke-width="1.4"/><path d="M-5-34h10l-2 7h-6z" fill="#8B6B4A"/></g>`)}
-  if(has(15)){const [x,y]=IP(9.4,12.8);add(y,`<g transform="translate(${x} ${y})"><ellipse cy="4" rx="30" ry="7" fill="#0B3B2E" opacity=".14"/><path d="M-22 0v-10M18 8v-10M-14-12v-14M24-4v-14" stroke="#5A4636" stroke-width="3.4" stroke-linecap="round"/><path d="M-26-8L22 6l4-4L-22-12Z" fill="#A47E58"/><path d="M-18-22L28-8v6L-18-16Z" fill="#B88B60"/></g>`)}
-  // farm life: hay, barrels, crates, a scarecrow, a wheelbarrow, chickens, a cow and sheep
-  {const at=(u,v,svg)=>{const [x,y]=IP(u,v);add(y,`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})">${svg}</g>`)};
-    const bale=`<ellipse cy="2" rx="16" ry="5" fill="#0B3B2E" opacity=".2"/><path d="M-14-16h22v16h-22z" fill="#E2B94E"/><ellipse cx="8" cy="-8" rx="6" ry="8" fill="#F0CD68"/><path d="M6-12q2 4 0 8M9-14q2 6 0 12" stroke="#C99A30" stroke-width=".8" fill="none"/><path d="M-14-16h22" stroke="#C99A30" stroke-width="1.2"/><path d="M-6-16v16M0-16v16" stroke="#B5852A" stroke-width="1.4"/>`;
-    const barrel=`<ellipse cy="2" rx="10" ry="3.4" fill="#0B3B2E" opacity=".2"/><path d="M-8 0q-2-9 0-18h16q2 9 0 18z" fill="#9A6A3E"/><path d="M2 0q2-9 0-18h6q2 9 0 18z" fill="#000" opacity=".15"/><ellipse cy="-18" rx="8" ry="3" fill="#B88456"/><path d="M-9-4h18M-9-14h18" stroke="#5A5A5A" stroke-width="1.6"/>`;
-    const crateAt=(u,v)=>{add(IP(u+.25,v+.25)[1],isoBox(u-.25,v-.25,u+.25,v+.25,14,'#C2925E','#A0743F','#D9AC74')+`<path d="M${ipt(u-.25,v+.25,7)}L${ipt(u+.25,v+.25,7)}L${ipt(u+.25,v-.25,7)}" stroke="#7E5A30" stroke-width="1" fill="none"/>`)};
-    if(has(25)){at(11.1,4.2,barrel);at(11.5,4.0,barrel);crateAt(10.9,4.7);at(12.1,5.1,`<ellipse cy="2" rx="9" ry="3" fill="#0B3B2E" opacity=".18"/><path d="M0 0V-20" stroke="#6B4B33" stroke-width="2.4"/><rect x="-7" y="-28" width="14" height="9" rx="4" fill="#3F8FC2"/><path d="M7-26v-6h3" stroke="#E8402E" stroke-width="2" fill="none"/>`)}
-    if(has(40)){const [x,y]=IP(BEDS[0][0]+.2,BEDS[0][1]+.2,5);add(y+.5,`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><ellipse cy="2" rx="10" ry="3" fill="#0B3B2E" opacity=".2"/><path d="M0 0V-34M-14-24H14" stroke="#7A5A3C" stroke-width="2.6" stroke-linecap="round"/><path d="M-12-25L12-25L9-12H-9Z" fill="#C0392B"/><path d="M-12-25h24" stroke="#8E2A1F" stroke-width="1.4"/><circle cy="-32" r="6" fill="#E8C98E"/><path d="M-9-36q9-9 18 0z" fill="#B88B3A"/><path d="M-11-36h22" stroke="#9A7230" stroke-width="2"/><circle cx="-2" cy="-32" r=".9"/><circle cx="2" cy="-32" r=".9"/><path d="M-14-24l-3 3M14-24l3 3" stroke="#E2B94E" stroke-width="1.6"/></g>`)}
-    if(has(15))at(13.6,4.4,`<ellipse cy="2" rx="16" ry="4" fill="#0B3B2E" opacity=".2"/><circle cx="-10" cy="-5" r="5" fill="none" stroke="#3A3A3A" stroke-width="2.4"/><path d="M-14-10h24l-4 8h-16z" fill="#4F7FA8"/><path d="M-14-10h24" stroke="#2E5A80" stroke-width="1.4"/><path d="M10-10l10-6M8-4l12-8" stroke="#7A5A3C" stroke-width="2" stroke-linecap="round"/><g fill="#E8822A"><circle cx="-6" cy="-12" r="3"/><circle cx="0" cy="-13" r="3"/><circle cx="5" cy="-12" r="2.6"/></g>`);
-    if(has(80)){at(.6,5.6,bale);at(1.4,5.5,bale);at(4.1,1.2,bale);crateAt(4.4,2.4);
-      const hen=(c1,f)=>`<g transform="scale(${f} 1)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".2"/><g class="peck"><path d="M-6-6q0-6 6-6q4 0 5 4l3 1-3 1q-1 6-7 6q-4 0-4-6z" fill="${c1}"/><path d="M3-12q1-3 3-1" fill="#E8402E"/><circle cx="3.2" cy="-9" r=".8" fill="#222"/><path d="M-6-6l-3-3 1 4z" fill="${c1}"/></g><path d="M-1 0v-2M2 0v-2" stroke="#E0A030" stroke-width="1"/></g>`;
-      at(2.6,5.2,hen('#FFFFFF',1));at(3.1,5.6,hen('#C9844A',-1));at(2.2,5.8,hen('#FFFFFF',-1));
-      const cow=`<ellipse cy="2" rx="26" ry="6" fill="#0B3B2E" opacity=".2"/><path d="M-16 0v-12M-10 0v-12M10 0v-12M16 0v-12" stroke="#E9E4DA" stroke-width="4" stroke-linecap="round"/><path d="M-16 0h2M-10 0h2M10 0h2M16 0h2" stroke="#3A2E26" stroke-width="3"/><path d="M-22-14q0-12 14-12h18q12 0 12 10v4q0 6-8 6h-28q-8 0-8-8z" fill="#FAF7F0" stroke="#2A1E16" stroke-opacity=".3"/><path d="M-12-24q6 4 2 10q-6 2-8-4q0-4 6-6zM6-20q8-2 10 4q-2 6-10 4z" fill="#2E2E2E"/><path d="M22-18q8-4 12 2q2 8-4 10q-8 2-10-4z" fill="#FAF7F0" stroke="#2A1E16" stroke-opacity=".3"/><ellipse cx="31" cy="-8" rx="5" ry="3.6" fill="#F2B8B0"/><circle cx="28" cy="-15" r="1.2" fill="#222"/><path d="M24-20l-3-4M30-20l2-4" stroke="#C9B48A" stroke-width="2" stroke-linecap="round"/><path d="M-22-14q-6 2-6 10" stroke="#E9E4DA" stroke-width="2" fill="none"/>`;
-      const sheep=`<ellipse cy="2" rx="16" ry="4" fill="#0B3B2E" opacity=".2"/><path d="M-8 0v-8M-3 0v-8M5 0v-8M9 0v-8" stroke="#3A2E26" stroke-width="2.6" stroke-linecap="round"/>${[[-8,-12,6],[0,-15,7],[7,-12,6],[-3,-9,6],[4,-8,6]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#F6F3EC" stroke="#2A1E16" stroke-opacity=".2"/>`).join('')}<ellipse cx="14" cy="-12" rx="4.6" ry="4" fill="#3A2E26"/><circle cx="15.5" cy="-13" r=".9" fill="#fff"/>`;
-      at(14.8,6.4,cow);at(14.9,8.6,sheep);at(14.3,9.8,`<g transform="scale(-1 1)">${sheep}</g>`)}}
-  // reeds and cattails around the back of the pond
-  if(has(40)){const [cx,cy]=IP(5.6,13.6);let rd='';for(let a=190;a<=350;a+=14){const t=a*Math.PI/180,x=cx+Math.cos(t)*120,y=cy+Math.sin(t)*56;rd+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-3 0q-2-10-5-16M0 0v-22M3 0q2-10 5-15" stroke="#4E8F3A" stroke-width="1.8" fill="none" stroke-linecap="round"/>${a%28===0?'<rect x="-1.6" y="-30" width="3.2" height="9" rx="1.6" fill="#7A4A2A"/>':''}</g>`}add(cy-40,rd)}
-  // trees and palms around the farm: behind the back fences first, then the side margins
-  {const slotsE=[];const r=rnd(13),j=a=>(r()-.5)*a;
-    for(const off of [-.9,-2,-3.1])for(let k=1;k<=18;k++){slotsE.push([k-.3+j(.3),off+j(.2)]);slotsE.push([off+j(.2),k-.1+j(.3)])}
-    for(let v=12.3;v<=18.6;v+=1.1)for(let u=.7;u<=2.8;u+=1.1)slotsE.push([u+j(.3),v+j(.3)]);
-    for(let u=13.9;u<=17.6;u+=.9)for(let v=5;v<=11;v+=1)slotsE.push([u+j(.2),v+j(.2)]);
-    for(let u=11.2;u<=17.6;u+=1.1)for(let v=.6;v<=3.6;v+=1.1)slotsE.push([u+j(.2),v+j(.2)]);
-    const blocked=(u,v)=>{if(has(100)&&u<0&&u>-1.6&&v>gateV[0]-.8&&v<gateV[1]+.8)return true;if(u<0&&v>5.6&&v<7.6)return true;
-      if(has(25)&&u>5.6&&u<11.4&&v>0&&v<4.6)return true;if(has(80)&&u>0&&u<4.2&&v>.8&&v<5.4)return true;if(has(10)&&u>1&&u<3&&v>10.4&&v<12.4)return true;if(has(40)&&u>2&&u<9.4&&v>11.4&&v<16)return true;
-      if(has(100)&&u>13.5&&v>2&&v<9)return true;if(has(80)&&u>13.5&&v>5&&v<11)return true;if(has(80)&&u<4.6&&v>.6&&v<6.2&&u>-.1)return true;const [x,y]=IP(u,v);if(Object.keys(DECOR_POS).some(id=>owned(id)&&!(state.garden.hidden||{})[id]&&Math.abs(DECOR_POS[id][0]-x)<44&&Math.abs(DECOR_POS[id][1]-y)<30))return true;return x<12||x>988||y<172||y>556};
-    const E=slotsE.filter(([u,v])=>!blocked(u,v)).map(([u,v])=>{const [x,y]=IP(u,v);return {x,y,out:u<0||v<0}});const behindL=[];
-    tall.forEach((i,k)=>{const q=E[k%Math.max(1,E.length)];if(!q)return;const extra=Math.floor(k/Math.max(1,E.length));const p={x:q.x+extra*9,y:q.y+extra*5,v:((i*7919)%100)/100,s:isTall(plantKind(i))?.78:.95,ripe:treeRipe(i)};
-      let s=plantSVG(i,p);if(animate&&i>=seen)s=`<g class="new" style="animation-delay:${(i-seen)*120}ms">${s}</g>`;if(q.out)behindL.push([p.y,s]);else add(p.y,s)});
-    behindL.sort((a,b)=>a[0]-b[0]);behind=behindL.map(a=>a[1]).join('')}
-  // golden palms from the streak
-  {const sp=[[930,420],[70,430],[960,470],[40,470]];for(let i=0;i<Math.min(palms,sp.length);i++){const [x,y]=sp[i];add(y,`<g transform="translate(${x} ${y}) scale(1.3)"><path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#F4B740" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/></g></g>`)}}
-  if(n>0&&has(25)&&asleep()){const [zx,zy]=IP(8.4,2.3,has(60)?110:80);add(999,zzz(zx,zy))}
-  if(n>0){storeSVG(add,night);add(IP(16.45,14.6)[1],sellerSVG());add(IP(12.6,14)[1]-.5,farmHandsSVG(crops.length));ground+=townSVG(add,night)}
-  spr.sort((a,b)=>a[0]-b[0]);
-  const fo=dry>0?'<g filter="url(#gd)">':'',fc=dry>0?'</g>':'';let o=ground+fo+behind+fc+back+fo+spr.map(a=>a[1]).join('')+fc;
-  return o}
-// people the size of the townsfolk: a farm hand who never stops (bed to bed, then the harvest to the storehouse) and a seller at the stand
-function personSVG(c1,c2,hat,extra='',walk=true){return `<g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><g class="${walk?'fwalk ':''}fleg"><path d="M-2-12v11" stroke="#2E3A4A" stroke-width="2.6"/></g><g class="${walk?'fwalk ':''}fleg2"><path d="M2-12v11" stroke="#2E3A4A" stroke-width="2.6"/></g><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M-5-33q5-6 10 0" fill="${c2}"/>${hat}${extra}</g>`}
-function farmHandsSVG(cropCount){if(asleep())return '';
-  const beds=Math.max(1,Math.min(BEDS.length,Math.ceil(cropCount/BED.per)));
-  // route: storehouse door, then beside each bed in use, then back with the basket
-  const pts=[[15.65,15.3],[15.65,12.2]];for(let b=0;b<Math.min(beds,6);b++){const [u0,v0]=BEDS[b];pts.push([u0+BED.S*.5,v0+BED.S+.25])}pts.push([15.65,12.2],[15.65,15.3]);
-  const P=pts.map(([u,v])=>IP(u,v));let L=[0];for(let k=1;k<P.length;k++)L.push(L[k-1]+Math.hypot(P[k][0]-P[k-1][0],P[k][1]-P[k-1][1]));
-  const speed=22,dwell=2.2,tot=L[L.length-1]/speed+dwell*(P.length-1);let t=0,kp=[],kt=[];
-  for(let k=0;k<P.length;k++){if(k){t+=(L[k]-L[k-1])/speed;kp.push(L[k]/L[L.length-1]);kt.push(t/tot)}if(k<P.length-1){kp.push(L[k]/L[L.length-1]);kt.push(t/tot);t+=dwell}}
-  const path='M'+P.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
-  const basket=`<g transform="translate(7 -16)"><path d="M-6 0h12l-2 7h-8z" fill="#B88B5E" stroke="#7E5A30" stroke-width=".8"/><circle cx="-3" cy="-1" r="2.4" fill="#E8452E"/><circle cx="1" cy="-2" r="2.4" fill="#F4C542"/><circle cx="4" cy="-1" r="2.2" fill="#E8822A"/></g>`;
-  const worker=`<g class="hit" data-act="worker"><title>عامل الزراعة</title><animateMotion dur="${tot.toFixed(1)}s" repeatCount="indefinite" calcMode="linear" keyPoints="${kp.map(x=>x.toFixed(4)).join(';')}" keyTimes="${kt.map(x=>Math.min(1,x).toFixed(4)).join(';')}" path="${path}"/>${personSVG('#3E9E6A','#5A3A20','<path d="M-6-34q6-7 12 0z" fill="#E8402E"/><path d="M5-34h4" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>',`<g class="peck">${basket}</g>`)}<circle cy="-12" r="16" fill="transparent"/></g>`;
-  return worker}
-function sellerSVG(){if(asleep())return '';const [sx,sy]=IP(16.45,14.6);
-  return `<g transform="translate(${sx.toFixed(0)} ${sy.toFixed(0)})"><g class="bfbob" style="animation-duration:1.6s">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false)}</g></g>`}
-/* ---------- crops grow, a worker harvests them, the storehouse, the stand and the town ---------- */
-const CROP_INFO={apple:['🍎','تفاح'],orange:['🍊','برتقال'],lemon:['🍋','ليمون'],dates:['🌴','رطب'],pine:['🌰','صنوبر'],corn:['🌽','ذرة'],strawberry:['🍓','فراولة'],wheat:['🌾','قمح'],carrot:['🥕','جزر'],sunflower:['🌻','دوار الشمس'],blueberry:['🫐','توت'],cabbage:['🥬','ملفوف'],tomato:['🍅','طماطم'],pumpkin:['🎃','قرع'],lavender:['💜','خزامى'],grape:['🍇','عنب']};
-const GROW_H=6,WORKER_EVERY=2*3600e3,PRICE_T=2; // a crop sells for 0.2 (kept in tenths)
-const HOUR=3600e3;
-const boostOn=k=>((state.garden.boost||{})[k]||0)>Date.now();
-// trees and palms from your tasks bear fruit too: ripe every 8 hours (5 with fertiliser)
-const TREE_H=8;
-function fruitOf(i){const k=plantKind(i);return k==='palm'?'dates':k==='pine'?'pine':(k==='big'||k==='tree')?['apple','orange','lemon','apple'][i%4]:null}
-const fruitYield=i=>{const k=plantKind(i);return k==='big'?4:k==='palm'?3:2};
-function treeSlots(n){const out=[];const total=Math.min(n,260);for(let i=0;i<total;i++){const f=isTall(plantKind(i))&&fruitOf(i);if(f)out.push({i,kind:f})}return out}
-function treeAge(i){const t=(state.garden.treeT||{})[i];return t?Date.now()-t:Infinity}
-const treeGrow=()=>(boostOn('fert')?5:TREE_H)*HOUR;
-function treeRipe(i){return treeAge(i)>=treeGrow()}
-function cropStage(t){if(!t)return 3;const a=(Date.now()-t)/HOUR,G=boostOn('fert')?4:GROW_H;return a<.5?0:a<G/3?1:a<G?2:3}
-const GROCERY=[
-  {id:'fert',icon:'🧪',name:'سماد عضوي',price:8,desc:'المحاصيل تنضج في 4 ساعات بدل 6، لمدة يوم كامل'},
-  {id:'seeds',icon:'🌱',name:'بذور مميزة',price:15,desc:'كل محصول يقطفه العامل يطلع اثنين بدل واحد، لمدة يوم'},
-  {id:'baskets',icon:'🧺',name:'سلال عرض',price:6,desc:'البسطة تعرض أحلى والزباين يجون أكثر ويشترون أكثر، لمدة يوم'},
-  {id:'juice',icon:'🥤',name:'عصير للعامل',price:3,desc:'العامل ينشط ويقطف كل 5 دقايق بدل ربع ساعة، لمدة يوم'}];
-function buyGrocery(id){const it=GROCERY.find(x=>x.id===id),g=state.garden;if(!it)return;if((g.moneyT||0)<it.price*10){toast(`تحتاج ${moneyStr(it.price*10-(g.moneyT||0))} فلوس زيادة · بيع محاصيل من المخزن`);return}
-  g.moneyT-=it.price*10;g.boost=Object.assign({},g.boost||{});g.boost[id]=Math.max(Date.now(),g.boost[id]||0)+24*HOUR;saveGarden();renderStore();toast(`${it.icon} اشتريت ${it.name} من البقالة`);openShopPop('بقالة')}
-// which plantings are crops in beds (index i, bed slot j, kind)
-function cropSlots(n){const out=[];let j=0;const total=Math.min(n,260);for(let i=0;i<total;i++){if(isTall(plantKind(i)))continue;if(j>=BEDS.length*BED.per)break;out.push({i,j,kind:CROPS[Math.floor(j/BED.per)%CROPS.length]});j++}return out}
-let cropSaveT=null;
-function ensureCropTimes(count){const g=state.garden;let ch=false;if(!Array.isArray(g.cropT)||(!g.cropT.length&&count)){g.cropT=Array(count).fill(0);ch=true}while(g.cropT.length<count){g.cropT.push(Date.now());ch=true}
-  if(ch){clearTimeout(cropSaveT);cropSaveT=setTimeout(saveGarden,800)}return g.cropT}
-const UNRIPE={'#F4C542':'#B8D86A','#E23B3B':'#B9D98A','#E8452E':'#9CCB6A','#E8822A':'#9CBF5A','#F29A3E':'#B2D06E','#4A63B8':'#A9C98A','#7B4FA0':'#A8C77A','#F0C75A':'#A9CF6A','#C9952E':'#7FA84A','#F7C531':'#9CCB5A','#9C7AD6':'#8FB86A','#C4A5F0':'#A9CC88','#F08A2E':'#7A5A3A'};
-function cropStageArt(k,st){
-  if(st===0)return `<path d="M0 0v-6" stroke="#5E9C3A" stroke-width="1.4"/><path d="M0-5c-3 0-5-2-5-4c3 0 5 2 5 4zM0-6c0-3 2-5 5-5c0 3-2 5-5 5z" fill="#79C24A"/>`;
-  if(st===1)return `<path d="M0 0v-10" stroke="#4F8A2E" stroke-width="1.6"/><path d="M0-4c-5-1-7-4-7-7c4 0 6 3 7 6zM0-6c5-1 7-4 7-7c-4 0-6 3-7 6zM0-9c-2-3-2-6 0-8c2 2 2 5 0 8z" fill="#5FAE3A"/>`;
-  let a=cropArt(k);if(st===2)for(const [f,t] of Object.entries(UNRIPE))a=a.split(f).join(t);return a}
-// ---- worker ----
-let workerPhase=null,workerTimers=[];
-function workerSVG(){
-  if(!workerPhase)return '';
-  const legs=workerPhase==='work'?'':' fwalk';
-  const body=`<ellipse cy="2" rx="13" ry="3.4" fill="#0B3B2E" opacity=".2"/>
-    <g class="fleg${legs}"><path d="M-4-17v15" stroke="#2E5A80" stroke-width="5" stroke-linecap="round"/><ellipse cx="-3" cy="-1" rx="5" ry="2.4" fill="#3A2A1E"/></g>
-    <g class="fleg2${legs}"><path d="M4-17v15" stroke="#24496A" stroke-width="5" stroke-linecap="round"/><ellipse cx="5" cy="-1" rx="5" ry="2.4" fill="#3A2A1E"/></g>
-    <path d="M-10-36Q0-40 10-36L11-15Q0-12-11-15Z" fill="#3E9E6A"/><path d="M-6-36v20h12v-20" fill="#2E7E52"/>
-    <rect x="-2.2" y="-41" width="4.4" height="5" rx="2" fill="#B98058"/><circle cy="-48" r="8" fill="#C98E62"/><circle cx="3" cy="-49" r="1.1" fill="#2B211C"/><path d="M1-45q2 1.4 4 0" stroke="#5A3A20" stroke-width="1" fill="none"/>
-    <path d="M-9-52q9-9 18 0z" fill="#E8402E"/><path d="M8-52h7" stroke="#C0392B" stroke-width="2.6" stroke-linecap="round"/>
-    <g class="${workerPhase==='work'?'peck':''}"><path d="M8-30l10 8" stroke="#C98E62" stroke-width="3.4" stroke-linecap="round"/><path d="M12-22h16l-3 12h-10z" fill="#B88B5E" stroke="#7E5A30" stroke-width="1"/><g fill="#E8452E"><circle cx="16" cy="-23" r="2.6"/><circle cx="21" cy="-24" r="2.6"/><circle cx="25" cy="-22" r="2.2"/></g></g>`;
-  let sp='';if(workerPhase==='work'){const r=rnd(8);for(let i=0;i<10;i++){const b=BEDS[Math.floor(r()*Math.min(BEDS.length,4))],[x,y]=IP(b[0]+r()*BED.S,b[1]+r()*BED.S,10);sp+=`<path class="sparkle" style="animation-delay:-${(r()*1.6).toFixed(2)}s" transform="translate(${x.toFixed(0)} ${y.toFixed(0)})" d="M0-5l1.3 3.7L5 0 1.3 1.3 0 5-1.3 1.3-5 0-1.3-3.7z" fill="#B8F07A"/>`}}
-  const [x,y]=IP(9.9,6.55);
-  return `${sp}<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><g class="farmer-${workerPhase}">${body}</g></g>`;
-}
-function harvestNow(){const g=state.garden,cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.length);let got=0;const st=g.store||(g.store={});
-  const per=boostOn('seeds')?2:1;for(const c of cs){if(cropStage(T[c.j])===3){st[c.kind]=(st[c.kind]||0)+per;T[c.j]=Date.now();got+=per}}
-  const TT=g.treeT||(g.treeT={});for(const t of treeSlots(gardenCount())){if(treeRipe(t.i)){const q=fruitYield(t.i)*per;st[t.kind]=(st[t.kind]||0)+q;TT[t.i]=Date.now();got+=q}}return got}
-function runWorker(manual){
-  if(workerPhase||farmerPhase)return;workerTimers.forEach(clearTimeout);
-  workerPhase='in';rerenderGarden();if(manual)toast('👷 عامل الزراعة جاي يشيك على الزرع');
-  workerTimers=[
-    setTimeout(()=>{workerPhase='work';const got=harvestNow();state.garden.workerAt=Date.now();saveGarden();rerenderGarden();renderStore();
-      toast(got?`🧺 العامل قطف ${got} ${cropWord(got)} ووداها المخزن، وزرع مكانها من جديد`:'🌱 العامل سقى الزرع ورتّبه، ما فيه شي جاهز للقطف الحين')},4200),
-    setTimeout(()=>{workerPhase='out';rerenderGarden()},8200),
-    setTimeout(()=>{workerPhase=null;rerenderGarden()},12400)];
-}
-let lastHarvestToast=0;
-function checkWorker(manual){if(!gardenLoaded||!gardenCount())return;if(asleep()){if(manual)toast('😴 حسن نايم، يصحى الساعة 6 الصبح ويقطف كل الناضج');return}const g=state.garden;if(!manual&&Date.now()-(g.workerAt||0)<(boostOn('juice')?5:15)*60e3)return;
-  const got=harvestNow();g.workerAt=Date.now();saveGarden();renderStore();if(got){lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false)}
-  if(manual||got&&(!$('gview').hidden||Date.now()-lastHarvestToast>2*HOUR)){lastHarvestToast=Date.now();toast(got?`🧺 العامل قطف ${got} ${cropWord(got)} ووداها المخزن، وزرع مكانها`:'🌱 ما فيه شي ناضج الحين، العامل قاعد يسقي ويرعى الزرع')}}
-setInterval(()=>{checkWorker();townTick()},60000);
-// ---- money and selling ----
-const moneyStr=t=>(t/10).toFixed(1);
-function storeTotal(){return Object.values(state.garden.store||{}).reduce((a,b)=>a+b,0)}
-const cropWord=n=>n===1?'محصول':n===2?'محصولين':n<=10?'محاصيل':'محصول';
-function displayTotal(){return Object.values(state.garden.display||{}).reduce((a,b)=>a+b,0)}
-// "sell" puts produce on the stand; Abu Hassan sells it to customers as they turn up
-function putOnDisplay(kind){const g=state.garden,st=g.store||(g.store={}),dp=g.display||(g.display={});let n=0;
-  for(const k of kind?[kind]:Object.keys(st)){const q=st[k]||0;if(!q)continue;dp[k]=(dp[k]||0)+q;delete st[k];n+=q}
-  if(!n)return 0;saveGarden();renderStore();lastPeriod=null;renderSky();if(!$('gview').hidden)renderGarden(false);
-  toast(`🧺 حطّيت ${n} ${cropWord(n)} على البسطة، وأبو حسن يبيعها للزباين أول ما يجون`);return n}
-function sellCrops(kind,qty,who){const g=state.garden,st=g.display||(g.display={});let sold=0;
-  const take=k=>{const q=Math.min(st[k]||0,qty-sold);st[k]=(st[k]||0)-q;if(!st[k])delete st[k];sold+=q};
-  if(kind)take(kind);else for(const k of Object.keys(st).sort((a,b)=>st[b]-st[a])){if(sold>=qty)break;take(k)}
-  if(!sold)return 0;g.moneyT=(g.moneyT||0)+sold*PRICE_T;const tw=townState();tw.sold+=sold;saveGarden();renderStore();if(!$('gview').hidden)renderMarket();if(who!=='town'){toast(`💰 بعت ${sold} ${cropWord(sold)} بـ ${moneyStr(sold*PRICE_T)} فلوس`)}return sold}
-// ---- the town ----
-function townState(){const g=state.garden;if(!g.town||typeof g.town!=='object')g.town={start:Date.now(),sold:0,built:0,buyAt:Date.now()};return g.town}
-const SHOPS={2:['بقالة','#2E8B57'],5:['مخبز','#C2410C'],8:['مقهى','#7A4A2A'],11:['مسجد','mosque'],14:['صيدلية','#2E86C1'],17:['مطعم','#B03A2E'],20:['مدرسة','school'],23:['محل ورد','#D45D7E'],27:['سوق الخضار','#3E9E6A'],31:['مستوصف','#2E86C1'],35:['مكتبة','#6C4FA0'],40:['محطة وقود','#E0A030'],45:['فندق','#34495E'],50:['حديقة عامة','park'],56:['مول','#8E44AD'],63:['برج','tower']};
-const TOWN_LOTS=(()=>{const L=[];const rows=[20.2,21.9,24.9,26.6];
-  for(const a of rows)for(let b=17.4;b>=-7;b-=1.9){L.push([a,b]);L.push([b,a])}
-  for(const a of rows)for(const b of rows)if(a<=b){L.push([a,b]);if(a!==b)L.push([b,a])}
-  const seen=new Set();return L.filter(([u,v])=>{const k=u.toFixed(1)+','+v.toFixed(1);if(seen.has(k))return false;seen.add(k);return true}).sort((p,q)=>Math.hypot(p[0]-19.5,p[1]-19.5)-Math.hypot(q[0]-19.5,q[1]-19.5))})();
-const TOWN_ROADS=[18.9,23.4,28.1];
-// everyone sleeps from midnight to 6 am: no building, harvesting or selling
-const WAKE_H=6;const zzz=(x,y)=>`<g class="zzz" transform="translate(${x.toFixed(0)} ${y.toFixed(0)})" pointer-events="none"><text font-size="11" font-weight="700" fill="#EAF2FF" font-family="Montserrat,sans-serif">z</text><text x="7" y="-9" font-size="14" font-weight="700" fill="#EAF2FF" font-family="Montserrat,sans-serif">Z</text></g>`;const asleep=(d=new Date())=>d.getHours()<WAKE_H;
-function awakeHours(from,to){if(to<=from)return 0;let h=(to-from)/HOUR;const d=new Date(from);d.setHours(0,0,0,0);
-  for(let t=d.getTime();t<to;t+=24*HOUR){const a=Math.max(from,t),b=Math.min(to,t+WAKE_H*HOUR);if(b>a)h-=(b-a)/HOUR}return Math.max(0,h)}
-// building is a little slower now: about one new building every 6 waking hours, plus one for every 5 crops sold
-function townXP(){const t=townState();return awakeHours(t.start,Date.now())/6+t.sold/5}
-function townBuilt(){return Math.min(TOWN_LOTS.length,Math.max(townState().built||0,3+Math.floor(townXP())))}
-function townName(b){return b<6?'قرية صغيرة':b<14?'قرية':b<26?'بلدة':b<40?'مدينة صغيرة':b<60?'مدينة':'مدينة كبيرة'}
-function openShops(b){return Object.entries(SHOPS).filter(([k])=>+k<b).map(([,v])=>v[0])}
-function townTick(){if(!gardenLoaded)return;const t=townState(),b=townBuilt();let changed=false;
-  if(b>(t.built||0)){const fresh=Object.entries(SHOPS).filter(([k])=>+k>=(t.built||0)&&+k<b).map(([,v])=>v[0]);if(t.built&&fresh.length)toast(`🏪 انفتح في ${townName(b)}: ${fresh.join('، ')}`);else if(t.built&&b-(t.built||0)>0)toast(`🏗️ أهل ${townName(b)} خلّصوا بناء جديد`);t.built=b;changed=true}
-  // townspeople come to the stand and buy what's in the storehouse
-  // customers turn up at random: each minute there's a small chance one comes and buys a few things
-  {const mins=Math.min(720,Math.floor((Date.now()-(t.buyAt||Date.now()))/60e3));if(mins>0){t.buyAt=(t.buyAt||Date.now())+mins*60e3;changed=true;
-    const chance=Math.min(.3,(.08+b*.004)*(boostOn('baskets')?1.6:1));let got=0,people=0,last='';
-    const t0=t.buyAt-mins*60e3;for(let m=0;m<mins&&displayTotal();m++){if(new Date(t0+m*60e3).getHours()<WAKE_H)continue;if(Math.random()>=chance)continue;const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0);if(!ks.length)break;
-      const k=ks[Math.floor(Math.random()*ks.length)],q=1+Math.floor(Math.random()*(2+Math.floor(b/10)+(boostOn('baskets')?1:0)));const n2=sellCrops(k,q,'town');if(n2){got+=n2;people++;last=`${n2} ${CROP_INFO[k][1]}`}}
-    if(got)toast(people===1?`🛒 زبون من ${townName(b)} اشترى ${last} (+${moneyStr(got*PRICE_T)} فلوس)`:`🛒 ${people} زباين اشتروا ${got} ${cropWord(got)} (+${moneyStr(got*PRICE_T)} فلوس)`)}}
-  if(changed){saveGarden();renderStore();lastPeriod=null;renderSky()}}
-// a small car drawn in the same angled view: body, cabin with windows, wheels, lights
-function carSVG(alongU,col){
-  const P=(a,b,z)=>{const u=alongU?a:b,v=alongU?b:a;return `${((u-v)*30).toFixed(1)} ${((u+v)*15-z).toFixed(1)}`};
-  const poly=(pts,f,ex='')=>`<path d="M${pts.map(p=>P(...p)).join('L')}Z" fill="${f}" ${ex}/>`;
-  const L=.48,W=.22,dk=mixHex(col,'#000000',.28),dk2=mixHex(col,'#000000',.42),lt=mixHex(col,'#FFFFFF',.25),OL='stroke="#1A1410" stroke-opacity=".35" stroke-width=".6" stroke-linejoin="round"';
-  // the two faces we see depend on direction: +a end (front) and +b side
-  const box=(a0,b0,a1,b1,z0,z1,cf,cs,ct)=>poly([[a1,b0,z0],[a1,b1,z0],[a1,b1,z1],[a1,b0,z1]],cf,OL)+poly([[a0,b1,z0],[a1,b1,z0],[a1,b1,z1],[a0,b1,z1]],cs,OL)+poly([[a0,b0,z1],[a1,b0,z1],[a1,b1,z1],[a0,b1,z1]],ct,OL);
-  const wheel=(a,b)=>{const [x,y]=P(a,b,3).split(' ').map(Number);return `<ellipse cx="${x}" cy="${y}" rx="3.2" ry="3.6" fill="#1E1E1E"/><ellipse cx="${x}" cy="${y}" rx="1.4" ry="1.6" fill="#9A9A9A"/>`};
-  let s=`<ellipse cy="2" rx="17" ry="6" fill="#0B2A20" opacity=".25"/>`;
-  s+=wheel(-L*.6,-W)+wheel(L*.6,-W);
-  s+=box(-L,-W,L,W,3,9,dk,dk2,col);
-  s+=box(-L*.45,-W*.85,L*.35,W*.85,9,15,lt,lt,col);
-  s+=poly([[L*.35,-W*.75,10],[L*.35,W*.75,10],[L*.35,W*.75,14],[L*.35,-W*.75,14]],'#BFE6F0',OL)+poly([[-L*.38,W*.85,10],[L*.28,W*.85,10],[L*.28,W*.85,14],[-L*.38,W*.85,14]],'#A9D6E6',OL);
-  s+=poly([[-L*.06,W*.86,10],[-L*.02,W*.86,10],[-L*.02,W*.86,14],[-L*.06,W*.86,14]],lt);
-  s+=wheel(-L*.6,W)+wheel(L*.6,W);
-  const [h1x,h1y]=P(L,-W*.6,6).split(' ').map(Number),[h2x,h2y]=P(L,W*.6,6).split(' ').map(Number);
-  s+=`<circle cx="${h1x}" cy="${h1y}" r="1.4" fill="#FFF4C2"/><circle cx="${h2x}" cy="${h2y}" r="1.4" fill="#FFF4C2"/>`;
-  return s}
-function townSVG(add,night){
-  const t=townState(),b=townBuilt(),xp=townXP(),prog=Math.max(0,Math.min(1,xp-Math.floor(xp))),paved=b>=16,r=rnd(91);
-  let ground='';
-  // roads reach as far as the built lots
-  const lots=TOWN_LOTS.slice(0,Math.min(TOWN_LOTS.length,b+1));const ext=lots.reduce((m,[u,v])=>Math.max(m,u>18.5&&v<18.5?18.5-v:0,v>18.5&&u<18.5?18.5-u:0),2)+2;
-  const far=lots.reduce((m,[u,v])=>Math.max(m,u,v),21)+1.4;
-  const roadCol=paved?'#6B6E73':'#C9B48A',edge=paved?'#B9BCC0':'#B29A6E';
-  for(const R of TOWN_ROADS){if(R>far+.5)continue;const a=18.5-ext,w=.75;
-    ground+=ipoly([[R-w/2,a],[R+w/2,a],[R+w/2,far],[R-w/2,far]],roadCol)+ipoly([[a,R-w/2],[far,R-w/2],[far,R+w/2],[a,R+w/2]],roadCol);
-    if(paved){ground+=`<path d="M${ipt(R,a)}L${ipt(R,far)}M${ipt(a,R)}L${ipt(far,R)}" stroke="#F4F1E8" stroke-width="1.6" stroke-dasharray="10 9"/>`;
-      ground+=`<path d="M${ipt(R-w/2,a)}L${ipt(R-w/2,far)}M${ipt(R+w/2,a)}L${ipt(R+w/2,far)}M${ipt(a,R-w/2)}L${ipt(far,R-w/2)}M${ipt(a,R+w/2)}L${ipt(far,R+w/2)}" stroke="${edge}" stroke-width="3"/>`}}
-  // a lane from the stand to the town road
-  ground+=ipoly([[17,12.9],[18.6,12.9],[18.6,13.7],[17,13.7]],roadCol,'opacity=".85"');
-  // buildings
-  const PAL=['#F2E6D0','#E9D2A6','#F6EFE2','#DCE8EE','#F0D9C8','#E6E0F0'],ROOF=['#B5603A','#6E4A3A','#3E6E8E','#8E3B2E','#4E7A5A','#7A5A8E'];
-  const winGrid=(u0,v0,u1,v1,h,fl)=>{let s='';for(let f=0;f<fl;f++){const z=8+f*17;for(let u=u0+.2;u<u1-.15;u+=.42)s+=ipoly([[u,v1,z],[u+.22,v1,z],[u+.22,v1,z+8],[u,v1,z+8]],night?'#FFD97A':'#9FD3E2');for(let v=v1-.2;v>v0+.15;v-=.42)s+=ipoly([[u1,v,z],[u1,v-.22,z],[u1,v-.22,z+8],[u1,v,z+8]],night?'#F2C860':'#86BFD0')}return s};
-  lots.forEach(([u,v],k)=>{const u0=u-.7,v0=v-.7,u1=u+.7,v1=v+.7,[bx,by]=IP(u1,v1);const age=b-k;
-    if(k===b){ // under construction
-      const hh=8+prog*30;let s=isoBox(u0,v0,u1,v1,4,'#A9A08F','#8D8577','#C9C0AE');
-      s+=`<g stroke="#C9A24A" stroke-width="1.6">${[[u0,v1],[u1,v1],[u1,v0]].map(([a,c])=>`<path d="M${ipt(a,c,4)}L${ipt(a,c,4+hh)}"/>`).join('')}<path d="M${ipt(u0,v1,4+hh*.5)}L${ipt(u1,v1,4+hh*.5)}L${ipt(u1,v0,4+hh*.5)}M${ipt(u0,v1,4+hh)}L${ipt(u1,v1,4+hh)}L${ipt(u1,v0,4+hh)}"/></g>`;
-      s+=isoBox(u0+.1,v0+.1,u1-.1,v1-.1,4+hh*.7,'#D8CDB8','#BDB09A','#E6DCC8',4);
-      if(b>=8){const [cx,cy]=IP(u0+.2,v0+.2);s+=`<g transform="translate(${cx.toFixed(0)} ${cy.toFixed(0)})"><path d="M0 0V-96" stroke="#E0A030" stroke-width="3"/><path d="M-8-92H48" stroke="#E0A030" stroke-width="3"/><path d="M40-92v20" stroke="#555" stroke-width="1"/><rect x="36" y="-72" width="8" height="6" fill="#8B6B4A"/><path d="M0-96L-8-92M0-96L48-92" stroke="#C98A20" stroke-width="1"/></g>`}
-      const [wx,wy]=IP(u1+.3,v1-.2);if(!asleep())s+=`<g transform="translate(${wx.toFixed(0)} ${wy.toFixed(0)}) scale(.55)"><g class="peck"><rect x="-5" y="-30" width="10" height="16" rx="3" fill="#E8822A"/><circle cy="-36" r="5" fill="#C98E62"/><path d="M-6-40q6-6 12 0z" fill="#F4C542"/><path d="M-3-14v12M3-14v12" stroke="#2E5A80" stroke-width="3.4"/></g></g>`;
-      add(by,s);return}
-    if(k>b)return;
-    const shop=SHOPS[k],floors=1+(age>18?1:0)+(age>36?1:0)+(age>54?1:0);let s='';
-    if(shop&&shop[1]==='mosque'){s+=isoBox(u0,v0,u1,v1,26,'#F6F1E6','#E2D9C6','#FBF8F1');const [dx,dy]=IP(u,v,26);s+=`<ellipse cx="${dx}" cy="${dy}" rx="20" ry="9" fill="#E2D9C6"/><path d="M${dx-18} ${dy}a18 22 0 0 1 36 0z" fill="#3FA08A"/><path d="M${dx} ${dy-22}v-8" stroke="#E0A030" stroke-width="2"/>`;s+=isoBox(u1-.3,v0,u1,v0+.3,62,'#F6F1E6','#E2D9C6','#FBF8F1')+(()=>{const [mx,my]=IP(u1-.15,v0+.15,62);return `<path d="M${mx-6} ${my}L${mx} ${my-14}L${mx+6} ${my}z" fill="#3FA08A"/>`})()+ipoly([[u0+.4,v1,0],[u0+.9,v1,0],[u0+.9,v1,16],[u0+.4,v1,16]],'#3FA08A')}
-    else if(shop&&shop[1]==='park'){ground+=ipoly([[u0,v0],[u1,v0],[u1,v1],[u0,v1]],'#6FBF4A');for(let q=0;q<4;q++){const [tx,ty]=IP(u0+.3+(q%2)*.8,v0+.3+Math.floor(q/2)*.8);s+=`<g transform="translate(${tx.toFixed(0)} ${ty.toFixed(0)}) scale(.55)"><rect x="-3" y="-16" width="6" height="16" fill="#6E4F33"/><circle cy="-26" r="14" fill="#2E8F6A"/><circle cx="4" cy="-30" r="6" fill="#4DB385" opacity=".7"/></g>`}}
-    else if(shop&&(shop[1]==='school'||shop[1]==='tower')){const H=shop[1]==='tower'?150:40;s+=isoBox(u0,v0,u1,v1,H,shop[1]==='tower'?'#8FB8CC':'#F2D9A6',shop[1]==='tower'?'#6F98AC':'#D9BC84',shop[1]==='tower'?'#B9D8E6':'#F8E6C0')+winGrid(u0,v0,u1,v1,H,Math.floor(H/17)-1)}
-    else if(shop){const H=floors>1?22+17*(floors-1):24;s+=isoBox(u0,v0,u1,v1,H,'#F6EFE2','#DCD0BC','#E9E2D2')+ipoly([[u0,v0,H],[u1,v0,H],[u1,v1,H],[u0,v1,H]],'#CFC5B2');
-      if(floors>1)s+=winGrid(u0,v0,u1,v1,H,floors).replace(/^/,'');
-      // awning with stripes and a sign over the shop window
-      let aw='';for(let q=0;q<6;q++){const a=u0+q*(1.4/6);aw+=ipoly([[a,v1,18],[a+1.4/6,v1,18],[a+1.4/6,v1+.25,13],[a,v1+.25,13]],q%2?'#FFFFFF':shop[1])}
-      s+=ipoly([[u0+.15,v1,0],[u1-.15,v1,0],[u1-.15,v1,13],[u0+.15,v1,13]],night?'#FFE6A0':'#BFE6F0')+aw;
-      const [lx,ly]=IP(u,v1,H-4);s+=`<g transform="translate(${lx.toFixed(0)} ${ly.toFixed(0)})"><rect x="-17" y="-7" width="34" height="11" rx="2" fill="${shop[1]}"/>${label(0,2,shop[0],false,'font-size="7.5" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')}</g>`}
-    else{const P={wall:PAL[k%PAL.length],wallD:mixHex(PAL[k%PAL.length],'#000000',.13),base:'#A9A08F',roof:ROOF[(k*5)%ROOF.length],trim:'#FFFFFF',door:'#7A5A3A',shut:'#5A7A8E'};
-      if(floors>=3){const H=17*floors+6;s+=isoBox(u0,v0,u1,v1,H,P.wall,P.wallD,'#D9D2C6')+winGrid(u0,v0,u1,v1,H,floors)+ipoly([[u0+.55,v1,0],[u0+.85,v1,0],[u0+.85,v1,12],[u0+.55,v1,12]],P.door)}
-      else{const h=floors===2?34:20;s+=isoHouse(u0+.05,v0+.05,u1-.05,v1-.05,h,14,P,night,winL(u0+.25,v1-.05,.35,h*.35,h*.35,night,P)+doorL(u0+.8,v1-.05,.3,h*.55,P)+(floors===2?winL(u0+.25,v1-.05,.35,h*.72,h*.2,night,P):''))}}
-    if(asleep()&&!shop&&k%2===0){const [zx,zy]=IP(u,v,floors>=3?17*floors+20:floors===2?62:46);s+=zzz(zx,zy)}
-    add(by,shop?`<g class="hit" data-act="shop" data-shop="${shop[0]}"><title>${shop[0]}</title>${s}</g>`:s)});
-  // people walk along the roads; cars once the town is a city
-  // people and cars move on the road layer, under the buildings, so houses in front hide them
-  let mv='';const walkers=asleep()?0:Math.min(40,3+b);const routes=[];for(const R of TOWN_ROADS){if(R>far+.5)continue;routes.push([[R-.5,18.5-ext+.5],[R-.5,far-.3]],[[18.5-ext+.5,R-.5],[far-.3,R-.5]])}
-  const CL=['#FFFFFF','#2A2A2A','#E8822A','#3F8FC2','#C0392B','#8E44AD','#3E9E6A','#F4C542'];
-  for(let q=0;q<walkers&&routes.length;q++){const [A,B]=routes[q%routes.length],[ax,ay]=IP(A[0],A[1]),[bx2,by2]=IP(B[0],B[1]),d=(30+r()*40).toFixed(0),c1=CL[q%CL.length],c2=CL[(q*3+1)%CL.length];
-    mv+=(`<g><animateMotion dur="${d}s" begin="-${(r()*60).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}L${ax.toFixed(0)} ${ay.toFixed(0)}"/><g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><g class="fwalk fleg"><path d="M-2-12v11" stroke="#3A2E26" stroke-width="2.6"/></g><g class="fwalk fleg2"><path d="M2-12v11" stroke="#3A2E26" stroke-width="2.6"/></g><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M-5-33q5-6 10 0" fill="${c2}"/></g></g>`)}
-  if(b>=26&&!asleep()){for(let q=0;q<Math.min(10,Math.floor(b/5));q++){const ri=(q*3+1)%routes.length,[A0,B0]=routes[ri],back=q%2,[A,B]=back?[B0,A0]:[A0,B0],lane=back?-.18:.18,alongU=A[0]!==B[0];
-    const off=alongU?[0,lane+.25]:[lane+.25,0],[ax,ay]=IP(A[0]+off[0],A[1]+off[1]),[bx2,by2]=IP(B[0]+off[0],B[1]+off[1]),d=(18+r()*14).toFixed(0),cc=['#C0392B','#3F8FC2','#F4F1E8','#2A2A2A','#E0A030','#2E8B57'][q%6];
-    mv+=(`<g pointer-events="none"><animateMotion dur="${d}s" begin="-${(r()*30).toFixed(0)}s" repeatCount="indefinite" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${bx2.toFixed(0)} ${by2.toFixed(0)}"/>${carSVG(alongU,cc)}</g>`)}}
-  // buyers walk up to the stand when there's something to sell
-  if(displayTotal()&&!asleep()){const [ax,ay]=IP(18.6,13.3),[sx,sy]=IP(17.3,13.3);for(let q=0;q<Math.min(3,1+Math.floor(b/10));q++){const d=(16+q*5),c1=CL[(q+2)%CL.length];
-    add(ay-2,`<g><animateMotion dur="${d}s" begin="-${q*5}s" repeatCount="indefinite" keyPoints="0;1;1;0" keyTimes="0;.4;.6;1" calcMode="linear" path="M${ax.toFixed(0)} ${ay.toFixed(0)}L${sx.toFixed(0)} ${sy.toFixed(0)}"/><g transform="scale(.6)"><ellipse cy="1" rx="6" ry="2" fill="#0B3B2E" opacity=".25"/><path d="M-2-12v11M2-12v11" stroke="#3A2E26" stroke-width="2.6"/><path d="M-6-26q6-4 12 0l1 14h-14z" fill="${c1}"/><circle cy="-31" r="5" fill="#C98E62"/><path d="M6-20h6l-1 8h-4z" fill="#B88B5E"/></g></g>`)}}
-  return ground+mv}
-// storehouse and the little stand, inside the front of the farm
-function storeSVG(add,night){
-  const P={wall:'#B88B5E',wallD:'#9A6E44',base:'#8D8577',roof:'#7A3A2E',trim:'#F4EEE4',door:'#6B4426'};
-  let ex=ipoly([[13.4,15.9,0],[14.3,15.9,0],[14.3,15.9,24],[13.4,15.9,24]],P.trim)+ipoly([[13.48,15.9,0],[14.22,15.9,0],[14.22,15.9,22],[13.48,15.9,22]],P.door)+`<path d="M${ipt(13.5,15.9,1)}L${ipt(14.2,15.9,21)}M${ipt(14.2,15.9,1)}L${ipt(13.5,15.9,21)}" stroke="${P.trim}" stroke-width="1.6"/>`;
-  {let pl='';for(let u=12.7;u<15.3;u+=.3)pl+=`M${ipt(u,15.9,0)}L${ipt(u,15.9,34)}`;ex=`<path d="${pl}" stroke="#7E5A30" stroke-width=".8" opacity=".6"/>`+ex}
-  const [lx,ly]=IP(13.85,15.9,40);ex+=`<g transform="translate(${lx.toFixed(0)} ${ly.toFixed(0)})"><rect x="-20" y="-8" width="40" height="12" rx="2" fill="#383838"/>${label(0,1.5,'المخزن',false,'font-size="8" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')}</g>`;
-  const [hx,hy]=IP(15.3,15.9);add(hy,`<g class="hit" data-act="store"><title>المخزن</title>${isoHouse(12.6,14,15.3,15.9,34,22,P,night,ex)}</g>`);
-  // the stand: a counter with an awning and baskets of what's in store
-  const st=state.garden.display||{},kinds=Object.keys(st).filter(k=>st[k]>0).slice(0,4);
-  let s=isoBox(15.9,12.6,16.7,14.2,12,'#A47E58','#8B6440','#C29A70');
-  const COL={apple:'#E8402E',orange:'#F59A23',lemon:'#F2D13A',dates:'#8B4A1E',pine:'#8B6B4A',corn:'#F4C542',strawberry:'#E23B3B',wheat:'#F0C75A',carrot:'#F08A2E',sunflower:'#F7C531',blueberry:'#4A63B8',cabbage:'#8FCB6A',tomato:'#E8452E',pumpkin:'#E8822A',lavender:'#9C7AD6',grape:'#7B4FA0'};
-  kinds.forEach((k,q)=>{const [x,y]=IP(16.3,12.85+q*.38,12);s+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-6-1h12l-2 5h-8z" fill="#8B6440"/>${[[-3,-3],[0,-4],[3,-3],[-1.5,-6],[1.5,-6]].map(([a,c])=>`<circle cx="${a}" cy="${c}" r="2.2" fill="${COL[k]}"/>`).join('')}</g>`});
-  s+=`<g stroke="#7A5A3C" stroke-width="2.2">${[[15.9,12.6],[16.7,12.6],[16.7,14.2]].map(([a,c])=>`<path d="M${ipt(a,c,0)}L${ipt(a,c,34)}"/>`).join('')}</g>`;
-  let aw='';for(let q=0;q<6;q++){const a=12.4+q*.32;aw+=ipoly([[15.7,a,34],[16.95,a,30],[16.95,a+.32,30],[15.7,a+.32,34]],q%2?'#FFFFFF':'#0EA89C')}
-  s+=aw;const [sx,sy]=IP(16.95,13.4,40);s+=`<g transform="translate(${sx.toFixed(0)} ${sy.toFixed(0)})"><rect x="-24" y="-8" width="48" height="12" rx="2" fill="#0EA89C"/>${label(0,1.5,'نقطة البيع',false,'font-size="7.5" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')}</g>`;
-  add(IP(16.7,14.2)[1],`<g class="hit" data-act="stand"><title>نقطة البيع</title>${s}</g>`)}
-
 function gardenSVG(n,palms,seen,animate,wide){
   const per=periodOf(new Date().getHours()),night=per==='night',wx=weatherNow(),dry=dryLevel();
   sunSide=(night?nightT():dayT())>.5?-1:1;
   let c=skyFor(per);const W=curWorld();
-  if(W==='garden')c=Object.assign({},c,wx==='spring'?{hill:'#7CC24E',g1:'#93D35C',g2:'#5EAF3E'}:{hill:'#86C25A',g1:'#9CCF68',g2:'#68AE48'});
+  if(W==='garden'&&wx==='spring'&&!night)c=Object.assign({},c,{hill:'#B2E2B0',g1:'#A6E09C',g2:'#74C887'});
   if(W!=='garden'){const T={beach:{hill:'#7FCBDC',g1:'#F3E2B8',g2:'#E2C690'},mountain:{hill:'#7FA88E',g1:'#9CCB8E',g2:'#6FA56E'},oasis:{hill:'#E3BE84',g1:'#EED9A8',g2:'#D9B678'}}[W];c=Object.assign({},c,Object.fromEntries(Object.entries(T).map(([a,v])=>[a,night?mixHex(v,'#0E1A24',.6):v])))}
   if(dry>0){const d=DESERT[per];c=Object.fromEntries(Object.keys(c).map(k=>[k,mixHex(c[k],d[k],dry)]))}
-  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="600"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
-  // no sky: the land fills the view, like looking down on the farm from above
-  // the whole farm, fence to fence, fits the scene
-  o+='<g transform="translate(35 -113) scale(.93)">';
-  o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="url(#gg)"/>`;
-  o+=(dry>0?'<g filter="url(#gd)">':'')+surroundSVG(W,c,night)+(dry>0?'</g>':'');
-  if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=230+r()*300,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
+  const has=a=>n>=a;let o=`<svg viewBox="0 0 1000 560" role="img" aria-label="حديقتك: ${n} زرعة"><defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="560"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E86A8A"/><stop offset=".25" stop-color="#F4B740"/><stop offset=".5" stop-color="#7FD3A0"/><stop offset=".75" stop-color="#5B9BD5"/><stop offset="1" stop-color="#B48CE8"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="245" x2="0" y2="560"><stop offset="0" stop-color="${c.g1}"/><stop offset="1" stop-color="${c.g2}"/></linearGradient>${dry>0?dryFilter(dry):""}${gardenDefs(c,night)}</defs>`;
+  o+=wide?`<rect x="-2000" y="-1000" width="5000" height="1600" fill="url(#gs)"/>`:`<rect width="1000" height="560" fill="url(#gs)"/>`;
+  if(night){const r=rnd(5);for(let i=0;i<70;i++)o+=`<circle cx="${(r()*1000).toFixed(0)}" cy="${(r()*200).toFixed(0)}" r="${(r()*1.5+.4).toFixed(1)}" fill="#fff" ${r()<.3?'class="glow"':'opacity=".7"'}/>`;o+=moonSVG(wide)}
+  else{const sy=wide?172:80,cy0=wide?150:70;
+    // the sun climbs and sets with the clock; it warms to orange and grows near the horizon
+    const t=dayT(),q=skyArc(t,wide),low=1-Math.sin(Math.PI*t),r0=(wide?26:32)*(1+low*.5);
+    o+=`<circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="${(r0*2.6).toFixed(0)}" fill="url(#gxGlow)"/><circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="${r0.toFixed(0)}" fill="url(#gxSun)"/>`;
+    if(low>.35)o+=`<circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="${r0.toFixed(0)}" fill="#FF8A3D" opacity="${Math.min(.65,(low-.35)*1.1).toFixed(2)}"/>`;
+    o+=cloudSVG(210,cy0,1)+cloudSVG(560,cy0-12,.75)+(wide?'':cloudSVG(380,cy0+40,.5));}
+  // wide mode (banner zoomed out): carry the hills and ground past the scene edges
+  if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/><rect x="-2000" y="258" width="5000" height="1400" fill="url(#gg)"/>`;
+  if(W==='beach'){ // sea on the horizon, a sailboat drifting across
+    o+=`<rect x="-2000" y="188" width="5000" height="80" fill="url(#gxSea)"/><path d="M-2000 190H3000" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/>`;
+    {const r=rnd(12);let wv='';for(let i=0;i<26;i++){const x=r()*1000,y=200+r()*55;wv+=`<path d="M${x.toFixed(0)} ${y.toFixed(0)}q6-3 12 0q6-3 12 0"/>`}o+=`<g stroke="#fff" stroke-opacity=".55" stroke-width="1.4" fill="none">${wv}</g>`}
+    o+=`<g transform="translate(0 214)"><g class="fly" style="animation-duration:140s;animation-delay:-40s"><path d="M-22 0h44l-7 8h-30z" fill="#8B5A33"/><path d="M0 0V-34" stroke="#5A4636" stroke-width="2"/><path d="M1-33L20-4H1Z" fill="#FFFFFF"/><path d="M-1-28L-15-4H-1Z" fill="#F08AA4"/></g></g>`;
+  }else if(W==='mountain'){ // snowy peaks behind green hills, a line of pines
+    const pk=mixHex(c.b,c.hill,.45),pk2=mixHex(pk,'#000000',.12);
+    o+=`<path d="M-40 236L90 120L170 180L270 90L380 196L470 130L560 200L660 100L770 190L860 128L1040 236Z" fill="${pk}"/><path d="M-40 236L90 120L120 160L200 200L270 90L320 170L380 196Z M560 200L660 100L700 160L770 190Z" fill="${pk2}" opacity=".5"/>`;
+    o+=`<g fill="#FFFFFF" opacity="${night?.6:.95}"><path d="M90 120L72 136L84 134L92 142L100 134L110 138Z"/><path d="M270 90L250 110L262 108L272 118L282 108L292 112Z"/><path d="M660 100L638 122L652 118L662 128L672 118L684 122Z"/><path d="M860 128L842 144L854 142L862 150L870 142L880 146Z"/></g>`;
+    if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/>`;
+    o+=`<path d="M0 235C140 200 260 212 380 226S640 196 780 214 930 232 1000 220V560H0z" fill="${c.hill}"/>`;
+    {const r=rnd(19);let pn='';for(let x=10;x<1000;x+=18+r()*22){const y=226+Math.sin(x/80)*5,h=14+r()*12;pn+=`<path d="M${x.toFixed(0)} ${(y-h).toFixed(0)}l${(h*.35).toFixed(0)} ${h.toFixed(0)}h${(-h*.7).toFixed(0)}z"/>`}o+=`<g fill="${mixHex(c.hill,'#0B3B2E',.45)}" opacity=".75">${pn}</g>`}
+  }else if(W==='oasis'){ // soft sand dunes, distant palms
+    o+=`<path d="M0 214C160 170 300 196 440 206S720 168 860 190 960 206 1000 200V560H0z" fill="${mixHex(c.hill,c.b,.4)}"/>`;
+    {let pm='';for(const [x,y] of [[140,196],[520,200],[600,196],[880,192]])pm+=`<g transform="translate(${x} ${y}) scale(.5)"><path d="M0 0c0-14 2-28 0-40" stroke="${mixHex(c.hill,'#3A2A1A',.5)}" stroke-width="4" fill="none"/><path d="M0-40c-9-6-19-5-26 3M0-40c9-6 19-5 26 3M0-40c-6-9-15-13-22-11M0-40c6-9 15-13 22-11" stroke="${mixHex(c.hill,'#2A4A2A',.5)}" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;o+=pm}
+    if(wide)o+=`<rect x="-2000" y="226" width="5000" height="40" fill="${c.hill}"/>`;
+    o+=`<path d="M0 238C140 206 280 220 400 230S660 204 800 218 940 236 1000 226V560H0z" fill="${c.hill}"/>`;
+  }else{
+  const far=mixHex(c.hill,c.b,.45);
+  o+=`<path d="M0 222C120 196 230 200 330 212S560 186 700 198 900 214 1000 204V560H0z" fill="${far}"/>`;
+  if(wide)o+=`<rect x="-2000" y="210" width="5000" height="20" fill="${far}"/>`;
+  {const r=rnd(9);let tl='';for(let x=10;x<1000;x+=26+r()*30){const y=212+Math.sin(x/90)*6,h=8+r()*10;tl+=`<ellipse cx="${x.toFixed(0)}" cy="${(y-h*.35+6).toFixed(0)}" rx="${(7+r()*7).toFixed(0)}" ry="${(h*.7).toFixed(0)}"/>`}o+=`<g fill="${mixHex(far,c.hill,.6)}" opacity=".7">${tl}</g>`}
+  o+=`<path d="M0 235C140 190 260 205 380 222S640 188 780 210 930 230 1000 215V560H0z" fill="${c.hill}"/>`;
+  }
+  o+=`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gg)"/>`;
+  o+=`<rect x="-2000" y="250" width="5000" height="60" fill="${c.b}" opacity=".12"/>`;
+  {const r=rnd(61);let fr='';for(let x=-10;x<1010;x+=5+r()*4){const y=255+Math.sin(x/170)*4-((x>500&&x<540)?2:0),h=4+r()*6;fr+=`M${x.toFixed(0)} ${(y+4).toFixed(0)}l${(r()*2-1).toFixed(1)} ${(-h).toFixed(1)}l${(1.5+r()).toFixed(1)} ${h.toFixed(1)}`}o+=`<path d="${fr}" fill="${mixHex(c.g1,'#000000',.08)}" opacity=".9"/>`}
+  o+=wide?`<rect x="-2000" y="262" width="5000" height="1400" fill="url(#gxGrass)"/>`:`<path d="M0 262C180 245 360 258 520 254S860 244 1000 258V560H0z" fill="url(#gxGrass)"/>`;
+  if(dry>0.45){const r=rnd(77);let cr='';for(let i=0;i<14;i++){let x=40+r()*920,y=300+r()*240,d=`M${x.toFixed(0)} ${y.toFixed(0)}`;for(let j=0;j<4;j++){x+=(r()-.5)*40;y+=(r()-.3)*14;d+=`L${x.toFixed(0)} ${y.toFixed(0)}`}cr+=`<path d="${d}"/>`}
     o+=`<g stroke="#9C6F3C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${Math.min(.7,(dry-.45)*1.4).toFixed(2)}">${cr}</g>`}
-  o+=farmSVG(n,has,c,night,wide,W,dry,animate,seen,palms);
+  if(has(15)){const P='M505 560C500 480 520 420 560 380S660 330 700 330';
+    o+=`<path d="${P}" stroke="#C9B48A" stroke-width="38" fill="none" stroke-linecap="round" opacity=".55"/><path d="${P}" stroke="url(#gxPath)" stroke-width="32" fill="none" stroke-linecap="round"/>`;
+    const r=rnd(31);let pb='';for(let t=0;t<1;t+=.035){const x=(1-t)**3*505+3*(1-t)**2*t*500+3*(1-t)*t*t*520+t**3*560,y=(1-t)**3*560+3*(1-t)**2*t*480+3*(1-t)*t*t*420+t**3*380;pb+=`<ellipse cx="${(x+(r()-.5)*22).toFixed(0)}" cy="${(y+(r()-.5)*10).toFixed(0)}" rx="${(1.5+r()*2).toFixed(1)}" ry="${(1+r()*1.2).toFixed(1)}"/>`}
+    for(let t=0;t<1;t+=.08){const x=560+(700-560)*t,y=380-(50)*Math.sin(t*1.57);pb+=`<ellipse cx="${(x+(r()-.5)*18).toFixed(0)}" cy="${(y+(r()-.5)*8).toFixed(0)}" rx="${(1.5+r()*1.8).toFixed(1)}" ry="1.1"/>`}
+    o+=`<g fill="#BFA47A" opacity=".75">${pb}</g>`;
+    {const bz=t=>[(1-t)**3*505+3*(1-t)**2*t*500+3*(1-t)*t*t*520+t**3*560,(1-t)**3*560+3*(1-t)**2*t*480+3*(1-t)*t*t*420+t**3*380];
+     const r2=rnd(47);let fs='',ed='';const stone=(x,y,w,h)=>{const pts=[];for(let k=0;k<7;k++){const a=k/7*Math.PI*2,m=.78+r2()*.3;pts.push(`${(x+Math.cos(a)*w*m).toFixed(1)},${(y+Math.sin(a)*h*m).toFixed(1)}`)}return pts.join(' ')};
+     for(let t=0.02;t<1;t+=.07){const [x,y]=bz(t),sc=.55+(y-380)/180*.5;for(const off of [-.45,.45]){const sx=x+off*22*sc+(r2()-.5)*4,sy=y+(r2()-.5)*3,w=9*sc+r2()*3,h=4.2*sc+r2()*1.5,p=stone(sx,sy,w,h);fs+=`<polygon points="${p}" transform="translate(0 1.6)" fill="#9C8A6A" opacity=".55"/><polygon points="${p}" fill="${['#E2D5BA','#D9CBAE','#E8DDC6','#D2C3A4'][Math.floor(r2()*4)]}"/>`}}
+     for(let t=0;t<1;t+=.06){const x=560+(700-560)*t,y=380-50*Math.sin(t*1.57),sc=.5;for(const off of [-.4,.4]){const sx=x+(r2()-.5)*6,sy=y+off*16*sc+(r2()-.5)*2,p=stone(sx,sy,8*sc+r2()*2,3.5*sc+r2());fs+=`<polygon points="${p}" transform="translate(0 1.2)" fill="#9C8A6A" opacity=".55"/><polygon points="${p}" fill="${['#E2D5BA','#D9CBAE','#E8DDC6'][Math.floor(r2()*3)]}"/>`}}
+     for(let t=0;t<1;t+=.012){const [x,y]=bz(t),sc=.55+(y-380)/180*.5;for(const sd of [-1,1]){const ex=x+sd*17*sc+(r2()-.5)*3,h=2.5+r2()*4*sc;ed+=`M${ex.toFixed(1)} ${(y+1).toFixed(1)}l${((r2()-.5)*2).toFixed(1)} ${(-h).toFixed(1)}l${(1.2+r2()).toFixed(1)} ${h.toFixed(1)}`}}
+     o+=`<g>${fs}</g><path d="${ed}" fill="${mixHex(c.g1,'#000000',.15)}" opacity=".85"/>`}}
+  if(has(5)){o+='<g><path d="M40 250H940" stroke="#8A6845" stroke-width="3.5"/><path d="M40 260H940" stroke="#8A6845" stroke-width="3.5"/><path d="M40 249H940M40 259H940" stroke="#B89571" stroke-width="1" opacity=".8"/>';
+    for(let i=0;i<26;i++){const x=40+i*36;o+=`<path d="M${x-3} 268V246l3-4 3 4V268z" fill="#9C7A55"/><path d="M${x-3} 268V246l3-4V268z" fill="#B89571"/>`}o+='<ellipse cx="490" cy="269" rx="460" ry="3" fill="#0B3B2E" opacity=".08"/></g>'}
+  const win=(x,y,w,h)=>`<rect x="${x-2}" y="${y-2}" width="${w+4}" height="${h+4}" rx="3" fill="#FFFFFF"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="url(#gxWin)" class="${night?'glow':''}"/><path d="M${x+w/2} ${y}v${h}M${x} ${y+h/2}h${w}" stroke="#FFFFFF" stroke-width="2"/>${night?'':`<path d="M${x+3} ${y+h-4}l${w*0.35} ${-h*0.6}" stroke="#fff" stroke-width="2" opacity=".55"/>`}<rect x="${x-4}" y="${y+h+1}" width="${w+8}" height="4" rx="1.5" fill="#D9CDB8"/>`;
+  const houseAlt=(big)=>{ // world variants of the house
+    if(W==='beach'){const T=big?'translate(600 200)':'translate(640 228)',k=big?1.45:1;return `<g transform="${T} scale(${k})"><path d="M14 74V96M58 74V96M100 74V96M142 74V96" stroke="#8B6B4A" stroke-width="5"/><rect x="6" y="70" width="150" height="7" rx="2" fill="#A47E58"/><rect x="14" y="30" width="134" height="42" rx="3" fill="#CFEFF2"/><path d="M14 46H148M14 58H148" stroke="#AEDDE3" stroke-width="2"/><rect x="66" y="40" width="28" height="32" rx="3" fill="url(#gxDoor)"/><rect x="24" y="40" width="26" height="18" rx="2" fill="url(#gxWin)"/><rect x="112" y="40" width="26" height="18" rx="2" fill="url(#gxWin)"/><path d="M0 34L81 0L162 34Z" fill="#D9B26A"/><path d="M0 34L81 0L81 34Z" fill="#E6C27E"/><path d="M4 34l6 6M20 34l5 6M36 34l5 6M52 34l5 6M68 34l5 6M84 34l5 6M100 34l5 6M116 34l5 6M132 34l5 6M148 34l5 6" stroke="#C29A50" stroke-width="2"/><path d="M60 77l-6 19M100 77l6 19" stroke="#A47E58" stroke-width="3"/></g>`}
+    if(W==='mountain'){const T=big?'translate(600 196)':'translate(640 228)',k=big?1.5:1;let lg='';for(let y=40;y<76;y+=6)lg+=`<path d="M12 ${y}H152" stroke="#8E5E34" stroke-width="1.6"/>`;return `<g transform="${T} scale(${k})"><rect x="12" y="34" width="140" height="44" rx="3" fill="#B07A48"/>${lg}<rect x="118" y="2" width="14" height="26" fill="#6B5B4E"/><path d="M0 40L82-2L164 40Z" fill="#2F5D4A"/><path d="M0 40L82-2L82 40Z" fill="#3D7360"/><path d="M0 40H164" stroke="#1E3F32" stroke-width="3"/><rect x="66" y="46" width="30" height="32" rx="3" fill="#5A3A20"/><circle cx="90" cy="63" r="2" fill="#F4D27A"/>${'<rect x="26" y="48" width="26" height="18" rx="2" fill="url(#gxWin)" stroke="#FFFFFF" stroke-width="2"/><rect x="110" y="48" width="26" height="18" rx="2" fill="url(#gxWin)" stroke="#FFFFFF" stroke-width="2"/>'}${night?'':'<g class="smoke"><circle cx="125" cy="-6" r="5" fill="#fff" opacity=".5"/><circle cx="130" cy="-16" r="6" fill="#fff" opacity=".35"/></g>'}</g>`}
+    if(W==='oasis'){const T=big?'translate(596 214)':'translate(636 236)',k=big?1.55:1;let sadu='';for(let x=10;x<154;x+=12)sadu+=`<path d="M${x} 30l6 5 6-5" stroke="#C0392B" stroke-width="2" fill="none"/><path d="M${x} 36h12" stroke="#F3EDE3" stroke-width="1.4"/>`;return `<g transform="${T} scale(${k})"><path d="M0 76L18 18Q82 4 146 18L164 76Z" fill="#3A2E26"/><path d="M18 18Q82 4 146 18L150 30Q82 18 14 30Z" fill="#4A3A30"/>${sadu}<path d="M58 76L66 40H98L106 76Z" fill="#2A211B"/><rect x="40" y="76" width="84" height="6" rx="2" fill="#B5422F"/><path d="M40 79h84" stroke="#F4B740" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M18 18V76M146 18V76M82 4V40" stroke="#6B5038" stroke-width="2.4"/>${night?'<circle cx="82" cy="62" r="10" fill="url(#gxGlow)"/><circle cx="82" cy="64" r="3" fill="#FFD97A" class="glow"/>':''}</g>`}
+    return ''};
+  const houseG=()=>{ // the classic house, drawn at its big size (scaled down for the small one)
+    let sh='';for(let y=12,row=0;y<66;y+=6.5,row++){const hw=(y-4)/64*128;sh+=`<path d="M${(130-hw).toFixed(1)} ${y.toFixed(1)}H${(130+hw).toFixed(1)}"/>`;for(let x=130-hw+(row%2?6:12);x<130+hw-4;x+=12)sh+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)}v-5.5"/>`}
+    let br='';for(let y=16,row=0;y<52;y+=6,row++)for(let x=186+(row%2?5:0);x<206;x+=10)br+=`<rect x="${x}" y="${y}" width="${Math.min(9.4,206-x)}" height="5.2" rx=".6"/>`;
+    let pl='';for(let x=18,k=0;x<242;x+=14,k++)pl+=`<rect x="${x+.6}" y="${141+(k%2)*.8}" width="13" height="${12.4-(k%2)*.8}" rx="2.4"/>`;
+    const shut=(x,y,w,h)=>`<g fill="#0B6E65"><rect x="${x-13}" y="${y-2}" width="10" height="${h+4}" rx="1.5"/><rect x="${x+w+3}" y="${y-2}" width="10" height="${h+4}" rx="1.5"/></g><g stroke="#08544D" stroke-width="1">${[0,1,2,3,4].map(k=>`<path d="M${x-12} ${y+3+k*h/5}h8M${x+w+4} ${y+3+k*h/5}h8"/>`).join('')}</g>`;
+    const box=(x,w,y)=>{let f='';for(let k=0;k<6;k++)f+=`<circle cx="${x+5+k*(w-10)/5}" cy="${y-2-(k%2)*2}" r="3.2" fill="${['#F08AA4','#F7C548','#FFFFFF','#E86A8A','#C4A5F0','#FF9E6B'][k]}"/>`;return `<g fill="#3E9E6A"><ellipse cx="${x+w/2}" cy="${y}" rx="${w/2}" ry="4"/></g>${f}<rect x="${x-2}" y="${y}" width="${w+4}" height="7" rx="1.5" fill="#8B5A33"/><rect x="${x-2}" y="${y}" width="${w+4}" height="2" fill="#A47E58"/>`};
+    return `<rect x="186" y="12" width="20" height="40" fill="#8E5640"/><g fill="#A8664B" stroke="#7A4433" stroke-width=".5">${br}</g><rect x="196" y="12" width="10" height="40" fill="#000" opacity=".18"/><rect x="183" y="8" width="26" height="7" rx="2" fill="#4A3828"/>
+      ${night?'':'<g class="smoke"><circle cx="196" cy="-2" r="5" fill="#fff" opacity=".45"/><circle cx="201" cy="-13" r="6.5" fill="#fff" opacity=".3"/><circle cx="208" cy="-26" r="8" fill="#fff" opacity=".18"/></g>'}
+      <rect x="18" y="62" width="224" height="92" fill="url(#gxWall)"/><rect x="18" y="62" width="224" height="92" fill="url(#gxTPlaster)"/>
+      <rect x="18" y="62" width="224" height="20" fill="#3A2A1A" opacity=".12"/><rect x="18" y="62" width="224" height="6" fill="#3A2A1A" opacity=".12"/>
+      <path d="M18 62h5v92h-5zM237 62h5v92h-5z" fill="#E4D8C2"/>
+      <rect x="18" y="140" width="224" height="14" fill="#9A9184"/><g fill="url(#gxStone)" stroke="#7C7568" stroke-width=".6">${pl}</g><rect x="18" y="139" width="224" height="2.4" fill="#CFC5B2"/>
+      <path d="M2 68L130 4L130 68z" fill="#5A4A44"/><path d="M130 4L258 68L130 68z" fill="#3E3230"/>
+      <g stroke="#2A201E" stroke-width="1.1" opacity=".75" fill="none">${sh}</g>
+      <path d="M2 68L130 4" stroke="#7A6A62" stroke-width="2.2"/><path d="M130 4L258 68" stroke="#2A201E" stroke-width="2.2"/>
+      <rect x="-1" y="66" width="262" height="6" rx="2" fill="#F2ECE2"/><rect x="-1" y="70.5" width="262" height="2" fill="#000" opacity=".15"/>
+      <path d="M2 68L130 4L258 68" fill="none" stroke="#000" stroke-width="1" opacity=".25"/>
+      ${shut(40,86,46,34)}${shut(174,86,46,34)}${win(40,86,46,34)}${win(174,86,46,34)}${box(38,50,124)}${box(172,50,124)}
+      <path d="M100 86h60l6 8h-72z" fill="#3E3230"/><rect x="94" y="94" width="72" height="3" fill="#F2ECE2"/>
+      <rect x="110" y="98" width="40" height="56" rx="3" fill="url(#gxDoor)"/><rect x="110" y="98" width="40" height="56" rx="3" fill="none" stroke="#08574F" stroke-width="2"/>
+      <rect x="115" y="104" width="13" height="20" rx="1.5" fill="#000" opacity=".14"/><rect x="132" y="104" width="13" height="20" rx="1.5" fill="#000" opacity=".14"/><rect x="115" y="128" width="13" height="20" rx="1.5" fill="#000" opacity=".14"/><rect x="132" y="128" width="13" height="20" rx="1.5" fill="#000" opacity=".14"/>
+      <circle cx="142" cy="127" r="2.6" fill="#F4D27A"/><circle cx="141.4" cy="126.4" r=".9" fill="#fff" opacity=".7"/>
+      <rect x="100" y="152" width="60" height="5" rx="1.5" fill="#CBBCA2"/><rect x="96" y="156" width="68" height="5" rx="1.5" fill="#B8AA90"/>
+      <g transform="translate(98 152)"><path d="M-6 0l2-10h8l2 10z" fill="#B5603A"/><path d="M-6-10h12" stroke="#8E4A2C" stroke-width="2"/><circle cy="-15" r="6" fill="#2A7E58"/><circle cx="-3" cy="-17" r="3.5" fill="#3EA374"/></g>
+      <g transform="translate(162 152)"><path d="M-6 0l2-10h8l2 10z" fill="#B5603A"/><path d="M-6-10h12" stroke="#8E4A2C" stroke-width="2"/><circle cy="-15" r="6" fill="#2A7E58"/><circle cx="3" cy="-17" r="3.5" fill="#3EA374"/></g>
+      <g transform="translate(254 0)"><circle cy="112" r="6" fill="${night?'#FFD97A':'#E9D9B0'}" class="${night?'glow':''}"/><path d="M-6 106h12l-2-4h-8z" fill="#383838"/><path d="M0 118v37" stroke="#383838" stroke-width="3"/></g>`};
+  const house=has(60)?`<g transform="translate(600 210)">${houseG()}</g>`
+    :has(25)?`<g transform="translate(640 262) scale(.636)">${houseG()}</g>`:'';
+  const house2=W!=='garden'&&house?houseAlt(has(60)):house;
+  if(house)o+=`<ellipse cx="${has(60)?730:722}" cy="${has(60)?366:362}" rx="${has(60)?140:90}" ry="12" fill="#0B3B2E" opacity=".14"/>`;
+  o+=house2;
+  if(has(10)&&W==='beach')o+=`<g transform="translate(215 335)"><ellipse cy="8" rx="52" ry="7" fill="#0B3B2E" opacity=".14"/><path d="M-50-6H50L38 8H-38Z" fill="#C0392B"/><path d="M-50-6H50L46 0H-46Z" fill="#FFFFFF"/><path d="M-38 8H38" stroke="#8E2A1F" stroke-width="2"/><path d="M-30-6Q-36-20-30-24M30-6Q36-20 30-24" stroke="#8B6B4A" stroke-width="2.4" fill="none"/><path d="M-18-6V-10H18V-6" fill="#8B5A33"/></g>`;
+  else if(has(10)){let st='';for(let row=0;row<3;row++)for(let j=0;j<5;j++){const x=-34+j*14+(row%2?7:0);if(x>30)continue;st+=`<rect x="${x}" y="${32+row*10}" width="13" height="9" rx="3" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".8"/>`}
+    o+=`<g transform="translate(215 300)"><ellipse cy="64" rx="40" ry="8" fill="#0B3B2E" opacity=".14"/><path d="M-34 30V60Q0 70 34 60V30z" fill="#9AA5A3"/><clipPath id="gxWellClip"><path d="M-34 30V60Q0 70 34 60V30z"/></clipPath><g clip-path="url(#gxWellClip)">${st}</g>
+      <ellipse cy="30" rx="34" ry="9" fill="#8D9896"/><ellipse cy="30" rx="27" ry="6" fill="#2F4A55"/><path d="M-26 30V-4M26 30V-4" stroke="#7A5A3C" stroke-width="5" stroke-linecap="round"/>
+      <path d="M-42-2L0-28L0-2z" fill="#4A4A4A"/><path d="M0-28L42-2L0-2z" fill="#2E2E2E"/><path d="M-26 -1H26" stroke="#7A5A3C" stroke-width="3"/>
+      <path d="M0-1v16" stroke="#C9B48A" stroke-width="1.4"/><path d="M-6 15h12l-2 9h-8z" fill="#8B6B4A"/><path d="M-6 15h12" stroke="#5A4636" stroke-width="1.5"/></g>`}
+  if(has(40)){let rim='';for(let a=0;a<360;a+=11){const r1=a*Math.PI/180;rim+=`<ellipse cx="${(335+Math.cos(r1)*122).toFixed(0)}" cy="${(468+Math.sin(r1)*36).toFixed(0)}" rx="${(8+(a%3)*2)}" ry="5.5" fill="url(#gxStone)" stroke="#7C8785" stroke-width=".7"/>`}
+    const lily=(x,y,r,fl)=>`<path d="M${x} ${y}m${-r} 0a${r} ${r*.42} 0 1 0 ${r*2} 0l${-r} 0z" fill="#4FA36F"/><path d="M${x} ${y}l${r*.9} ${-r*.12}" stroke="#2E7E52" stroke-width="1"/>${fl?`<g transform="translate(${x-2} ${y-3})"><ellipse rx="3" ry="2" fill="#F08AA4"/><ellipse cy="-1.5" rx="1.8" ry="2.2" fill="#FFC6D4"/></g>`:''}`;
+    o+=`<g><ellipse cx="335" cy="474" rx="132" ry="42" fill="#0B3B2E" opacity=".12"/><ellipse cx="335" cy="468" rx="120" ry="34" fill="url(#gxWater)"/><ellipse cx="335" cy="468" rx="120" ry="34" fill="url(#gxTWater)" class="shimmer"/><ellipse cx="335" cy="458" rx="104" ry="20" fill="${c.a}" opacity=".18"/>${rim}
+      <ellipse cx="300" cy="458" rx="40" ry="8" fill="#fff" opacity=".14"/><g class="shimmer"><path d="M262 462q22-9 44 0M352 478q22-9 44 0M300 486q16-6 32 0" stroke="#fff" stroke-width="2.6" fill="none" opacity=".55" stroke-linecap="round"/></g><g class="shimmer" style="animation-delay:-1.6s"><path d="M240 474q14-5 28 0M384 462q14-5 28 0" stroke="#fff" stroke-width="1.8" fill="none" opacity=".45" stroke-linecap="round"/></g>
+      ${lily(300,476,11,true)}${lily(382,458,9,false)}${lily(360,484,7,true)}</g>`}
+  if(has(15))o+='<g transform="translate(560 470)"><ellipse cy="9" rx="34" ry="4" fill="#0B3B2E" opacity=".14"/><path d="M-24-7v14M24-7v14M-22-20v-6M22-20v-6" stroke="#5A4636" stroke-width="4" stroke-linecap="round"/><rect x="-32" y="-15" width="64" height="8" rx="3" fill="#A47E58"/><rect x="-32" y="-15" width="64" height="3" rx="1.5" fill="#C29A70"/><rect x="-32" y="-29" width="64" height="7" rx="3" fill="#A47E58"/><rect x="-32" y="-29" width="64" height="2.5" rx="1.2" fill="#C29A70"/></g>';
+  if(has(100)&&W==='beach')o+='<g transform="translate(75 250)"><path d="M-16 120L-9 -40H9L16 120Z" fill="#FFFFFF"/><path d="M-14 80H14L13 100H-13ZM-11 20H11L10 40H-10ZM-10-20H10L9 0H-9Z" fill="#C0392B"/><rect x="-12" y="-62" width="24" height="22" rx="3" fill="#383838"/><rect x="-8" y="-58" width="16" height="14" rx="2" fill="#FFE9A0" class="glow"/><path d="M-14-62L0-76L14-62Z" fill="#C0392B"/></g>';
+  else if(has(100)){let bl='';for(const px of [-52,32])for(let k=0;k<7;k++)bl+=`<rect x="${px+(k%2?1:0)}" y="${-6+k*18}" width="${k%2?18:20}" height="17" rx="2.5" fill="url(#gxStone)" stroke="#8E8170" stroke-width=".8"/>`;
+    o+='<g transform="translate(75 250)"><ellipse cy="126" rx="70" ry="6" fill="#0B3B2E" opacity=".14"/>'+bl.replace(/url\(#gxStone\)/g,'#D8C7A6')+'<rect x="-56" y="-12" width="28" height="8" rx="2" fill="#BFA67E"/><rect x="28" y="-12" width="28" height="8" rx="2" fill="#BFA67E"/><path d="M-42-12Q0-62 42-12" stroke="#CDB58C" stroke-width="16" fill="none"/><path d="M-42-12Q0-62 42-12" stroke="#E6D3AE" stroke-width="3" fill="none" transform="translate(0 -5)"/><circle cx="-42" cy="-18" r="5" fill="#BFA67E"/><circle cx="42" cy="-18" r="5" fill="#BFA67E"/><rect x="-44" y="-52" width="88" height="26" rx="6" fill="#383838"/><rect x="-41" y="-49" width="82" height="20" rx="4" fill="none" stroke="#E8C46A" stroke-width="1"/>'+label(0,-34,'محمية',wide,'font-size="16" font-family="Thmanyah Sans,IBM Plex Sans Arabic,sans-serif" fill="#fff"')+'</g>'}
   o+=decorSVG(night,has,wide);
+  const pts=slots(Math.min(n,260));
+  {const tc=Math.min(state.garden.tidyCount||0,pts.length);if(tc){const tl=tidyLayout(tc);for(let i=0;i<tc;i++)pts[i]=tl[i]}}
+  const items=pts.map((p,i)=>({p,i})).sort((a,b)=>a.p.y-b.p.y);
   const farmer=farmerSVG();
+  if(dry>0)o+='<g filter="url(#gd)">';
+  for(const it of items){const svg=plantSVG(it.i,it.p);o+=animate&&it.i>=seen?svg.replace('<g transform','<g class="new" style="animation-delay:'+((it.i-seen)*120)+'ms"><g transform')+'</g>':svg}
+  if(dry>0)o+='</g>';
   if(dry>=0.7)o+='<g transform="translate(0 372)"><g class="tumble"><g class="spin"><circle r="16" fill="none" stroke="#A57A45" stroke-width="2.2"/><path d="M-14-6c8 4 18 2 26-4M-12 8c8-6 18-6 25 0M-4-15c4 10 2 22-4 29M6-14c-6 8-6 20 2 28" stroke="#8B6234" stroke-width="1.8" fill="none" stroke-linecap="round"/></g></g></g>';
+  const sp=[[880,330],[530,300],[950,300],[140,520]];
+  for(let i=0;i<Math.min(palms,sp.length);i++){const [x,y]=sp[i];o+=`<g transform="translate(${x} ${y}) scale(1.5)"><path d="M0 0c0-14 2-28 0-40" stroke="#A47E55" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="none" stroke="#F4B740" stroke-width="4.5" stroke-linecap="round"><path d="M0-40c-9-6-19-5-26 3"/><path d="M0-40c9-6 19-5 26 3"/><path d="M0-40c-6-9-15-13-22-11"/><path d="M0-40c6-9 15-13 22-11"/></g><g fill="#C2410C"><circle cx="-4" cy="-35" r="2.6"/><circle cx="3" cy="-34" r="2.6"/></g></g>`}
   const oryx=(x,y,f=1)=>`<g transform="translate(${x} ${y}) scale(${f} 1)"><ellipse cy="28" rx="40" ry="5" fill="#0B3B2E" opacity=".14"/>
     <path d="M-26 6L-28 28M-16 8L-17 28M16 8L17 28M26 6L28 28" stroke="#E9E4DA" stroke-width="5" stroke-linecap="round"/><path d="M-28 18L-28 28M-17 18V28M17 18V28M28 18V28" stroke="#4A3B2E" stroke-width="5" stroke-linecap="round"/><path d="M-28 27h3M-17 27h3M17 27h3M28 27h3" stroke="#2B211C" stroke-width="3"/>
     <path d="M-36-2C-36-18-18-20 0-19S30-20 34-10C38 0 32 10 20 11H-24C-32 11-36 6-36-2Z" fill="#F7F3EC"/><path d="M-30 6C-18 12 10 12 26 6" stroke="#D9D2C2" stroke-width="3" fill="none"/><path d="M-12-18C-4-14 8-14 16-18" stroke="#FFFFFF" stroke-width="2" fill="none" opacity=".7"/>
@@ -1979,7 +1624,7 @@ function gardenSVG(n,palms,seen,animate,wide){
   else if(has(150)){const gz=(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cy="17" rx="20" ry="3" fill="#0B3B2E" opacity=".14"/><path d="M-13 1L-15 17M-7 2L-7 17M8 2L9 17M14 1L16 17" stroke="#B9875A" stroke-width="2.4" stroke-linecap="round"/>
     <path d="M-19-2C-19-10-8-11 2-10S18-11 19-4C20 2 15 5 8 5H-13C-17 5-19 2-19-2Z" fill="#D9A46F"/><path d="M-16 1C-6 5 8 5 16 1" stroke="#FFFFFF" stroke-width="3" fill="none" opacity=".85"/><path d="M-12-4C-2 0 10 0 17-4" stroke="#8B5A33" stroke-width="1.6" fill="none"/>
     <path d="M13-6C17-12 19-16 21-20" stroke="#D9A46F" stroke-width="6" stroke-linecap="round"/><path d="M18-23C22-26 28-25 29-21C30-18 27-16 24-16C21-16 18-18 18-23Z" fill="#D9A46F"/><circle cx="22" cy="-21" r="1" fill="#1A1410"/><path d="M21-19l5 1" stroke="#FFFFFF" stroke-width="1"/>
-    <path d="M20-24C18-30 17-34 19-37M23-24C22-30 22-34 24-37" stroke="#3A2E26" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M18-24l-4-3" stroke="#C9935E" stroke-width="2.4" stroke-linecap="round"/><path d="M-19-2l-3 4" stroke="#3A2E26" stroke-width="2" stroke-linecap="round"/></g>`;o+=gz(44,522)+gz(250,552)}
+    <path d="M20-24C18-30 17-34 19-37M23-24C22-30 22-34 24-37" stroke="#3A2E26" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M18-24l-4-3" stroke="#C9935E" stroke-width="2.4" stroke-linecap="round"/><path d="M-19-2l-3 4" stroke="#3A2E26" stroke-width="2" stroke-linecap="round"/></g>`;o+=gz(780,520)+gz(700,540)}
   o+=farmer;
   // birds fly across the sky (not at night)
   if(!night){const bird=(y,d,sc,dl)=>`<g transform="translate(0 ${y})"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><g transform="scale(${sc})"><g class="flap"><path d="M0 0C-4-8-10-10-16-8C-11-6-6-3-1 2ZM0 0C4-8 10-10 16-8C11-6 6-3 1 2Z" fill="#3A3A3A"/></g><ellipse cx="0" cy="1" rx="4.6" ry="2.2" fill="#2E2E2E"/><circle cx="4.6" cy="0" r="1.8" fill="#2E2E2E"/><path d="M6.2 0l2.4.6-2.4.6z" fill="#E0A030"/><path d="M-4.4 1l-3 1.6 3 .4z" fill="#2E2E2E"/></g></g></g>`;
@@ -1998,19 +1643,15 @@ function gardenSVG(n,palms,seen,animate,wide){
   // spring: soft light rain
   if(wx==='spring'){
     const r=rnd(41);let drops='';for(let i=0;i<170;i++){const x=(r()*1500-250).toFixed(0),y=(r()*600).toFixed(0);drops+=`<path d="M${x} ${y}l-5 16"/>`}
-    o+=`<g stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.5" stroke-linecap="round" opacity=".65"><g class="rainloop">${[[0,0],[187.5,-600],[-1500,0],[1500,0],[-1312.5,-600],[1687.5,-600],[0,600],[-1500,600],[1500,600]].map(([x,y])=>`<g transform="translate(${x} ${y})">${drops}</g>`).join('')}</g></g>`;
+    o+=`<g stroke="${night?'#9FC3D0':'#FFFFFF'}" stroke-width="1.5" stroke-linecap="round" opacity=".65"><g class="rainloop"><g>${drops}</g><g transform="translate(187.5 -600)">${drops}</g></g></g>`;
   }
   if(!n)o+='<g transform="translate(500 430) scale(3.2)"><g class="pl"><ellipse cy="2" rx="14" ry="4" fill="#8B6B4A"/><path d="M0 0v-12" stroke="#3E9E6A" stroke-width="2.4" stroke-linecap="round"/><path d="M0-10c-5 0-8-3-8-7 5 0 8 3 8 7zM0-12c0-5 3-8 8-8 0 5-3 8-8 8z" fill="#0EA89C"/></g></g>';
-  if(night){o+=`<rect x="-2000" y="-1000" width="5000" height="2600" fill="#0B1733" opacity=".42" pointer-events="none"/>`+farmLights;
-    const r=rnd(71);let ff='';for(let i=0;i<26;i++)ff+=`<circle class="glow" style="animation-delay:-${(r()*3).toFixed(1)}s" cx="${(r()*1000).toFixed(0)}" cy="${(200+r()*350).toFixed(0)}" r="${(1.4+r()*1.2).toFixed(1)}" fill="#F7F3A0"/>`;
-    o+=`<g class="bfly" style="animation-duration:24s">${ff}</g>`}
-  else{ // soft cloud shadows drift across the land
-    for(const [y,d,dl,rx] of [[260,110,20,190],[430,140,80,240],[150,95,55,160]])o+=`<g transform="translate(0 ${y})" pointer-events="none"><g class="fly" style="animation-duration:${d}s;animation-delay:-${dl}s"><ellipse rx="${rx}" ry="${rx*.42}" fill="url(#gxSoft)" opacity=".38"/></g></g>`}
   if(!night){const t=dayT(),q=skyArc(t,wide),low=1-Math.sin(Math.PI*t);
     o+=`<defs><radialGradient id="gxLight" gradientUnits="userSpaceOnUse" cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="700"><stop offset="0" stop-color="${low>.5?'#FFC27A':'#FFF4D0'}" stop-opacity="${low>.5?.28:.18}"/><stop offset=".6" stop-color="#FFF4D0" stop-opacity="0"/></radialGradient></defs>`;
     o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="url(#gxLight)" pointer-events="none"/>`;
     if(low>.6)o+=`<rect x="-2000" y="-1000" width="5000" height="2000" fill="#FF9A4A" opacity="${((low-.6)*.25).toFixed(2)}" pointer-events="none"/>`}
-  o+='</g>';
+  if(!wide){o+=`<defs><radialGradient id="gxVig" cx=".5" cy=".55" r=".75"><stop offset=".65" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="${night?.35:.16}"/></radialGradient></defs><rect width="1000" height="560" fill="url(#gxVig)" pointer-events="none"/>`;
+}
   // soft, fading shadows instead of flat ellipses
   o=o.replace(/fill="#0B3B2E" opacity="\.1\d"/g,'fill="url(#gxSoft)"').replace(/fill="#0B3B2E" opacity="\.\d+"/g,'fill="url(#gxSoft)"');
   return o+'</svg>';
@@ -2032,7 +1673,7 @@ function renderWorlds(){
 }
 function itemIcon(id,l){return `<svg viewBox="-46 -72 92 82" aria-hidden="true"><defs>${gardenDefs(skyFor('day'),false)}</defs>${id==='lanterns'?lanternArt(false):itemArt(id,Math.max(1,l),false)}</svg>`}
 function renderMarket(){
-  const g=state.garden,bal=payBal();$('mkt-bal').innerHTML='';{const m=$('mkt-bal');for(const [k,t] of [['dates',`🌴 ${datesBal()} تمر`],['money',`💰 ${moneyStr(g.moneyT||0)} فلوس`]]){const b=document.createElement('button');b.type='button';b.className='pay';b.textContent=t;b.setAttribute('aria-pressed',String(payWith===k));b.title='ادفع بـ'+(k==='money'?'الفلوس':'التمر');b.onclick=()=>{payWith=k;try{localStorage.setItem('tb-pay',k)}catch(e){}renderMarket()};m.append(b)}}
+  const g=state.garden,bal=datesBal();$('mkt-bal').textContent=`🌴 ${bal}`;
   // daily actions
   const act=$('mkt-act');act.replaceChildren();
   const hv=hiveReady();if(hv){const b=document.createElement('button');b.textContent=`🐝 اجمع العسل (+${hv})`;b.onclick=collectHive;act.append(b)}
@@ -2040,7 +1681,7 @@ function renderMarket(){
   // deal of the day + rare items today
   const dl=$('mkt-deal');dl.replaceChildren();const did=dealToday();
   if(did){const it=ITEM[did],d=document.createElement('div');d.className='deal';d.innerHTML=itemIcon(did,lvlOf(did)+1);
-    const tx=document.createElement('div');tx.className='dt';tx.innerHTML=`<b>🔥 عرض اليوم</b>`;tx.append(`${it.name}${lvlOf(did)?' (المستوى '+(lvlOf(did)+1)+')':''} بخصم 30%: ${payIcon()} ${priceOf(did)} بدل ${it.prices[lvlOf(did)]}`);
+    const tx=document.createElement('div');tx.className='dt';tx.innerHTML=`<b>🔥 عرض اليوم</b>`;tx.append(`${it.name}${lvlOf(did)?' (المستوى '+(lvlOf(did)+1)+')':''} بخصم 30%: 🌴 ${priceOf(did)} بدل ${it.prices[lvlOf(did)]}`);
     const b=document.createElement('button');b.textContent=lvlOf(did)?'طوّر':'اشترِ';b.disabled=!!buyable(did);b.onclick=()=>buy(did);d.append(tx,b);dl.append(d)}
   {const [a,b2]=rareToday(),d=document.createElement('div');d.className='deal rare';d.innerHTML=itemIcon(a,1);const tx=document.createElement('div');tx.className='dt';tx.innerHTML='<b>✨ النادر اليوم</b>';tx.append(`${ITEM[a].name} و${ITEM[b2].name}: يتغيرون كل يوم، اشترهم قبل ما يروحون`);d.append(tx);dl.append(d)}
   // tabs
@@ -2067,7 +1708,7 @@ function renderMarket(){
     const btn=document.createElement('button');btn.className='buy';
     if(max){btn.textContent='أعلى مستوى ✓';btn.disabled=true}
     else if(why){btn.textContent=why;btn.disabled=true}
-    else{btn.textContent=`${l?'طوّر':'اشترِ'} · ${payIcon()} ${pr}`;if(bal<pr)btn.classList.add('short');btn.onclick=()=>buy(it.id)}
+    else{btn.textContent=`${l?'طوّر':'اشترِ'} · 🌴 ${pr}`;if(bal<pr)btn.classList.add('short');btn.onclick=()=>buy(it.id)}
     f.append(btn);
     if(it.id===dealToday()&&!max){const o=document.createElement('span');o.className='old';o.textContent=it.prices[l];f.append(o)}
     if(l&&!['sprinkler','hive','greenhouse','basket','bell','palmgrove'].includes(it.id)||(l&&['sprinkler','hive','greenhouse','basket','bell','palmgrove'].includes(it.id))){const h=document.createElement('button');h.className='hide';h.textContent=(g.hidden||{})[it.id]?'إظهار في الحديقة':'إخفاء من الحديقة';h.onclick=()=>toggleHide(it.id);f.append(h)}
@@ -2080,8 +1721,7 @@ function renderGarden(animate){
   {let note=dryNote()||WEATHER_NOTE[weatherNow()];if(periodOf(new Date().getHours())==='night'){const m=moonInfo();let mn='';try{mn=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'long'}).format(new Date())}catch(e){}note=(note?note+' · ':'')+`🌙 القمر الليلة: ${m.name}${mn?' ('+mn+')':''}`}$('g-wx').textContent=note;$('g-wx').hidden=!note}
   $('g-sub').textContent=n?`زرعت ${n} ${n===1?'زرعة':n===2?'زرعتين':n<=10?'زرعات':'زرعة'} · السهلة تزرع وحدة، المتوسطة اثنتين، والكبيرة ثلاث`:'خلّص أول مهمة وتنزرع أول نبتة';
   const seen=Math.min(state.garden.seen||0,n);
-  $('g-scene').innerHTML=uniqIds(gardenSVG(n,palmCount(),seen,animate),'gw-');
-  if(!gardenZoom)gardenZoom=makeZoomer($('g-scene'),GV,sceneDims,()=>{},[-400,1400,-200,1000]);gardenZoom.apply();renderStore();if($('farm-full')&&!$('farm-full').hidden)renderFull();
+  $('g-scene').innerHTML=gardenSVG(n,palmCount(),seen,animate);
   const prev=[...STRUCTS].reverse().find(x=>x.at<=n);const from=prev?prev.at:0;
   if(next){$('g-bar').style.width=((n-from)/(next.at-from)*100)+'%';const left=next.at-n;$('g-next').innerHTML='';$('g-next').append(`باقي ${left} ${left===1?'مهمة':left===2?'مهمتين':left<=10?'مهام':'مهمة'} ويصير عندك: `);const b=document.createElement('b');b.textContent=structName(next);$('g-next').append(b);if(nextLv&&nextLv.min===next.at)$('g-next').append(` · وتصير ${nextLv.name}`)}
   else{$('g-bar').style.width='100%';$('g-next').textContent='محميتك اكتملت. كل مهمة تخلّصها تزيد فيها زرع.'}
@@ -2100,90 +1740,10 @@ function gardenPlay(root){
     b.classList.add('flee');setTimeout(()=>b.classList.remove('flee'),1800);b.addEventListener('animationend',ev=>{if(ev.target===b)b.classList.remove('flee')},{once:true})});
   root.addEventListener('click',e=>{const pl=e.target.closest&&e.target.closest('.pl');if(!pl)return;e.stopPropagation();
     pl.classList.remove('shake');void pl.getBoundingClientRect();pl.classList.add('shake');setTimeout(()=>pl.classList.remove('shake'),800);pl.addEventListener('animationend',ev=>{if(ev.target===pl)pl.classList.remove('shake')},{once:true});
-    if(sound.on&&sound.ctx)chirp();
-    if(pl.dataset.tree!=null)openTreePop(+pl.dataset.tree)});
+    if(sound.on&&sound.ctx)chirp()});
 }
 gardenPlay($('sky-deco'));gardenPlay($('g-scene'));
 $('g-farmer-b').onclick=()=>runFarmer(true);
-function renderStore(){if($('ff-money'))$('ff-money').textContent=`💰 ${moneyStr(state.garden.moneyT||0)}`;const el=$('g-store');if(!el)return;const g=state.garden,st=g.store||{},tot=storeTotal(),dp=g.display||{},dtot=displayTotal(),b=townBuilt(),xp=townXP(),shops=openShops(b);
-  const next=Math.max(0,WORKER_EVERY-(Date.now()-(g.workerAt||0))),hh=Math.floor(next/HOUR),mm=Math.ceil((next%HOUR)/60e3);
-  const cs=cropSlots(gardenCount()),T=g.cropT||[];let ripe=0,growing=0;for(const c of cs){cropStage(T[c.j])===3?ripe++:growing++}
-  el.innerHTML=`<div class="st-h"><b>🏚️ المخزن ونقطة البيع</b><span class="money">💰 ${moneyStr(g.moneyT||0)} فلوس</span></div>
-    <div class="crops">${tot?Object.keys(st).filter(k=>st[k]>0).map(k=>`<span class="crop">${CROP_INFO[k][0]} ${CROP_INFO[k][1]} <b>${st[k]}</b><button type="button" data-sell="${k}">اعرض للبيع</button></span>`).join(''):'<span class="row">المخزن فاضي. العامل يقطف المحاصيل الجاهزة ويجيبها هنا.</span>'}</div>
-    ${tot?`<div class="row"><span>اللي تعرضه يروح البسطة، والزباين يشترونه بـ 0.2 للحبة</span><button type="button" data-sell="*">اعرض الكل للبيع</button></div>`:''}
-    <div class="row"><span>🧺 على البسطة: ${dtot?Object.keys(dp).filter(k=>dp[k]>0).map(k=>`${CROP_INFO[k][0]} ${dp[k]}`).join(' · ')+` · أبو حسن يبيعها للزباين أول ما يجون`:'ما فيه شي معروض'}</span></div>
-    <div class="row"><span>👷 عامل الزراعة موجود دائمًا: يرعى الزرع ويقطف الناضج ويوديه المخزن ويزرع مكانه · ${ripe} ناضج · ${growing} قاعد يكبر · 🧑‍🌾 والبيّاع واقف في نقطة البيع</span><button type="button" class="ghost" id="g-worker-b">اقطف الناضج الحين</button></div>
-    <div class="row"><span>🏘️ ${townName(b)} · ${b} ${b<=10?'مباني':'مبنى'} · قيد البناء ${Math.round((xp-Math.floor(xp))*100)}%${shops.length?` · المحلات: ${shops.join('، ')}`:''} · أهلها يجون نقطة البيع بأوقات عشوائية · اضغط على البقالة تشتري منها</span><button type="button" class="ghost" id="g-town2">شوف المدينة</button></div>`;
-  el.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{const k=x.dataset.sell;putOnDisplay(k==='*'?null:k)});
-  $('g-worker-b').onclick=()=>checkWorker(true);$('g-town2').onclick=showTown}
-let infoClosedAt=0;
-function closeInfo(){if($('info-pop'))infoClosedAt=Date.now();$('info-pop')&&$('info-pop').remove();$('info-scrim')&&$('info-scrim').remove()}
-function infoPop(html){closeInfo();const sc=document.createElement('div');sc.id='info-scrim';sc.onclick=closeInfo;const p=document.createElement('div');p.id='info-pop';p.className='info-pop';p.dir='rtl';p.setAttribute('role','dialog');
-  p.innerHTML='<button type="button" class="x" aria-label="إغلاق">✕</button>'+html;p.querySelector('.x').onclick=closeInfo;(document.querySelector('.hello.max')||document.body).append(sc,p);return p}
-addEventListener('keydown',e=>{if(e.key==='Escape'&&$('info-pop')){closeInfo();e.stopPropagation()}},true);
-const fmtLeft=ms=>{const t=Math.ceil(ms/60e3),h=Math.floor(t/60),m=t%60,H=h===1?'ساعة':h===2?'ساعتين':h<=10?`${h} ساعات`:`${h} ساعة`,M=m===1?'دقيقة':m===2?'دقيقتين':m<=10?`${m} دقايق`:`${m} دقيقة`;return h?(m?`${H} و${M}`:H):M};
-function openStorePop(){const st=state.garden.store||{},ks=Object.keys(st).filter(k=>st[k]>0),tot=storeTotal();
-  const p=infoPop(`<h3>🏚️ المخزن</h3><div class="sub">اللي قطفه العامل وجابه هنا · المجموع ${tot} ${cropWord(tot)}</div>
-    ${ks.length?`<div class="grid">${ks.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${st[k]}</b></div>`).join('')}</div>`:'<div class="sub">المخزن فاضي الحين. أول ما ينضج شي العامل يقطفه ويجيبه.</div>'}
-    <div class="foot"><span>💰 عندك ${moneyStr(state.garden.moneyT||0)} فلوس</span>${tot?`<button type="button" data-all>اعرض الكل للبيع</button>`:''}</div>`);
-  const a=p.querySelector('[data-all]');if(a)a.onclick=()=>{putOnDisplay(null);openStorePop()}}
-function openWorkerPop(){const cs=cropSlots(gardenCount()),T=ensureCropTimes(cs.length),G=(boostOn('fert')?4:GROW_H)*HOUR,now=Date.now(),by={};
-  for(const c of cs){const o=by[c.kind]||(by[c.kind]={n:0,ripe:0,next:Infinity,sum:0});o.n++;const t=T[c.j],age=t?now-t:G;if(age>=G){o.ripe++;o.sum+=1}else{o.next=Math.min(o.next,G-age);o.sum+=age/G}}
-  const TG=treeGrow();for(const c of treeSlots(gardenCount())){const o=by[c.kind]||(by[c.kind]={n:0,ripe:0,next:Infinity,sum:0,tree:true});o.n++;const age=treeAge(c.i);if(age>=TG){o.ripe++;o.sum+=1}else{o.next=Math.min(o.next,TG-age);o.sum+=age/TG}}
-  const ks=Object.keys(by),allRipe=ks.reduce((a,k)=>a+by[k].ripe,0),soon=Math.min(...ks.map(k=>by[k].next)),every=(boostOn('juice')?5:15)*60e3,nextPick=Math.max(0,every-(now-(state.garden.workerAt||0)));
-  const art=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#3E9E6A','#5A3A20','<path d="M-6-34q6-7 12 0z" fill="#E8402E"/><path d="M5-34h4" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>','<g transform="translate(7 -16)"><path d="M-6 0h12l-2 7h-8z" fill="#B88B5E" stroke="#7E5A30" stroke-width=".8"/><circle cx="-3" cy="-1" r="2.4" fill="#E8452E"/><circle cx="1" cy="-2" r="2.4" fill="#F4C542"/></g>',false).replace('scale(.6)','scale(1)')}</svg>`;
-  const p=infoPop(`<h3>👷 عامل الزراعة</h3><div class="seller">${art}<div><b>حسن</b><div class="sub" style="margin:2px 0 0">${asleep()?'"😴 نايم الحين، أصحى الساعة 6 الصبح وأقطف كل الناضج"':`"أرعى الزرع والشجر والنخل، وأقطف الناضج كل ${boostOn('juice')?'5 دقايق':'ربع ساعة'} وأوديه المخزن"`}</div></div></div>
-    ${ks.length?`<div class="grid">${ks.map(k=>{const o=by[k],pct=Math.round(o.sum/o.n*100);return `<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${o.n}${o.tree?` <small style="font-family:inherit;font-weight:500;font-size:11px">${k==='dates'?(o.n===1?'نخلة':'نخلات'):(o.n===1?'شجرة':'شجرات')}</small>`:''}</b><span>${o.ripe?`<span class="on">${o.ripe} ${o.tree?'مثمرة':'ناضج'}</span>`:''}${o.ripe&&o.n>o.ripe?' · ':''}${o.n>o.ripe?`${o.n-o.ripe} يكبر`:''}</span><span style="width:100%;height:6px;border-radius:9px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:#0EA89C"></i></span><span>${o.n>o.ripe?`الحصاد الجاي بعد ${fmtLeft(o.next)}`:'كله ناضج، ينقطف الحين'}</span></div>`}).join('')}</div>`:'<div class="sub">ما فيه محاصيل مزروعة للحين. خلّص مهام وتنزرع في الأحواض.</div>'}
-    <div class="foot"><span>${allRipe?`🧺 ${allRipe} ناضج ينقطف ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'}`:soon<Infinity?`🌱 أقرب حصاد بعد ${fmtLeft(soon)}`:''}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${allRipe?'<button type="button" data-pick>اقطف الناضج الحين</button>':''}</div>`);
-  const b=p.querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openWorkerPop()}}
-function openTreePop(i){const f=fruitOf(i);if(!f)return;const k=plantKind(i),age=treeAge(i),G=treeGrow(),ripe=age>=G,pct=ripe?100:Math.round(age/G*100);
-  const what=k==='palm'?'نخلة':k==='pine'?'شجرة صنوبر':k==='big'?`شجرة ${CROP_INFO[f][1]} كبيرة`:`شجرة ${CROP_INFO[f][1]}`;
-  const every=(boostOn('juice')?5:15)*60e3,nextPick=Math.max(0,every-(Date.now()-(state.garden.workerAt||0)));
-  infoPop(`<h3>${CROP_INFO[f][0]} ${what}</h3><div class="sub">زرعتها بمهامك · تعطي ${fruitYield(i)*(boostOn('seeds')?2:1)} ${CROP_INFO[f][1]} كل قطفة · تثمر كل ${boostOn('fert')?'5':'8'} ساعات</div>
-    <div style="height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin:6px 0 10px"><i style="display:block;height:100%;width:${pct}%;background:${ripe?'#E8822A':'#0EA89C'}"></i></div>
-    <div class="foot" style="margin-top:0"><span>${ripe?`<span class="on">مثمرة الحين!</span> حسن بيقطفها ${nextPick?`بعد ${fmtLeft(nextPick)}`:'الحين'} ويوديها المخزن`:`🌱 باقي على الثمر <b>${fmtLeft(G-age)}</b>`}${boostOn('fert')?' · <span class="on">🧪 السماد شغال</span>':''}</span>${ripe?'<button type="button" data-pick>اقطفها الحين</button>':''}</div>`);
-  const b=$('info-pop').querySelector('[data-pick]');if(b)b.onclick=()=>{checkWorker(true);openTreePop(i)}}
-function openStandPop(){const st=state.garden.display||{},ks=Object.keys(st).filter(k=>st[k]>0),b=townBuilt(),inStore=state.garden.store||{},sk=Object.keys(inStore).filter(k=>inStore[k]>0);
-  const sellerArt=`<svg viewBox="-12 -42 24 46" aria-hidden="true">${personSVG('#0EA89C','#2A2A2A','<path d="M-6-34q6-6 12 0z" fill="#F4F1E8"/>','<path d="M-6-22l-5 5M6-22l5 5" stroke="#C98E62" stroke-width="2.2" stroke-linecap="round"/>',false).replace('scale(.6)','scale(1)')}</svg>`;
-  const p=infoPop(`<h3>🧺 نقطة البيع</h3><div class="seller">${sellerArt}<div><b>أبو حسن، البيّاع</b><div class="sub" style="margin:2px 0 0">${asleep()?'"😴 البسطة مسكّرة، نايم وأفتح الساعة 6 الصبح"':ks.length?'"حيّاك، تفضل شوف المعروض اليوم"':'"البسطة فاضية، اعرض لي شي من المخزن وأبيعه"'}</div></div></div>
-    ${ks.length?`<div class="grid">${ks.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]}<b>${st[k]}</b><span>معروض · 0.2 للحبة</span></div>`).join('')}</div>`:''}
-    ${sk.length?`<div class="sub" style="margin-top:12px">في المخزن وتقدر تعرضه:</div><div class="grid">${sk.map(k=>`<div class="cell"><span class="em">${CROP_INFO[k][0]}</span>${CROP_INFO[k][1]} · ${inStore[k]}<button type="button" data-sell="${k}">اعرضه</button></div>`).join('')}</div>`:''}
-    <div class="foot"><span>🛒 زباين ${townName(b)} يجون بأوقات عشوائية${boostOn('baskets')?' · <span class="on">🧺 سلال العرض شغالة</span>':''}</span><span>💰 ${moneyStr(state.garden.moneyT||0)} فلوس</span></div>`);
-  p.querySelectorAll('[data-sell]').forEach(x=>x.onclick=()=>{putOnDisplay(x.dataset.sell);openStandPop()})}
-function openShopPop(name){if(name!=='بقالة'){infoPop(`<h3>🏪 ${name}</h3><div class="sub">هذا المحل جديد في ${townName(townBuilt())}، أهلها قاعدين يجهزونه. البقالة مفتوحة وتقدر تشتري منها.</div>`);return}
-  const g=state.garden,m=(g.moneyT||0)/10;
-  const p=infoPop(`<h3>🏪 البقالة</h3><div class="sub">أغراض تساعد مزرعتك · تدفع من فلوس البيع · عندك 💰 ${moneyStr(g.moneyT||0)} فلوس</div>
-    <div class="grid">${GROCERY.map(it=>{const left=((g.boost||{})[it.id]||0)-Date.now();return `<div class="cell"><span class="em">${it.icon}</span><b style="font-family:inherit;font-size:13.5px">${it.name}</b><span>${it.desc}</span>${left>0?`<span class="on">شغال · باقي ${fmtLeft(left)}</span>`:''}<button type="button" data-buy="${it.id}" ${m<it.price?'disabled':''}>${left>0?'مدّد يوم':'اشترِ'} · 💰 ${it.price}</button></div>`}).join('')}</div>`);
-  p.querySelectorAll('[data-buy]').forEach(x=>x.onclick=()=>buyGrocery(x.dataset.buy))}
-document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('.hit[data-act]');if(!h)return;e.stopPropagation();const a=h.dataset.act;if(a==='store')openStorePop();else if(a==='worker')openWorkerPop();else if(a==='stand')openStandPop();else if(a==='shop')openShopPop(h.dataset.shop)});
-function showTown(){if(gardenZoom){GV.z=.5;GV.cx=560;GV.cy=520;gardenZoom.apply()}}
-$('g-town').onclick=showTown;
-// the farm alone, full screen
-let fullZoom=null;const FV={z:1,cx:500,cy:280,min:.45,max:4};
-// give every id in a scene its own prefix so two scenes on the page never borrow each other's gradients
-function uniqIds(svg,p){const ids=new Set();svg.replace(/\sid="([^"]+)"/g,(m,id)=>{ids.add(id);return m});if(!ids.size)return svg;
-  const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),re=new RegExp(`(id="|url\\(#|href="#)(${[...ids].map(esc).join('|')})(?=[")])`,'g');return svg.replace(re,(m,a,id)=>a+p+id)}
-function renderFull(){const host=document.querySelector('#farm-full .g-scene');if(!host)return;host.innerHTML=uniqIds(gardenSVG(gardenCount(),palmCount(),gardenCount(),false),'ff-').replace('<svg ','<svg preserveAspectRatio="xMidYMid slice" ');if(!fullZoom)fullZoom=makeZoomer(host,FV,sceneDims,()=>{},[-400,1400,-200,1000]);fullZoom.apply()}
-// full screen: the banner itself grows to fill the screen (same scene, so it always renders)
-function openFull(){const h=$('hello');if(!$('gview').hidden){const c=$('g-close');c&&c.click()}
-  if(!h.querySelector('.ff-exit')){const b=document.createElement('button');b.type='button';b.className='ff-exit';b.textContent='✕ خروج';b.onclick=closeFull;h.append(b)}
-  // a bar of farm actions, so everything works without leaving full screen
-  if(!h.querySelector('.ff-bar')){const bar=document.createElement('div');bar.className='ff-bar';bar.dir='rtl';
-    bar.innerHTML='<span class="money" id="ff-money"></span><button type="button" data-a="store">🏚️ المخزن</button><button type="button" data-a="stand">🧺 نقطة البيع</button><button type="button" data-a="worker">👷 حسن</button><button type="button" data-a="shop">🏪 البقالة</button><button type="button" data-a="town">🏘️ المدينة</button><button type="button" data-a="garden">🌱 الحديقة والسوق</button>';
-    bar.onclick=e=>{const a=e.target.closest('button')?.dataset.a;if(!a)return;e.stopPropagation();
-      if(a==='store')openStorePop();else if(a==='stand')openStandPop();else if(a==='worker')openWorkerPop();else if(a==='shop')openShopPop('بقالة');
-      else if(a==='town'){BV.z=.5;BV.cx=540;BV.cy=520;bannerZoom&&bannerZoom.apply();saveBV()}else if(a==='garden'){closeFull();$('garden-btn').click()}};
-    h.append(bar)}
-  $('ff-money').textContent=`💰 ${moneyStr(state.garden.moneyT||0)}`;h.append($('toast'));
-  h.classList.add('max');document.documentElement.classList.add('farm-max');
-  try{const p=h.requestFullscreen&&h.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}
-  requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
-function closeFull(){const h=$('hello');h.classList.remove('max');document.body.append($('toast'));closeInfo();document.documentElement.classList.remove('farm-max');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}requestAnimationFrame(()=>bannerZoom&&bannerZoom.apply())}
-document.addEventListener('gesturestart',e=>{if($('hello').classList.contains('max'))e.preventDefault()});
-try{new ResizeObserver(()=>bannerZoom&&bannerZoom.apply()).observe($('hello'))}catch(e){}
-document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('hello').classList.contains('max')){if($('info-pop')||Date.now()-infoClosedAt<400)closeInfo();else closeFull()}else bannerZoom&&bannerZoom.apply()});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&$('hello').classList.contains('max')&&!$('info-pop')&&Date.now()-infoClosedAt>200){closeFull();e.stopPropagation()}},true);
-$('g-full').onclick=openFull;$('z-full').onclick=openFull;
 $('g-close').onclick=closeGarden;$('g-scrim').onclick=closeGarden;
 
 /* ---------- motivational line, changes every 10 minutes ---------- */
@@ -2298,45 +1858,8 @@ async function toggleSound(){
 // banner zoom: + to get closer to the plant, − to see more of the garden
 const ZOOMS=[0.5,0.7,1,1.4,2,2.8];let zoomI=2;
 try{const z=parseInt(localStorage.getItem('tb-zoom'),10);if(z>=0&&z<ZOOMS.length)zoomI=z}catch(e){}
-/* ---------- zoom with the mouse wheel toward the cursor, drag to look around ---------- */
-const BV={z:ZOOMS[zoomI],cx:null,cy:null,min:.45,max:4};   // banner view
-try{const v=JSON.parse(localStorage.getItem('tb-view2')||'null');if(v&&v.z){BV.z=v.z;BV.cx=v.cx;BV.cy=v.cy}}catch(e){}
-const GV={z:1,cx:500,cy:280,min:.45,max:4};                    // garden window view
-function bannerDims(S){const el=$('hello'),r=el&&el.getBoundingClientRect(),ar=r&&r.width?r.height/r.width:.34,W=1000/S.z,H=W*ar;if(S.cx==null){S.cx=500;const cy=S.z>1?330:(innerWidth<=620?300:290);S.cy=Math.min(cy-H/2,560-H*0.55)+H/2}return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
-function sceneDims(S){const W=1000/S.z,H=560/S.z;return {W,H,vx:S.cx-W/2,vy:S.cy-H/2}}
-function makeZoomer(host,S,dims,save,lim,svgHost=host,touchOk=()=>false){
-  const svgOf=()=>svgHost.querySelector(':scope > svg');
-  const clamp=()=>{S.cx=Math.max(lim[0],Math.min(lim[1],S.cx));S.cy=Math.max(lim[2],Math.min(lim[3],S.cy))};
-  const apply=()=>{const svg=svgOf();if(!svg)return;const d=dims(S);svg.setAttribute('viewBox',`${d.vx.toFixed(1)} ${d.vy.toFixed(1)} ${d.W.toFixed(1)} ${d.H.toFixed(1)}`)};
-  const toScene=(x,y)=>{const svg=svgOf(),m=svg&&svg.getScreenCTM();if(!m)return null;const p=new DOMPoint(x,y).matrixTransform(m.inverse());return [p.x,p.y]};
-  const zoomAt=(P,f)=>{dims(S);const z0=S.z,z1=Math.max(S.min,Math.min(S.max,z0*f));if(Math.abs(z1-z0)<1e-4)return;S.z=z1;S.cx=P[0]+(S.cx-P[0])*z0/z1;S.cy=P[1]+(S.cy-P[1])*z0/z1;clamp();apply();save()};
-  const skip=t=>t.closest&&t.closest('button,input,a,.zoom,.streak,.snd-panel,.wx-pill,.resize-h,.plus');
-  host.addEventListener('wheel',e=>{if(skip(e.target))return;const P=toScene(e.clientX,e.clientY);if(!P)return;e.preventDefault();zoomAt(P,Math.exp(-e.deltaY*(e.deltaMode?0.05:0.0018)))},{passive:false});
-  let drag=null,moved=false;
-  // fingers (iPad/phone, full screen): one finger drags, two fingers pinch to zoom
-  const touches=new Map();let pinch=null;
-  const startDrag=(x,y)=>{const svg=svgOf();if(!svg)return;drag={x,y,cx:S.cx,cy:S.cy,k:1/svg.getScreenCTM().a}};
-  host.addEventListener('pointerdown',e=>{if(skip(e.target))return;
-    if(e.pointerType==='touch'){if(!touchOk())return;touches.set(e.pointerId,[e.clientX,e.clientY]);
-      if(touches.size===2){const [a,b]=[...touches.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),m:[(a[0]+b[0])/2,(a[1]+b[1])/2]};drag=null;moved=true}
-      else if(touches.size===1){startDrag(e.clientX,e.clientY);moved=false}return}
-    if(e.button!==0)return;startDrag(e.clientX,e.clientY);moved=false});
-  addEventListener('pointermove',e=>{
-    if(e.pointerType==='touch'&&touches.has(e.pointerId)){touches.set(e.pointerId,[e.clientX,e.clientY]);
-      if(pinch&&touches.size>=2){const [a,b]=[...touches.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]),m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
-        const svg=svgOf();if(svg){const k=1/svg.getScreenCTM().a;S.cx-=(m[0]-pinch.m[0])*k;S.cy-=(m[1]-pinch.m[1])*k;clamp();const P=toScene(m[0],m[1]);if(P&&pinch.d>0)zoomAt(P,d/pinch.d);else apply()}
-        pinch={d,m};return}}
-    if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;host.classList.add('panning');S.cx=drag.cx-dx*drag.k;S.cy=drag.cy-dy*drag.k;clamp();apply()});
-  const up=e=>{if(e.pointerType==='touch'&&touches.has(e.pointerId)){touches.delete(e.pointerId);if(touches.size<2&&pinch){pinch=null;save();if(touches.size===1){const [p]=[...touches.values()];startDrag(p[0],p[1])}return}}
-    if(!drag)return;drag=null;host.classList.remove('panning');if(moved)save()};
-  addEventListener('pointerup',up);addEventListener('pointercancel',up);
-  host.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
-  return {apply,zoomBy:f=>{const d=dims(S);zoomAt([S.cx,S.cy],f)},reset:()=>{S.z=1;S.cx=500;S.cy=280;apply()}};
-}
-const saveBV=()=>{try{localStorage.setItem('tb-view2',JSON.stringify({z:BV.z,cx:BV.cx,cy:BV.cy}))}catch(e){}showZoom()};
-let bannerZoom=null,gardenZoom=null;
-function setZoom(d){bannerZoom&&bannerZoom.zoomBy(d>0?1.4:1/1.4)}
-function showZoom(){$('z-in').disabled=BV.z>=BV.max-1e-3;$('z-out').disabled=BV.z<=BV.min+1e-3}
+function setZoom(d){const nz=Math.max(0,Math.min(ZOOMS.length-1,zoomI+d));if(nz===zoomI)return;zoomI=nz;try{localStorage.setItem('tb-zoom',String(zoomI))}catch(e){}showZoom();renderSky()}
+function showZoom(){$('z-in').disabled=zoomI===ZOOMS.length-1;$('z-out').disabled=zoomI===0}
 function shootingStar(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   for(const host of [$('hello'),$('gview').hidden?null:$('g-scene')]){if(!host)continue;
@@ -2361,7 +1884,7 @@ function plusBubble(w,d){const el=document.createElement('span');el.className='p
 function renderSky(){
   const h=new Date().getHours(),per=periodOf(h);
   renderQuote();
-  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+farmerPhase+'|'+(state.garden.tidyCount||0)+'|'+weatherNow()+'|'+openCount()+'|'+Math.floor(Date.now()/6e5)+'|'+JSON.stringify(state.garden.picks||{}).length;
+  const n=gardenCount(),palms=palmCount(),key=per+'|'+n+'|'+palms+'|'+zoomI+'|'+farmerPhase+'|'+(state.garden.tidyCount||0)+'|'+weatherNow()+'|'+openCount()+'|'+Math.floor(Date.now()/6e5)+'|'+JSON.stringify(state.garden.picks||{}).length;
   if(key===lastPeriod)return;lastPeriod=key;
   const from=bannerN===null||n<bannerN?n:bannerN;bannerN=n;
   {const w=weatherNow(),pill=$('wx-pill');const dn=dryNote();pill.hidden=!dn&&w!=='spring';pill.textContent=[dn?(dryLevel()>=0.5?'🏜️ ':'🌵 ')+dn:w==='spring'?'🌧️ ربيع: الجو في أحسن حالاته':''].filter(Boolean).join(' · ')}
@@ -2371,12 +1894,11 @@ function renderSky(){
   // mirrored and shifted so the house and plants sit between the greeting (right) and the streak card (left)
   const full=gardenSVG(n,palms,from,from<n,true).replace(/id="g([sgrd])"/g,'id="b$1"').replace(/url\(#g([sgrd])\)/g,'url(#b$1)');
   // empty garden: put the shoot in the middle of the banner
-  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>'))
+  const inner=full.slice(full.indexOf('>')+1,full.lastIndexOf('</svg>')).replace('translate(500 430) scale(3.2)',innerWidth<=620?'translate(576 336) scale(2.3)':'translate(576 350) scale(2.6)')
     // bring the sun, clouds and moon down into the banner's sky
 ;
-  $('sky-deco').innerHTML=`<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g>${inner}</g></svg>`;
-  if(!bannerZoom)bannerZoom=makeZoomer($('hello'),BV,bannerDims,saveBV,[-300,1300,-40,640],$('sky-deco'),()=>$('hello').classList.contains('max'));
-  bannerZoom.apply();
+  const z=ZOOMS[zoomI],W=1000/z,H=340/z,vx=500-W/2,cy=z>1?(innerWidth<=620?318:330):(innerWidth<=620?300:260),vy=Math.min(cy-H/2,560-H*0.55);
+  $('sky-deco').innerHTML=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(1180 0) scale(-1.18 1)">${inner}</g></svg>`;
 }
 setInterval(()=>{renderSky();renderStreak()},10*60*1000);
 
@@ -2507,8 +2029,8 @@ if(window.claude&&typeof window.claude.use==='function'){
       for(const id of deletedIds)map.delete(id);
       state.tasks=[...map.values()];render();
     },()=>{toast('انقطع الاتصال بقاعدة البيانات');});
-    db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();// the database hands over read-only objects: work on a plain copy so harvests, sales and the town can change it
-      state.garden=JSON.parse(JSON.stringify(Object.assign({count:0,seen:0},d||{})));if(!gardenLoaded){gardenLoaded=true;setTimeout(checkFarmer,1500);setTimeout(()=>{checkWorker();townTick()},5000)}renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
+    db.doc('meta/garden').onSnapshot(snap=>{const d=snap.exists&&snap.data();// the database hands over read-only objects: work on a plain copy
+      state.garden=JSON.parse(JSON.stringify(Object.assign({count:0,seen:0},d||{})));if(!gardenLoaded){gardenLoaded=true;setTimeout(checkFarmer,1500)}renderGardenBtn();if(!$('gview').hidden)renderGarden(false)},()=>{});
     db.doc('meta/badges').onSnapshot(snap=>{const d=snap.exists&&JSON.parse(JSON.stringify(snap.data()||{}));state.badges=d&&d.weeks&&typeof d.weeks==='object'?d.weeks:{};renderMedals()},()=>{});
     db.doc('meta/days').onSnapshot(snap=>{const d=snap.exists&&JSON.parse(JSON.stringify(snap.data()||{}));state.days=d&&Array.isArray(d.days)?d.days:[];renderStreak()},()=>{});
     db.collection('clients').onSnapshot(snap=>{const inc=snap.docs.map(s=>Object.assign({id:s.id},JSON.parse(JSON.stringify(s.data()||{}))));const ids=new Set(inc.map(c=>c.id));
