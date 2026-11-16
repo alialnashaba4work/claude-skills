@@ -822,15 +822,18 @@ function openTask(id,focusTitle){
   $('scrim').hidden=false;$('drawer').hidden=false;
   (focusTitle?$('f-title'):$('d-close')).focus();
 }
-function closeTask(){if(document.activeElement&&$('drawer').contains(document.activeElement))document.activeElement.blur();flush();state.openId=null;$('scrim').hidden=true;$('drawer').hidden=true;render()}
+function closeTask(){if(document.activeElement&&$('drawer').contains(document.activeElement))document.activeElement.blur();if(syncFields()){const t=cur();clearTimeout(saveTimer);saveTimer=null;if(t)persist(t)}flush();state.openId=null;$('scrim').hidden=true;$('drawer').hidden=true;render()}
 function flush(){if(saveTimer){clearTimeout(saveTimer);saveTimer=null;const t=cur();if(t)persist(t)}draftDirty=false}
 function schedule(){draftDirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=null;const t=cur();if(t)persist(t);draftDirty=false;render()},700)}
 const fieldMap={'f-title':'title','f-size':'size','f-link':'link','f-notes':'notes'};
 for(const fid in fieldMap){
   const el=$(fid);
   el.addEventListener('input',()=>{const t=cur();if(!t)return;t[fieldMap[fid]]=el.value;schedule()});
-  el.addEventListener('change',()=>{flush();render()});
+  el.addEventListener('compositionend',()=>{const t=cur();if(!t)return;t[fieldMap[fid]]=el.value;schedule()});
+  el.addEventListener('change',()=>{const t=cur();if(t&&t[fieldMap[fid]]!==el.value){t[fieldMap[fid]]=el.value;schedule()}flush();render()});
 }
+// phone and iPad keyboards can hold back the last word until the field loses focus: read the fields straight from the form before saving
+function syncFields(){const t=cur();if(!t)return false;let ch=false;for(const fid in fieldMap){const v=$(fid).value;if((t[fieldMap[fid]]||'')!==v){t[fieldMap[fid]]=v;ch=true}}return ch}
 /* ---------- attachments ---------- */
 let assets=null,pending=[];
 const clipSvg='<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 9.5l-5.6 5.6a3.6 3.6 0 0 1-5.1-5.1l6-6a2.4 2.4 0 0 1 3.4 3.4l-6 6a1.2 1.2 0 0 1-1.7-1.7l5.5-5.5"/></svg>';
@@ -1952,7 +1955,7 @@ $('d-delete').onclick=()=>{
 };
 $('d-close').onclick=closeTask;$('scrim').onclick=closeTask;
 // save now and close (changes also save on their own while typing)
-$('d-save').onclick=()=>{const t=cur();if(!t)return;clearTimeout(saveTimer);saveTimer=null;persist(t);draftDirty=false;closeTask();toast('تم حفظ المهمة')};
+$('d-save').onclick=()=>{const t=cur();if(!t)return;syncFields();clearTimeout(saveTimer);saveTimer=null;persist(t);draftDirty=false;closeTask();toast('تم حفظ المهمة')};
 // copy a task: same details and steps (unticked), no due date or attachments, opens the copy
 $('d-copy').onclick=()=>{
   const t=cur();if(!t)return;flush();
