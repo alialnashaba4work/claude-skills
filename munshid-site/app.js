@@ -925,23 +925,8 @@
   sBtn.setAttribute("aria-label", L("بحث")); sBtn.innerHTML = SI;
   $("#fsBtn").before(sBtn);
 
-  /* ---------- الوضع الفاتح والداكن ---------- */
-  const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>';
-  const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
-  const tBtn = document.createElement("button");
-  tBtn.className = "icon-btn"; tBtn.id = "themeBtn"; tBtn.type = "button";
-  const applyTheme = (th) => {
-    if (th === "light") document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme;
-    tBtn.innerHTML = th === "light" ? MOON : SUN;
-    tBtn.setAttribute("aria-label", th === "light" ? L("الوضع الداكن") : L("الوضع الفاتح"));
-    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = th === "light" ? "#eef0f6" : "#070c24";
-  };
-  // الوضع الداكن هو الأساس في كل زيارة جديدة، والفاتح يبقى بس لين تسكر الصفحة
-  const ss = { get: () => { try { return sessionStorage.getItem("theme"); } catch (e) { return null; } }, set: (v) => { try { sessionStorage.setItem("theme", v); } catch (e) {} } };
-  try { localStorage.removeItem("theme"); } catch (e) {}
-  applyTheme(ss.get() === "light" ? "light" : "dark");
-  tBtn.addEventListener("click", () => { const th = document.documentElement.dataset.theme === "light" ? "dark" : "light"; ss.set(th); applyTheme(th); });
-  sBtn.after(tBtn);
+  // الموقع داكن دايماً (ما في وضع فاتح)
+  try { localStorage.removeItem("theme"); sessionStorage.removeItem("theme"); } catch (e) {}
 
   /* زر اللغة: العربية ⇄ الفارسية */
   const lBtn = document.createElement("button");
@@ -949,7 +934,7 @@
   lBtn.textContent = LANG === "fa" ? "ع" : "فا";
   lBtn.setAttribute("aria-label", LANG === "fa" ? "العربية" : "فارسی");
   lBtn.addEventListener("click", () => { try { localStorage.setItem("lang", LANG === "fa" ? "ar" : "fa"); } catch (e) {} location.reload(); });
-  tBtn.after(lBtn);
+  sBtn.after(lBtn);
 
   const panel = document.createElement("div");
   panel.className = "search"; panel.hidden = true;
