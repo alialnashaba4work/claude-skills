@@ -1,0 +1,350 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>متجر جرار</title>
+<meta name="description" content="زيت زيتون بكر ممتاز، زعتر ملكي، سماق بلدي، تتبيلات سلطة وبوكسات هدايا من جرار. Olive oil, zaatar and sumac from Jordanian farms.">
+<script>(function(){var l='ar';try{if(localStorage.getItem('jerar-lang')==='en')l='en'}catch(e){}document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';})();</script>
+<link rel="stylesheet" href="style.css">
+<div class="loader ld-vid ld-wait" id="loader" aria-hidden="true">
+  <img id="ldAnim" alt="Jerar">
+  <button type="button" class="ld-skip" id="ldSkip">تخطّي</button>
+</div>
+<script>/* شاشة التحميل: فيديو شعار جرار. تختفي لما يخلص الفيديو، أو بضغطة «تخطّي»،
+   وما تتكرر كاملة لو العميل تنقّل في نفس الزيارة */
+(function(){var d=document.documentElement,l=document.getElementById('loader'),im=document.getElementById('ldAnim'),gone=false,shown=false;
+/* شاشة التحميل ما تطلع إلا إذا التحميل طوّل أكثر من ثلث ثانية.
+   لو الصفحة جهزت قبلها، تنفتح على طول بدون ما تبان الشاشة أبداً */
+try{if(localStorage.getItem('jerar-lang')==='en')document.getElementById('ldSkip').textContent='Skip'}catch(e){}
+function hide(){if(gone)return;gone=true;clearTimeout(w);
+  if(!shown){l.remove();return}
+  l.classList.add('done');d.classList.remove('ld-lock');setTimeout(function(){l.remove()},450)}
+if(document.readyState==='complete'){l.remove();return}
+var w=setTimeout(function(){if(gone)return;shown=true;l.classList.remove('ld-wait');d.classList.add('ld-lock');
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)im.src='video/logo-intro.webp';},350);
+addEventListener('load',hide);
+setTimeout(hide,10000);
+document.getElementById('ldSkip').addEventListener('click',hide);})();</script>
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="#top" class="logo" data-t-aria="home_aria">
+      <img class="l-light" src="img/logo-light.png" alt="Jerar">
+      <img class="l-dark" src="img/logo-dark.png" alt="" aria-hidden="true">
+    </a>
+    <nav class="links" data-t-aria="main_nav">
+      <a href="#products" data-t="nav_shop"></a>
+      <a href="#gifts" data-t="nav_gifts"></a>
+      <a href="#story" data-t="nav_story"></a>
+      <a href="#certs" data-t="f_cert"></a>
+      <a href="#wholesale" data-t="nav_ws"></a>
+      <a href="#contact" data-t="nav_contact"></a>
+    </nav>
+    <div class="actions">
+      <button class="pill-btn" id="langBtn" data-t-aria="lang_aria"></button>
+      <div class="loc">
+        <button class="pill-btn" id="curBtn" aria-haspopup="menu" aria-expanded="false" data-t-aria="country_label">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5s-1.2 5.9-3.6 8.5c-2.4-2.6-3.6-5.4-3.6-8.5s1.2-5.9 3.6-8.5z"/></svg><b></b>
+        </button>
+        <div class="loc-pop" id="countryPop" hidden>
+          <p class="loc-h" data-t="country_label"></p>
+          <p class="loc-s" data-t="country_hint"></p>
+          <ul id="countryList" role="menu"></ul>
+        </div>
+      </div>
+      <a class="icon-btn hide-sm" href="https://wa.me/97332159000" target="_blank" rel="noopener" data-t-aria="wa_aria"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.2 6.4L4 20l1.1-3.6A8 8 0 0 1 4 12z"/></svg></a>
+      <button class="icon-btn" id="searchBtn" data-t-aria="search_aria" aria-expanded="false" aria-controls="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+      <button class="icon-btn" id="cartBtn"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="count" id="count">0</span></button>
+      <button class="icon-btn menu-btn" id="menuBtn" data-t-aria="menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<nav class="mnav" id="mnav" data-t-aria="menu">
+  <a href="#products" data-t="nav_shop"></a><a href="#gifts" data-t="nav_gifts"></a><a href="#story" data-t="nav_story"></a><a href="#certs" data-t="f_cert"></a><a href="#wholesale" data-t="nav_ws"></a><a href="#contact" data-t="nav_contact"></a>
+</nav>
+
+<main id="top">
+<section class="hero hero-yt">
+  <a class="hero-video" href="https://youtu.be/d_23C4IKII8" target="_blank" rel="noopener" data-t-aria="hv_watch">
+    <video class="hv-clip" src="video/hero.mp4" poster="video/hero-poster.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+    <span class="hv-label"><svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="5.5" fill="#FF0033"/><path d="M11.2 5.8v8.4l7-4.2z" fill="#fff"/></svg><span data-t="hv_watch"></span></span>
+  </a>
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <h1 data-t-html="hero_h1"></h1>
+      <p data-t="hero_p"></p>
+      <div class="cta-row">
+        <a href="#products" class="btn btn-olive" data-t="hero_cta"></a>
+        <a href="#gifts" class="btn btn-line" data-t="hero_cta2"></a>
+        <a href="#story" class="btn btn-line" data-t="hero_cta3"></a>
+        <a href="#certs" class="btn btn-line" data-t="hero_cta4"></a>
+      </div>
+    </div>
+    <div class="jar">
+      <div class="arch"><img src="img/giftbox.jpg" data-t-alt="hero_alt" alt=""></div>
+      <span class="rim" aria-hidden="true"></span>
+      <a class="stamp" id="heroStamp" href="#p-gift"><span data-t="stamp"></span><span data-price="6.6"></span></a>
+      <div class="hs-dots" id="heroDots" role="group" aria-label="Products"></div>
+    </div>
+  </div>
+</section>
+
+<a class="offer" id="offer" href="#products" hidden>
+  <span class="of-track" id="ofTrack" aria-hidden="true"></span>
+  <span class="sr" id="ofSr"></span>
+</a>
+
+<section id="best" class="best">
+  <div class="wrap">
+    <div class="shop-head">
+      <div>
+        <h2 data-t="best_h"></h2>
+        <p class="sub" data-t="best_sub"></p>
+      </div>
+      <a href="#products" class="btn btn-line-d best-all"><span data-t="best_all"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    </div>
+    <div class="grid" id="bestGrid"></div>
+    <div class="best-more"><a href="#products" class="btn btn-green" data-t="best_all"></a></div>
+  </div>
+</section>
+
+<section id="gifts">
+  <div class="wrap">
+    <div class="gifts-head">
+      <div>
+        <h2 data-t="gifts_h"></h2>
+        <p class="sub" data-t="gifts_sub"></p>
+      </div>
+    </div>
+    <div class="gifts" id="giftsGrid"></div>
+  </div>
+</section>
+
+<section id="story" class="story">
+  <div class="wrap story-grid st-solo">
+    <div class="st-copy st-reveal">
+      <span class="st-kick" data-t="story_kick"></span>
+      <h2 data-t="story_h"></h2>
+      <p data-t="story_p1"></p>
+      <p data-t="story_p2"></p>
+      <p class="quote" data-t="story_q"></p>
+    </div>
+  </div>
+  <div class="wrap journey">
+    <div class="jr-head st-reveal">
+      <h3 data-t="jr_h"></h3>
+      <p class="sub" data-t="jr_sub"></p>
+    </div>
+    <ol class="jr-steps st-reveal">
+      <li class="jr-step" style="--d:0">
+        <span class="jr-ph"><img loading="lazy" src="img/story/farm.jpg" alt=""><span class="jr-n">1</span></span>
+        <b data-t="jr1_t"></b>
+        <span class="jr-d" data-t="jr1_d"></span>
+      </li>
+      <li class="jr-step" style="--d:1">
+        <span class="jr-ph"><img loading="lazy" src="img/story/pick.jpg" alt=""><span class="jr-n">2</span></span>
+        <b data-t="jr2_t"></b>
+        <span class="jr-d" data-t="jr2_d"></span>
+      </li>
+      <li class="jr-step" style="--d:2">
+        <span class="jr-ph"><img loading="lazy" src="img/story/press.jpg" alt=""><span class="jr-n">3</span></span>
+        <b data-t="jr3_t"></b>
+        <span class="jr-d" data-t="jr3_d"></span>
+        <a class="jr-link" href="#certs" data-t="jr3_l"></a>
+      </li>
+      <li class="jr-step" style="--d:3">
+        <span class="jr-ph"><img loading="lazy" src="img/giftbox.jpg" alt=""><span class="jr-n">4</span></span>
+        <b data-t="jr4_t"></b>
+        <span class="jr-d" data-t="jr4_d"></span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="certs" class="certs">
+  <div class="wrap certs-wrap">
+    <div class="certs-copy">
+      <img class="pp-leaf" src="img/leaf.png" alt="" aria-hidden="true">
+      <h2 data-t="cert_h"></h2>
+      <p class="sub" data-t="cert_sub"></p>
+      <ul class="certs-stats">
+        <li><b>3</b><span data-t="cert_s1"></span></li>
+        <li><b class="ltr">2022–2024</b><span data-t="cert_s2"></span></li>
+      </ul>
+      <button type="button" class="btn btn-line-d" data-cert="2024" data-t="cert_all"></button>
+    </div>
+    <div class="desk">
+      <button class="paper" type="button" data-cert="2022" style="--i:0">
+        <span class="pp-frame" aria-hidden="true"></span>
+        <span class="pp-img"><img src="img/certs/cert-2022-sm.jpg" alt="" loading="lazy"></span>
+        <span class="pp-lab" data-cert-lab="2022"></span>
+        <span class="pp-seal" aria-hidden="true"><span class="pp-ring"></span><span class="pp-yr">2022</span></span>
+        <span class="pp-zoom" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4M11 8.5v5M8.5 11h5"/></svg></span>
+      </button>
+      <button class="paper" type="button" data-cert="2024" style="--i:1">
+        <span class="pp-frame" aria-hidden="true"></span>
+        <span class="pp-img"><img src="img/certs/cert-2024-sm.jpg" alt="" loading="lazy"></span>
+        <span class="pp-lab" data-cert-lab="2024"></span>
+        <span class="pp-seal" aria-hidden="true"><span class="pp-ring"></span><span class="pp-yr">2024</span></span>
+        <span class="pp-zoom" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4M11 8.5v5M8.5 11h5"/></svg></span>
+      </button>
+      <button class="paper" type="button" data-cert="2023" style="--i:2">
+        <span class="pp-frame" aria-hidden="true"></span>
+        <span class="pp-img"><img src="img/certs/cert-2023-sm.jpg" alt="" loading="lazy"></span>
+        <span class="pp-lab" data-cert-lab="2023"></span>
+        <span class="pp-seal" aria-hidden="true"><span class="pp-ring"></span><span class="pp-yr">2023</span></span>
+        <span class="pp-zoom" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4M11 8.5v5M8.5 11h5"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<section id="wholesale">
+  <div class="wrap">
+    <div class="ws-wrap">
+      <div>
+        <h2 data-t="ws_h"></h2>
+        <p class="sub" data-t="ws_sub"></p>
+        <ul class="ws-list">
+          <li data-t="ws_l1"></li>
+          <li data-t="ws_l2"></li>
+        </ul>
+      </div>
+      <form class="form" id="wsForm">
+        <div class="two">
+          <div class="field"><label for="wsName" data-t="ws_name"></label><input id="wsName" autocomplete="name" required></div>
+          <div class="field"><label for="wsCo" data-t="ws_co"></label><input id="wsCo" autocomplete="organization"></div>
+        </div>
+        <fieldset class="field">
+          <legend data-t="ws_via"></legend>
+          <div class="seg">
+            <input type="radio" name="via" id="v1" value="via_call" checked><label for="v1" data-t="via_call"></label>
+            <input type="radio" name="via" id="v2" value="via_wa"><label for="v2" data-t="via_wa"></label>
+            <input type="radio" name="via" id="v3" value="via_mail"><label for="v3" data-t="via_mail"></label>
+          </div>
+        </fieldset>
+        <div class="field"><label for="wsMsg" data-t="ws_msg"></label><textarea id="wsMsg" rows="4" data-t-ph="ws_ph"></textarea></div>
+        <a class="btn btn-green" id="wsSend" target="_blank" rel="noopener" href="https://wa.me/97332159000" data-t="ws_send"></a>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+<main id="pmain" hidden></main>
+<main id="plp" class="plp" hidden>
+<section id="shop" class="plp-sec">
+  <div class="wrap">
+    <div class="shop-head">
+      <div>
+        <h2 data-t="shop_h"></h2>
+        <p class="sub" data-t="shop_sub"></p>
+      </div>
+      <div class="tabs" id="tabs" role="group" data-t-aria="tabs_aria"></div>
+    </div>
+    <div class="shop-tools" id="shopTools"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <img class="f-logo" src="img/logo-light.png" alt="Jerar">
+      </div>
+      <div><h4 data-t="f_shop"></h4><ul>
+        <li><a href="#products" data-cat="liquids" data-t="f_cat_liquids"></a></li>
+        <li><a href="#products" data-cat="powders" data-t="f_cat_powders"></a></li>
+        <li><a href="#products" data-cat="dressings" data-t="f_cat_dressings"></a></li>
+        <li><a href="#gifts" data-t="nav_gifts"></a></li>
+      </ul></div>
+      <div><h4 data-t="f_about"></h4><ul>
+        <li><a href="#story" data-t="nav_story"></a></li>
+        <li><a href="#wholesale" data-t="nav_ws"></a></li>
+        <li><a href="#certs" data-t="f_cert"></a></li>
+        <li><a href="https://jerarbh.com/delivery-policy/" data-t="f_delivery"></a></li>
+        <li><a href="https://jerarbh.com/return-policy/" data-t="f_return"></a></li>
+      </ul></div>
+      <div><h4 data-t="f_contact"></h4><ul>
+        <li><a href="https://wa.me/97332159000"><span data-t="f_wa"></span> <span class="ltr">+973 3215 9000</span></a></li>
+        <li><a href="mailto:info@jerarbh.com">info@jerarbh.com</a></li>
+        <li><a href="https://www.instagram.com/jerar.bh"><span data-t="f_ig"></span> <span class="ltr">@jerar.bh</span></a></li>
+      </ul></div>
+    </div>
+    <div class="copy"><span><span data-t="f_rights"></span> <span class="ltr">© 2026</span></span><a href="https://jerarbh.com/terms-and-conditions/" data-t="f_terms"></a></div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" data-t-aria="cart_aria" aria-hidden="true">
+  <div class="d-head"><h3 data-t="cart_h"></h3><button class="icon-btn" id="closeCart" data-t-aria="cart_close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="d-list" id="dList"></div>
+  <div class="d-foot" id="dFoot">
+    <div class="seg" id="shipSeg" role="radiogroup" data-t-aria="ship_aria">
+      <input type="radio" name="ship" id="s1" value="0.8" checked><label for="s1" data-t="ship_std"></label>
+      <input type="radio" name="ship" id="s2" value="1.5"><label for="s2" data-t="ship_exp"></label>
+    </div>
+    <div class="line"><span data-t="c_sub"></span><span id="sub"></span></div>
+    <div class="line disc" id="discLine" hidden><span id="discLbl"></span><span id="discV"></span></div>
+    <div class="line"><span data-t="c_ship"></span><span id="shipV"></span></div>
+    <div class="line total"><span data-t="c_tot"></span><span id="tot"></span></div>
+    <a class="btn btn-green" id="checkout" target="_blank" rel="noopener" href="https://wa.me/97332159000" data-t="checkout"></a>
+    <p class="note" id="cartNote"></p>
+  </div>
+</aside>
+<div class="search" id="search" role="dialog" aria-modal="true" data-t-aria="search_aria" hidden>
+  <div class="s-box">
+    <form class="s-form" id="sForm" role="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+      <input id="sInput" type="search" autocomplete="off" enterkeyhint="search" data-t-ph="search_ph" data-t-aria="search_aria">
+      <button type="button" class="icon-btn" id="sClose" data-t-aria="search_close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </form>
+    <div class="s-results" id="sResults" aria-live="polite"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="cbox" id="cbox" role="dialog" aria-modal="true" data-t-aria="cert_h" hidden>
+  <div class="cb-scrim" data-cb-close></div>
+  <div class="cb-panel">
+    <button type="button" class="cb-x icon-btn" data-cb-close data-t-aria="cert_close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="cb-view" id="cbView"><img id="cbImg" alt=""></div>
+    <aside class="cb-info" id="cbInfo"></aside>
+    <button type="button" class="cb-nav cb-prev" id="cbPrev" data-t-aria="cert_prev"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button type="button" class="cb-nav cb-next" id="cbNext" data-t-aria="cert_next"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+</div>
+<script>/* فيديو الواجهة: آيفون أحياناً ما يشغّله تلقائياً (وضع توفير الطاقة أو بعد التحميل)،
+   فنشغّله بالكود، ونعيد المحاولة مع أول لمسة أو سكرول أو لما ترجع للصفحة */
+(function(){
+  var v=document.querySelector('.hv-clip');if(!v)return;
+  v.muted=true;v.defaultMuted=true;v.playsInline=true;
+  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
+  function play(){if(!v.paused)return;var p=v.play();if(p&&p.catch)p.catch(function(){})}
+  play();
+  v.addEventListener('loadeddata',play);v.addEventListener('canplay',play);
+  ['touchstart','pointerdown','scroll','keydown'].forEach(function(e){addEventListener(e,play,{passive:true})});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)play()});
+  addEventListener('pageshow',play);
+})();</script>
+<script src="site.js"></script>
+<script src="app.js"></script>
+<script src="search.js"></script>
+<script src="cartbar.js"></script>
+<script src="receipt.js"></script>
+<script src="stockists.js"></script>
+<script src="pages.js"></script>
+<script src="extras.js"></script>
+<script src="journey.js"></script>
+<script>/* شريط العرض تحت الفيديو: أحمر ويمشي */
+(function(){const el=$('#offer');function paint(){const live=offerLive();el.hidden=!live;if(!live)return;
+const item=`<span class="of-i"><b>${tx(OFFER.title)}</b><i></i><span>${tx(OFFER.codeTxt)}</span><i></i><span>${tx(OFFER.sub)}</span><i></i><u>${tx(OFFER.cta)}</u><i></i></span>`;
+/* نكرر الكلام لين يغطي عرض الشاشة مرتين، عشان الحركة ما يبان لها نهاية */
+const tr=$('#ofTrack');tr.innerHTML=`<span class="of-half">${item}</span>`;
+const one=tr.firstChild.getBoundingClientRect().width||300;
+const n=Math.max(2,Math.ceil((Math.max(innerWidth,screen.width||0)+200)/one));
+const half=`<span class="of-half">${item.repeat(n)}</span>`;
+tr.innerHTML=half+half;
+tr.style.animationDuration=(one*n/45)+'s';$('#ofSr').textContent=`${tx(OFFER.title)}، ${tx(OFFER.sub)}`;
+el.setAttribute('aria-label',`${tx(OFFER.title)}، ${tx(OFFER.cta)}`)}
+document.addEventListener('localechange',paint);let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(paint,300)});paint()})();</script>
+</body></html>
